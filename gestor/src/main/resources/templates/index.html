@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="theme-color" content="#ad5b57">
+<title>Floresca — Gestor</title>
+
+<link rel="manifest" href="/web.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Croissant+One&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/estilos.css">
+</head>
+
+<body>
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="side">
+    <div class="sidebar-logo">
+      <img src="/logo.jpg" alt="Logo de Floresca" class="logo-img">
+    </div>
+    <nav class="nav">
+      <a href="#" class="menu-btn black-shadow" data-view="dashboard">Inicio</a>
+      <a href="#" class="menu-btn black-shadow" data-view="pedido">Pedidos</a>
+      <a href="#" class="menu-btn black-shadow" data-view="materiales">Materiales</a>
+      <a href="#" class="menu-btn black-shadow" data-view="log">Historial</a>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <!-- DASHBOARD -->
+    <div id="view-dashboard" class="viewport view-root">
+      <section class="section">
+        <div class="section-header"><h2>Resumen de pedidos</h2></div>
+        <div class="kpis">
+          <div class="kpi"><div class="label">Pendientes</div><div class="value" id="kpiPendientes">0</div></div>
+          <div class="kpi"><div class="label">En proceso</div><div class="value" id="kpiProceso">0</div></div>
+          <div class="kpi"><div class="label">Entregados</div><div class="value" id="kpiListos">0</div></div>
+        </div>
+      </section>
+
+      <section class="tareas">
+        <h2>Recordatorios</h2>
+        <div class="nueva-tarea">
+          <input type="text" id="tareaInput" placeholder="Escribí una tarea...">
+          <button id="btnAgregarTarea">Agregar</button>
+        </div>
+        <div class="tarea-contenedor" id="tareaLista"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-header"><h2>Pedidos pendientes</h2></div>
+        <div class="orders-body">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th><th>Producto</th><th>Cantidad</th>
+                  <th>Fecha de entrega</th><th>Estado</th><th>Total</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyPedidos"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- GENERAR PEDIDO -->
+    <section id="view-pedido" class="section hidden view-root">
+      <div class="section-header">
+        <div>
+          <h2>Generar pedido</h2>
+          <p class="subtitle">Completá los datos y guardá</p>
+        </div>
+      </div>
+      <form id="formPedido" style="margin-top:10px">
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+          <div><label>Cliente</label><input id="cliente" type="text" required placeholder="Ej: María Pérez"/></div>
+          <div><label>Producto</label><input id="producto" type="text" required placeholder="Ej: Ramo artesanal"/></div>
+          <div><label>Cantidad</label><input id="cantidad" type="number" min="1" step="1" required value="1"/></div>
+          <div><label>Fecha de entrega</label><input id="fechaEntrega" type="date" required/></div>
+          <div><label>Valor individual (ARS)</label><input id="valorUnit" type="number" min="0" step="0.01" required placeholder="Ej: 12000"/></div>
+          <div><label>Total</label><input id="total" type="text" readonly value="$ 0,00"/></div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
+          <button type="button" class="btn" id="btnCancelar">Cancelar</button>
+          <button type="submit" class="btn">Guardar pedido</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- HISTORIAL -->
+    <section id="view-log" class="section hidden view-root">
+      <div class="section-header">
+        <div>
+          <h2>Historial de ventas</h2>
+          <p class="subtitle">Pedidos guardados y cambios</p>
+        </div>
+        <div class="log-actions" style="display:flex; gap:10px; align-items:center;">
+          <input id="logSearch" type="search" placeholder="Buscar cliente, producto o ID" style="width:320px">
+          <input id="logMes" type="month" title="Filtrar por mes" style="width:170px">
+          <button id="logRefresh" class="btn" type="button">Actualizar</button>
+        </div>
+      </div>
+
+      <div class="log-summary" style="display:flex;gap:12px;align-items:center;margin:10px 0">
+        <div class="kpi-mini" style="background:#fff;border:1px solid #ead0cd;border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:4px;box-shadow:var(--shadow-sm)">
+          <div class="label" style="font-weight:700;color:#5a4744">Ganancia mensual</div>
+          <div class="value" id="logTotalFiltrado" style="font-weight:700;font-size:20px;color:#ad5b57">$ 0</div>
+        </div>
+        <div class="kpi-mini" style="background:#fff;border:1px solid #ead0cd;border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:4px;box-shadow:var(--shadow-sm)">
+          <div class="label" style="font-weight:700;color:#5a4744">Ganancia total</div>
+          <div class="value" id="logTotalGeneral" style="font-weight:700;font-size:20px;color:#ad5b57">$ 0</div>
+        </div>
+      </div>
+
+      <div class="orders-body">
+        <div class="historial-wrap">
+          <table id="tabla-logs">
+            <thead>
+              <tr>
+                <th>#</th><th>Fecha entrega</th><th>Cliente</th><th>Producto</th>
+                <th>Cant.</th><th>Total</th><th>ID</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyLogs"><tr><td colspan="7">Cargando…</td></tr></tbody>
+          </table>
+          <!-- CARGAR MÁS (paginación) -->
+          <div id="logs-more-wrap" style="display:none;justify-content:center;padding:8px">
+            <button id="logs-more" class="btn" type="button">Cargar más</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MATERIALES -->
+    <section id="view-materiales" class="section hidden view-root">
+      <div class="section-header">
+        <div>
+          <h2>Materiales</h2>
+          <p class="subtitle">Cargá tus compras de materiales para medir costos</p>
+        </div>
+        <div class="mat-actions" style="display:flex;gap:10px;align-items:center">
+          <input id="matSearch" type="search" placeholder="Buscar material o proveedor">
+          <input id="matMes" type="month" title="Filtrar por mes">
+        </div>
+      </div>
+
+      <div class="mat-summary" style="display:flex;gap:12px;align-items:center;margin:10px 0">
+        <div class="kpi-mini" style="background:#fff;border:1px solid #ead0cd;border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:4px;box-shadow:var(--shadow-sm)">
+          <div class="label" style="font-weight:700;color:#5a4744">Invertido (mensual)</div>
+          <div class="value" id="matTotalFiltrado" style="font-weight:700;font-size:20px;color:#ad5b57">$ 0</div>
+        </div>
+        <div class="kpi-mini" style="background:#fff;border:1px solid #ead0cd;border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:4px;box-shadow:var(--shadow-sm)">
+          <div class="label" style="font-weight:700;color:#5a4744">Invertido total</div>
+          <div class="value" id="matTotalGeneral" style="font-weight:700;font-size:20px;color:#ad5b57">$ 0</div>
+        </div>
+      </div>
+
+      <!-- Formulario alta material -->
+      <form id="formMaterial" style="margin:6px 0 12px 0">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+          <div><label>Fecha</label><input id="matFecha" type="date" required></div>
+          <div><label>Material</label>
+            <input id="matNombre" type="text" list="dl-materiales" required placeholder="Ej: Cinta coral">
+            <datalist id="dl-materiales"></datalist>
+          </div>
+          <div><label>Cantidad</label><input id="matCantidad" type="number" min="0" step="0.01" required value="1"></div>
+          <div><label>Precio unit. (ARS)</label><input id="matPrecioUnit" type="number" min="0" step="0.01" required placeholder="Ej: 2500"></div>
+          <div><label>Total</label><input id="matTotal" type="text" readonly value="$ 0,00"></div>
+          <div><label>Proveedor (opcional)</label>
+            <input id="matProveedor" type="text" list="dl-proveedores" placeholder="Ej: Mayorista Central">
+            <datalist id="dl-proveedores"></datalist>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
+          <button type="submit" class="btn">Guardar material</button>
+        </div>
+      </form>
+
+      <div class="orders-body">
+        <div class="mat-table-wrap"><!-- scroll propio -->
+          <table id="tabla-materiales">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th class="sortable" data-key="fecha">Fecha</th>
+                <th class="sortable" data-key="material">Material</th>
+                <th class="sortable" data-key="cantidad">Cant.</th>
+                <th class="sortable" data-key="precio">Precio unit.</th>
+                <th class="sortable" data-key="total">Total</th>
+                <th class="sortable" data-key="proveedor">Proveedor</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyMateriales"><tr><td colspan="10">Sin compras aún</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="/index.js"></script>
+
+<!-- Audios -->
+<audio id="sonido-crear" src="/sonidos/crear.wav" preload="auto"></audio>
+<audio id="sonido-estado" src="/sonidos/estado.mp3" preload="auto"></audio>
+</body>
+</html>
+
+

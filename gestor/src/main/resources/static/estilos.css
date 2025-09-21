@@ -1,0 +1,273 @@
+:root{
+  --rose-900:#ad5b57; --rose-700:#d7827a; --rose-500:#e8a5a0;
+  --rose-200:#f6dbd8; --paper:#f6efe6; --paper-2:#f2e1d5;
+  --sage-700:#4b6e56;
+  --ink:#2d2a27;
+  --shadow-sm:0 2px 8px rgba(0,0,0,.05);
+  --shadow-md:0 8px 24px rgba(0,0,0,.10);
+  --radius:10px;
+  --gap:22px;
+}
+
+*{box-sizing:border-box}
+html,body{
+  height:100%;
+  margin:0;
+  font-family:"Merriweather", serif;
+  line-height: 1.35;
+  background:#e69a92;
+  color:var(--ink);
+}
+
+h1, h2, h3,
+.section-header h2,
+.kpi .value,
+.menu-btn.black-shadow {
+  font-family: "Croissant One", cursive;
+  letter-spacing: .02em;
+}
+
+.app{
+  height:100vh; display:grid;
+  grid-template-columns:280px 1fr;
+  gap:var(--gap); padding:var(--gap);
+}
+
+/* Sidebar */
+.side{
+  background:#ad5b57; border-radius:10px;
+  padding:18px; box-shadow:var(--shadow-md);
+  position:sticky; top:var(--gap);
+  height:calc(100vh - (var(--gap) * 2));
+  display:flex; flex-direction:column; min-height:0;
+}
+.sidebar-logo{display:flex; justify-content:center; align-items:center; padding:20px 0;}
+.logo-img{width:170px; height:170px; object-fit:contain; border-radius:50%; box-shadow:0 2px 6px rgba(0,0,0,.1);}
+
+.nav{display:flex; flex-direction:column; gap:12px; margin-top:12px;}
+.menu-btn.black-shadow{
+  display:flex; align-items:center; justify-content:center;
+  padding:10px 20px; font-size:16px; font-weight:bold; text-decoration:none;
+  color:#e69a92; background:#fff; border:2px solid #f4cdcd; border-radius:12px;
+  box-shadow:4px 4px 0px #f4cdcd; transition:transform .1s, box-shadow .1s;
+}
+.menu-btn.black-shadow:hover{transform:translate(-2px,-2px); box-shadow:6px 6px 0px #f4cdcd;}
+.menu-btn.black-shadow:active{transform:translate(0,0); box-shadow:2px 2px 0px #f4cdcd inset;}
+
+.main{min-width:0; min-height:0;}
+.viewport{
+  height:calc(100vh - (var(--gap) * 2));
+  display:grid; gap:var(--gap); min-height:0;
+  grid-template-rows:auto auto 1fr;
+  align-content:start;
+}
+
+/* Sección base */
+.section{
+  background:var(--rose-200); border-radius:10px;
+  box-shadow:var(--shadow-md); padding:14px 16px;
+  display:flex; flex-direction:column; min-height:0; overflow:visible;
+}
+.section-header{
+  padding-bottom:10px; margin-bottom:8px; border-bottom:1px solid #e7c4c1;
+  display:flex; align-items:end; justify-content:space-between;
+}
+h2{margin:0; color:var(--rose-900); letter-spacing:.03em}
+.subtitle{margin:0; color:#6f6a67; font-size:20px}
+
+/* KPIs */
+.kpis{
+  display:grid; gap:16px; min-height:0; width:100%;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+}
+.kpi{
+  background:#fff; border:2px solid #ad5b57; border-radius:12px; padding:20px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+  box-shadow:4px 4px 0 #ad5b57; transition:transform .15s, box-shadow .15s; min-height:120px;
+}
+.kpi .label{font-weight:700; font-size:16px; color:var(--ink);}
+.kpi .value{font-size:42px; font-weight:800; color:var(--rose-900);}
+
+/* =============== RECORDATORIOS (LIMPIO) =============== */
+/* Cabecera: Título + Input + Botón en una fila */
+.tareas{
+  display:grid;
+  grid-template-columns:auto minmax(360px,1fr) auto;
+  align-items:center;
+  column-gap:12px; row-gap:12px;
+  background:var(--rose-200);
+  border-radius:10px;
+  box-shadow:var(--shadow-md);
+  padding:14px 16px;
+  position:relative;
+  overflow:visible;                  /* no recorta la cinta */
+}
+.tareas > h2{ grid-column:1; margin:0; color:var(--rose-900); }
+.nueva-tarea{
+  grid-column:2 / 4;
+  display:grid; grid-template-columns:1fr auto; gap:12px; margin:0;
+  position:relative; z-index:1;
+}
+.tarea-contenedor{
+  grid-column:1 / -1;
+  display:flex; flex-wrap:wrap; gap:18px;
+  padding:10px 4px 6px;
+  position:relative; z-index:2;
+  overflow:visible;
+}
+
+/* Nota tipo post-it */
+.tarea{
+  position:relative; z-index:3;
+  width:220px; min-height:90px;
+  padding:14px 42px 16px 16px;
+  border:none; border-radius:0;
+  background:linear-gradient(180deg,#a5eea0 0%, #a5eea0 100%);
+  box-shadow:0 8px 18px rgba(0,0,0,.10), 0 2px 0 rgba(0,0,0,.06) inset;
+  display:flex; align-items:flex-start; justify-content:space-between;
+  transform:rotate(var(--rot,-1.5deg));
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.tarea:hover{ transform:rotate(0deg) translateY(-2px); box-shadow:0 12px 24px rgba(0,0,0,.14); }
+
+/* Cinta adhesiva (una sola definición, visible completa) */
+.tarea::before{
+  content:""; position:absolute; left:50%; top:-16px; transform:translateX(-50%) rotate(-2deg);
+  width:90px; height:20px; border-radius:3px; z-index:4;
+  background:linear-gradient(180deg,#f7e7ad 0%, #e6cf8a 100%);
+  box-shadow:0 6px 12px rgba(0,0,0,.18);
+  opacity:.95; mix-blend-mode:multiply; pointer-events:none;
+}
+
+/* Sombra inferior pegada */
+.tarea::after{
+  content:""; position:absolute; left:10px; right:10px; bottom:-6px; height:10px;
+  border-radius:10px; filter:blur(6px); background:rgba(0,0,0,.16);
+}
+
+/* Contenido de la nota */
+.tarea span{
+  display:block; color:#5a4e00; font-weight:700; line-height:1.25;
+  white-space:pre-wrap; word-break:break-word; max-width:150px;
+}
+
+/* Botón cerrar */
+.tarea .acciones{ position:relative; z-index:5; }
+.tarea .acciones button{
+	position: absolute; /* <- agregar esto */
+  top: -4px;           /* podés ajustar según lo necesites */
+  right: -30px;        /* AUMENTÁ este valor para correrlo a la izquierda */
+  width:26px; height:26px; border:none; border-radius:999px;
+  background:#fff3a5; color:#6f5a00; font-weight:800; cursor:pointer;
+  box-shadow:0 1px 0 rgba(0,0,0,.08);
+}
+.tarea .acciones button:hover{ background:#ffe971; }
+
+/* Aparición */
+@keyframes noteIn{
+  from{ opacity:0; transform:translateY(-6px) scale(.98) rotate(-3deg); }
+  to  { opacity:1; transform:translateY(0)    scale(1)    rotate(var(--rot,-1.5deg)); }
+}
+.tarea--new{ animation:noteIn .35s ease-out both; }
+
+/* ========= Tabla genérica ========= */
+.orders-body{flex:1; min-height:0; display:flex; flex-direction:column;}
+.table-wrap{flex:1; min-height:0; overflow:auto; background:#fff; border:1px solid #ead0cd; border-radius:12px;}
+table{width:100%; border-collapse:separate; border-spacing:0;}
+thead th{ position:sticky; top:0; z-index:1; background:#fff; border-bottom:1px solid #ead0cd; padding:12px 14px; text-align:left; font-weight:700; color:#523f3c; }
+tbody td{padding:11px 14px; border-bottom:1px dashed #ead0cd;}
+tbody tr:hover td{background:#fff6f6;}
+
+/* Scroll fija para materiales */
+.mat-table-wrap{ max-height:380px; overflow:auto; background:#fff; border:1px solid #ead0cd; border-radius:12px; }
+
+/* Historial */
+.historial-wrap{ flex:1; min-height:0; overflow-y:auto; max-height:400px; background:#fff; border:1px solid #ead0cd; border-radius:12px; }
+
+/* Chips */
+.state{display:inline-block; padding:6px 10px; border-radius:999px; font-weight:700; font-size:14px;}
+.state--pendiente{background:#ffe3e0; color:#7a4c48;}
+.state--proceso{background:#eef6f0; color:#3f6b53;}
+.state--listo{background:#e9f5ec; color:#3b6a52;}
+.state--cancelado{background:#f8eaea; color:#9a5f5f;}
+
+/* Scrollbar */
+.table-wrap::-webkit-scrollbar, .historial-wrap::-webkit-scrollbar, .mat-table-wrap::-webkit-scrollbar{width:12px; height:12px}
+.table-wrap::-webkit-scrollbar-thumb, .historial-wrap::-webkit-scrollbar-thumb, .mat-table-wrap::-webkit-scrollbar-thumb{background:#e8a5a0; border-radius:10px}
+.table-wrap:hover::-webkit-scrollbar-thumb, .historial-wrap:hover::-webkit-scrollbar-thumb, .mat-table-wrap:hover::-webkit-scrollbar-thumb{background:#d7827a}
+.table-wrap::-webkit-scrollbar-track, .historial-wrap::-webkit-scrollbar-track, .mat-table-wrap::-webkit-scrollbar-track{background:#f6efe6; border-radius:10px}
+
+/* Botones genéricos */
+.btn{ appearance:none; border:none; border-radius:999px; padding:10px 16px; background:linear-gradient(180deg,var(--rose-500),var(--rose-700)); color:#fff; font-weight:700; letter-spacing:.02em; cursor:pointer; box-shadow:var(--shadow-sm); transition:transform .15s, filter .15s, box-shadow .2s; }
+.btn:hover{transform:translateY(-1px); filter:brightness(1.05); box-shadow:var(--shadow-md);}
+.btn-link{background:transparent; border:none; color:#7a4c48; font-weight:700; cursor:pointer; padding:6px 8px; border-radius:8px;}
+.btn-link:hover{background:#ffeae7}
+
+/* Inputs */
+input[type="text"], input[type="number"], input[type="date"], input[readonly], input[type="month"], input[type="search"]{
+  width:100%; padding:12px 16px; font-size:15px; border:1px solid var(--rose-200);
+  border-radius:10px; background:#fdfdfd; box-shadow:0 2px 6px rgba(0,0,0,.08); outline:none; transition:all .2s;
+}
+input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus, input[type="month"]:focus, input[type="search"]:focus{
+  border-color:var(--rose-500); background:#fff; box-shadow:0 4px 12px rgba(173,91,87,.2);
+}
+
+/* Utilidad */
+.hidden{display:none}
+
+/* Orden visual en encabezados Materiales */
+th.sortable{ cursor:pointer; user-select:none; }
+th.sortable.asc::after{ content:" ▲"; }
+th.sortable.desc::after{ content:" ▼"; }
+
+/* Animación fila nueva (Materiales) */
+@keyframes rowIn {
+  0% { opacity:0; transform:translateY(-6px); background:rgba(232,165,160,.35);}
+  60%{ opacity:1; transform:translateY(0);   background:rgba(232,165,160,.18);}
+  100%{background:transparent;}
+}
+tr.row--new td{ animation: rowIn .45s ease-out both; }
+
+/* Skeleton (logs) */
+.skel-row td{ height:38px; }
+.skel{
+  display:inline-block; width:100%; height:12px; border-radius:6px;
+  background:linear-gradient(90deg,#eee 25%,#f5f5f5 37%,#eee 63%);
+  background-size:400% 100%;
+  animation:shimmer 1.2s infinite;
+}
+@keyframes shimmer{ 0%{background-position: 100% 0} 100%{background-position: -100% 0} }
+
+/* Responsivo */
+@media (max-width:1100px){
+  .app{grid-template-columns:1fr}
+  .side{position:static; height:auto}
+  .viewport{height:auto}
+  .kpis{grid-template-columns:repeat(2, minmax(0, 1fr))}
+}
+@media (max-width:840px){
+  .kpis{grid-template-columns:1fr}
+}
+
+/* ===== Transición entre vistas ===== */
+.view-root{
+  opacity: 0;
+  transform: translateY(6px) scale(.995);
+  transition: opacity .28s ease, transform .28s ease;
+  will-change: opacity, transform;
+}
+
+.view-root.is-visible{
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.view-root.is-hiding{
+  opacity: 0;
+  transform: translateY(6px) scale(.995);
+}
+
+/* Respeto accesibilidad */
+@media (prefers-reduced-motion: reduce){
+  .view-root{ transition: none; }
+}
