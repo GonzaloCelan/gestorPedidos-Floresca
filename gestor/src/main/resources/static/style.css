@@ -1,0 +1,470 @@
+/* =========================================================
+   FLORESCA — estilos base + tablas con scroll y thead fijo
+   (CSS LIMPIO / SIN DUPLICADOS)
+   ========================================================= */
+
+/* ============ TOKENS ============ */
+:root{
+  --bg:#f3f5f3;
+  --panel:#ffffff;
+  --panel-2:#eef3ef;
+  --ink:rgb(0, 0, 0);
+  --ink-2:#475569;
+  --brand:#2f6a4f;
+  --muted:#9aa4b2;
+
+  --radius:18px;
+  --shadow:0 10px 30px rgba(15,23,42,.08);
+  --ring:0 0 0 3px rgba(47,106,79,.15);
+
+  /* Scrollbar */
+  --sb-w: 12px;
+  --sb-track: #e7efe9;
+  --sb-thumb: #bcd1c6;
+  --sb-thumb-hover: #9bb8aa;
+
+  /* Verde oliva del menú (unificado para headers) */
+  --aside-olive:#bcd1bb;
+
+  /* Aux */
+  --ok:#2fa26a;
+  --warn:#d9a441;
+}
+
+/* ============ RESET BÁSICO ============ */
+*{ box-sizing:border-box }
+html,body{ height:100% }
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+ /* font:400 16px/1.5 "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;*/
+}
+
+/* ============ LAYOUT ============ */
+.app{
+  display:grid;
+  grid-template-columns:280px minmax(0,1fr);
+  gap:0;
+  min-height:100dvh;
+}
+
+/*background:linear-gradient(180deg,var(--aside-olive), var(--aside-olive));
+/*border-left: 4px solid #333;/*
+/* Sidebar */
+.sidebar{
+  width:280px; min-height:100dvh;
+  background:#ffffff;
+  padding:28px 0px; position:sticky; top:0;
+  box-shadow:none;
+  border-right:1px solid #e5e7eb;
+}
+.logo{
+  display:flex;
+  flex-direction:column;   /* apila vertical */
+  align-items:center;      /* centra horizontalmente */
+  gap:.4rem;  
+  margin-bottom:40px;             /* espacio entre logo y título */
+}
+.logo img{ max-width:140px; height:auto; display:block; }
+.logo .h1{ margin:0; line-height:1.1; }
+
+.nav{ display:flex; flex-direction:column; gap:10px }
+.nav a{
+	font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  display:flex; align-items:center; gap:10px;
+  padding:12px 14px; border-radius:0px; text-decoration:none;
+  color:rgb(0, 0, 0); background:#ffffff;
+  border:0px solid #d8e3dc;
+  transition:transform .05s ease, background .15s ease, color .15s ease;
+}
+.nav a:active{ transform:translateY(1px) }
+.nav a.active{ background:#bcd1bb; color:#fff; border-color:transparent }
+.nav a .icon{ width:18px; height:18px; opacity:.9 }
+
+/* Main + Panel "pegado" (sin card flotante) */
+.main{ padding:0; min-width:0 }
+.panel{
+  border-radius:0;
+  box-shadow:none;
+  background:var(--panel);
+  padding:28px 32px;
+  border-left:1px solid #d8e3dc;
+}
+.view-root{ min-height:100vh }
+
+/* ============ TITULARES ============ */
+.header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px }
+.h1{ font-size:28px; font-weight:700; letter-spacing:.3px }
+.subtitle{ color:var(--ink-2) }
+.h2{ font-size:18px; font-weight:700; margin:16px 0 8px; color:var(--ink) }
+
+/* ============ KPIs ============ */
+.kpis{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px }
+.kpi{ background:var(--panel); border-radius:0; box-shadow:var(--shadow); padding:18px }
+.kpi .label{
+  margin:0 0 6px; font-size:13px; color:var(--ink-2);
+  font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+}
+.kpi .value{ font-size:32px; font-weight:700; color:var(--brand) }
+
+/* ============ Inputs / Botones ============ */
+.input{
+  width:100%; background:var(--panel);
+  border:1px solid #e6ece7; border-radius:0px; padding:12px 14px; outline:none;
+}
+.input:focus{ box-shadow:var(--ring); border-color:transparent }
+.btn{
+  background:var(--brand); color:#fff; border:none; border-radius:0px;
+  padding:12px 16px; font-weight:600; cursor:pointer;
+}
+.btn:disabled{ opacity:.6; cursor:not-allowed }
+.btn-sec{ background:#f6f8f6; border:1px solid #e6ece7; color:var(--ink) }
+
+/* ============ Recordatorios (post-its) ============ */
+.reminders{ display:flex; gap:10px; align-items:center; margin:20px 0 8px }
+#tareaLista{
+  display:flex; flex-wrap:wrap; gap:12px; align-items:flex-start; padding:2px 0 8px; margin-top:20px;
+}
+.tarea{
+  position:relative; width:180px; min-height:72px;
+  padding:10px 28px 10px 12px;
+  border-radius:12px; border:1px solid #f1e2a8;
+  background:#fff7cc; color:#5a4e2b;
+  box-shadow:0 6px 16px rgba(0,0,0,.08), inset 0 1px 0 rgba(255,255,255,.6);
+  transform:rotate(var(--rot,0deg));
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.tarea::before{
+  content:""; position:absolute; left:40px; right:40px; top:-8px; height:14px;
+  border-radius:4px; background:linear-gradient(180deg,#f5f5f5,#e8e8e8);
+  box-shadow:0 2px 6px rgba(0,0,0,.06);
+}
+#tareaLista .tarea:nth-child(3n){ background:#fff3e1; border-color:#f2dfb9 }
+#tareaLista .tarea:nth-child(3n+1){ background:#eafcf1; border-color:#cdebd9; color:#1f3b2e }
+.tarea > span{
+  display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical;
+  overflow:hidden; line-height:1.35; word-break:break-word;
+}
+.tarea .acciones{ position:absolute; right:6px; top:6px }
+.tarea .acciones button{ border:0; background:transparent; cursor:pointer; font-weight:700; color:#6b7280 }
+.tarea:hover{ transform:rotate(0deg) translateY(-1px); box-shadow:0 10px 22px rgba(0,0,0,.10), inset 0 1px 0 rgba(255,255,255,.7) }
+
+/* ============ Badges de estado ============ */
+.badge{ padding:6px 10px; border-radius:999px; font-size:12px; font-weight:700 }
+.badge--pendiente{ background:#fff3cd; color:#8a6d3b }
+.badge--proceso{ background:#d1fae5; color:#065f46 }
+.badge--entregado{ background:#e0e7ff; color:#3730a3 }
+
+/* ============ Acciones / Icon Buttons ============ */
+.action{ display:flex; gap:8px }
+.icon-btn,
+.btn-ico{
+  background:#eef3ef; border:1px solid #dfe8e2; border-radius:10px;
+  padding:8px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center;
+  line-height:0; color:#1f2937; width:36px; height:36px; margin-inline:3px;
+  transition: transform .08s ease, filter .15s ease;
+}
+.icon-btn:hover,
+.btn-ico:hover{ border-color:#cfdad3; filter:brightness(.98); transform:translateY(-1px) }
+.icon-btn svg,
+.btn-ico svg{ width:18px; height:18px; stroke:currentColor; fill:#5a646e }
+.btn-ico.btn-danger svg{ fill:#8a3b3b }
+
+/* =========================================================
+   TABLAS — scroll interno + thead fijo (Inicio, Materiales, Historial)
+   ========================================================= */
+
+/* Alturas máximas por vista */
+#view-dashboard { --tbl-max: calc(100vh - 360px); }
+#view-materiales{ --tbl-max: calc(100vh - 420px); }
+#view-log       { --tbl-max: calc(100vh - 240px); }
+
+/* Contenedor scrolleable */
+#view-dashboard .table,
+#view-materiales .table,
+#view-log .table{
+  display:block;
+  overflow:auto;
+  max-height:var(--tbl-max, 60vh);
+  scrollbar-gutter:stable both-edges;
+
+  background:var(--panel);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+
+/* Tabla interna */
+#view-dashboard .table > table,
+#view-materiales .table > table,
+#view-log .table > table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  table-layout:fixed;
+}
+
+/* Encabezado fijo (pinta el fondo el ::before) */
+#view-dashboard thead,
+#view-materiales thead,
+#view-log thead{
+  position:sticky; top:0; z-index:3;
+}
+#view-dashboard thead th,
+#view-materiales thead th,
+#view-log thead th{
+  background:transparent; color:var(--ink-2); font-weight:600; padding:10px;
+  border-bottom:1px solid transparent;
+}
+
+.pedidos thead th{padding:10px}
+/* Fondo continuo del header — oliva */
+#view-dashboard thead::before,
+#view-materiales thead::before,
+#view-log thead::before{
+  content:""; position:absolute; inset:0;
+  background:var(--aside-olive);
+  z-index:-1;
+}
+
+/* Cuerpo */
+#view-dashboard tbody td,
+#view-materiales tbody td,
+#view-log tbody td{
+  padding:10px; border-bottom:1px solid #eef2ef;
+}
+#view-dashboard tbody tr:last-child td,
+#view-materiales tbody tr:last-child td,
+#view-log tbody tr:last-child td{ border-bottom:none; }
+
+/* Scrollbars */
+#view-dashboard .table::-webkit-scrollbar,
+#view-materiales .table::-webkit-scrollbar,
+#view-log .table::-webkit-scrollbar{ width:var(--sb-w) }
+#view-dashboard .table::-webkit-scrollbar-track,
+#view-materiales .table::-webkit-scrollbar-track,
+#view-log .table::-webkit-scrollbar-track{ background:var(--sb-track) }
+#view-dashboard .table::-webkit-scrollbar-thumb,
+#view-materiales .table::-webkit-scrollbar-thumb,
+#view-log .table::-webkit-scrollbar-thumb{ background:var(--sb-thumb) }
+#view-dashboard .table::-webkit-scrollbar-thumb:hover,
+#view-materiales .table::-webkit-scrollbar-thumb:hover,
+#view-log .table::-webkit-scrollbar-thumb:hover{ background:var(--sb-thumb-hover) }
+#view-dashboard .table,
+#view-materiales .table,
+#view-log .table{ scrollbar-width:thin; scrollbar-color:var(--sb-thumb) var(--sb-track) }
+
+/* ===== Específico: TABLA de PEDIDOS (dashboard) =====
+   – Sin bordes redondeados en costados/encabezado
+   – Columna 1 alineada a la izquierda
+*/
+#view-dashboard .table{ border-radius:0 }                    /* <- quita radius contenedor */
+#view-dashboard thead::before{
+  border-top-left-radius:0; border-top-right-radius:0;       /* <- header recto */
+}
+
+.pedidos th:first-child,
+.pedidos td:first-child,
+.pedidos th:nth-child(2),
+.pedidos td:nth-child(2),
+.pedidos th:nth-child(3),
+.pedidos td:nth-child(3), 
+.pedidos th:nth-child(4),
+.pedidos td:nth-child(4), 
+.pedidos th:nth-child(5),
+.pedidos td:nth-child(5), 
+.pedidos th:nth-child(6),
+.pedidos td:nth-child(6),
+.pedidos th:last-child, 
+.pedidos td:last-child { text-align: left; white-space: nowrap;}
+
+
+
+.historial th:first-child,
+.historial td:first-child,
+.historial th:nth-child(2),
+.historial td:nth-child(2),
+.historial th:nth-child(3),
+.historial td:nth-child(3),
+.historial th:nth-child(4),
+.historial td:nth-child(4),
+.historial th:nth-child(5),
+.historial td:nth-child(5),
+.historial th:nth-child(6),
+.historial td:nth-child(6),
+.historial th:last-child, 
+.historial td:last-child { text-align: left; white-space: nowrap;}
+
+
+
+/* Pill de estado */
+.pill{
+  display:inline-block; padding:6px 10px; border-radius:0px;
+  font-size:12px; font-weight:700;
+}
+.pill--pendiente{
+  background: color-mix(in srgb, var(--warn) 20%, white);
+  border:1px solid color-mix(in srgb, var(--warn) 35%, white);
+  color:#5d4517;
+}
+.pill--proceso{
+  background: color-mix(in srgb, var(--ok) 20%, white);
+  border:1px solid color-mix(in srgb, var(--ok) 35%, white);
+  color:#0f5132;
+}
+.pill--entregado{ background:#e0e7ff; border:1px solid #c7cffd; color:#374151 }
+
+/* ===== Específico: MATERIALES / HISTORIAL tarjetas ===== */
+.pedidos-card,
+.materiales-card,
+.historial-card{ width:100%; min-width:0; margin-top:20px }
+.pedidos-card .tabla-scroll,
+.materiales-card .tabla-scroll,
+.historial-card .tabla-scroll{ max-height:420px; overflow:auto; scrollbar-gutter:stable }
+.pedidos-card .tabla,
+.materiales-card .tabla,
+.historial-card .tabla{ width:100%; table-layout:fixed }
+
+/* Alineaciones en Materiales */
+.tabla.materiales th:first-child,
+.tabla.materiales td:first-child,
+.tabla.materiales th:nth-child(2),
+.tabla.materiales td:nth-child(2),
+.tabla.materiales th:nth-child(3),
+.tabla.materiales td:nth-child(3),
+.tabla.materiales th:nth-child(4),
+.tabla.materiales td:nth-child(4),
+.tabla.materiales th:nth-child(5),
+.tabla.materiales td:nth-child(5),
+.tabla.materiales th:nth-child(6),
+.tabla.materiales td:nth-child(6),
+.tabla.materiales th:last-child,
+.tabla.materiales td:last-child{ text-align:left; white-space:nowrap;}
+
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+.modal-backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,.35);
+  display:flex; align-items:center; justify-content:center; z-index:1000;
+}
+.modal-backdrop.hidden{ display:none }
+.modal{
+  background:#fff; border:1px solid #e6ece7; border-radius:18px;
+  box-shadow:0 16px 50px rgba(0,0,0,.18);
+  width:min(820px,92vw);
+}
+.modal-header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 18px; border-bottom:1px solid #e9efeb;
+}
+.modal h3{ margin:0; color:var(--ink) }
+.modal-close{ background:transparent; border:0; font-size:26px; line-height:1; cursor:pointer; color:var(--ink) }
+.modal-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; padding:16px 18px }
+.modal-actions{ display:flex; gap:10px; justify-content:flex-end; padding:0 18px 18px }
+
+/* =========================================================
+   Vistas (tu JS añade/quita .hidden / .is-visible)
+   ========================================================= */
+.view-root.hidden{ display:none }
+.view-root.is-visible{ display:block }
+
+
+
+/* ============ Responsive ============ */
+@media (max-width:1100px){
+  .kpis{ grid-template-columns:1fr 1fr }
+}
+@media (max-width:860px){
+  .app{ grid-template-columns:1fr }
+  .sidebar{ position:relative; width:auto; min-height:auto; border-radius:0 0 var(--radius) var(--radius) }
+  .main{ padding:18px }
+  .kpis{ grid-template-columns:1fr }
+  .modal-grid{ grid-template-columns:1fr }
+}
+
+:root{
+  --ink:#1f2937;
+  --muted:#6b7280;
+  --panel:#fff;
+  --accent:#bcd1bb;         /* pestaña verde izquierda */
+  --radius:12px;
+  --shadow:0 6px 18px rgba(15,23,42,.10);
+}
+
+/* contenedor del nav */
+.nav{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+/*padding:12px 14px 12px 18px;
+/* enlace base */
+.nav > a{
+  position:relative;
+  align-items:center;
+  gap:10px;
+  padding-left:75px;
+  color:#707070;
+  text-decoration:none;
+  font-weight:600;
+  transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+  display:flex;
+  width:100%;              /* <— full width */
+  box-sizing:border-box;
+}
+
+/* icono SVG (usa tu mismo <span class="icon">) */
+.nav > a .icon{
+  width:22px;
+  height:22px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  color:#707070;        /* stroke="currentColor" toma este color */
+}
+.nav > a svg{display:block}
+
+/* pestaña izquierda (hover y activo) */
+.nav > a::before{
+  content:"";
+  position:absolute;
+  left:0;
+  width:6px;
+  background:transparent;
+  transition:background .12s ease, width .12s ease;
+  top:0;                   /* <— desde arriba */
+  bottom:0;                /* <— hasta abajo */
+  width:10px;    
+}
+
+/* hover */
+
+.nav > a:hover{
+  background:#fff;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+}
+.nav > a:hover::before{ background:var(--accent); }
+
+/* ACTIVO (igual al boceto) */
+.nav > a.active .icon{color:rgb(0, 0, 0);}
+
+.nav > a.active{
+color:rgb(0, 0, 0);
+  background:var(--panel);
+  outline:1px solid transparent; 
+  box-shadow:0px 2px 12px rgba(0,0,0,.08); /* línea gris tipo boceto */
+}
+.nav > a.active::before{
+  background:var(--accent);
+}
+
+/* foco teclado accesible */
+.nav > a:focus-visible{
+  outline:2px solid color-mix(in srgb, var(--accent) 70%, #000 0%);
+  outline-offset:2px;
+  background:#fff;
+}
+
+
+

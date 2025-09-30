@@ -18,10 +18,12 @@ import com.floresta.gestor.dto.entregaDTO;
 import com.floresta.gestor.model.entrega;
 import com.floresta.gestor.service.entregaService;
 
+import jakarta.validation.Valid;
+
 
 
 @RestController
-@RequestMapping("/api/gestor")
+@RequestMapping("/api/v1")
 public class entregaController {
 	
 	
@@ -32,32 +34,44 @@ public class entregaController {
         this.service = service;
     }
     
-    
-    @PostMapping
-    public ResponseEntity<entrega> guardarEntrega(@RequestBody entregaDTO dto) {
+    //GUARDA UN PEDIDO NUEVO
+    @PostMapping ("/pedidos")
+    public ResponseEntity<entrega> guardarEntrega(@Valid @RequestBody entregaDTO dto) {
     	
     	entrega response = service.generarEntrega(dto);
     	
         return ResponseEntity.ok(response);
     }
     
-    @PutMapping("/{id}/{estado}")
+    //ACTUALIZA ESTADO DEL PEDIDO
+    
+    @PutMapping("/pedidos/{id}/{estado}")
     public ResponseEntity<entrega> actualizarEntrega(
     		@PathVariable Integer id,
     		@PathVariable String estado) {
     	
-    	Optional<entrega> response = service.actualizarEstado(id, estado);
+    	entrega response = service.actualizarEstado(id, estado);
     	
-
-        if (response.isPresent()) {
-            return ResponseEntity.ok(response.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    	return ResponseEntity.ok(response);
     	
     }
     
-    @DeleteMapping("/{id}")
+  //ACTUALIZA PEDIDO ENTERO
+    
+    @PutMapping("/pedidos/{id}")
+    public ResponseEntity<entrega> actualizarEntregaCompleto(
+    		@PathVariable Integer id,
+    		@RequestBody entregaDTO dto) {
+    	
+    	entrega response = service.actualizarPedido(id,dto);
+    	
+
+    	return ResponseEntity.ok(response);
+    	
+    }
+    
+    //ELIMINA UN PEDIDO POR ID
+    @DeleteMapping("/pedidos/{id}")
     public ResponseEntity<Void> eliminarEntrega(@PathVariable Integer id) {
         boolean eliminado = service.eliminarEntrega(id);
 
@@ -68,6 +82,7 @@ public class entregaController {
         }
     }
     
+    //OBTENGO TODOS LOS PEDIDOS ACTIVOS
     @GetMapping("/pedidos")
     public ResponseEntity<List<entrega>> getPedidosActivos(){
     	

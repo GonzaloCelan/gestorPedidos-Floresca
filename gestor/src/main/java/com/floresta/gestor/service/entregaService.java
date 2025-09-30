@@ -1,16 +1,21 @@
 package com.floresta.gestor.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 import com.floresta.gestor.dto.entregaDTO;
 import com.floresta.gestor.model.entrega;
 import com.floresta.gestor.model.logIngreso;
 import com.floresta.gestor.repository.entregaRepository;
 import com.floresta.gestor.repository.logIngresoRepository;
+
+import jakarta.validation.Valid;
 
 @Service
 public class entregaService {
@@ -26,9 +31,15 @@ public class entregaService {
 	}
 	
 	
-	public entrega generarEntrega(entregaDTO request) {
+	@Transactional
+	public entrega generarEntrega(@Valid entregaDTO request) {
 		
-		entrega response = entrega.builder()
+		if(request.getEstado() == null) { 
+			
+			request.setEstado("PENDIENTE");
+		}
+		
+		var nuevoPedido = entrega.builder()
 				.cliente(request.getCliente())
 				.producto(request.getProducto())
 				.cantidad(request.getCantidad())
@@ -37,50 +48,69 @@ public class entregaService {
 				.total(request.getTotal())
 				.build();
 				
-		return repository.save(response);
+		return repository.save(nuevoPedido);
 		
 		
 	}
 	
-	public Optional<entrega> actualizarEstado(Integer id, String nuevoEstado) {
+	@Transactional
+	public entrega actualizarEstado(Integer id, String nuevoEstado) {
         
-		return repository.findById(id).map(entrega -> {
-	        String estadoAnterior = entrega.getEstado();
+		entrega pedido = repository.findById(id).orElseThrow(() -> new ResponseStatusException( NOT_FOUND,"Entrega " + id + " no existe"));;
+    
+		var estadoAnterior = pedido.getEstado();
+		pedido.setEstado(nuevoEstado);
+		repository.save(pedido);
+		
+		if("ENTREGADO".equalsIgnoreCase(nuevoEstado) && !"ENTREGADO".equalsIgnoreCase(estadoAnterior)) { 
+			
+			var logPedido = logIngreso.builder()
+					  .idPedido(pedido.getIdEntrega())
+					  .cliente(pedido.getCliente())
+					  .producto(pedido.getProducto())
+					  .cantidad(pedido.getCantidad())
+					  .total(pedido.getTotal())
+					  .fechaEntrega(pedido.getFechaEntrega())
+					  .build();
+			
+			logRepository.save(logPedido);
+		}
+		
+		return pedido;
+	}
+	
+	@Transactional
+	public entrega actualizarPedido(Integer id, @Valid entregaDTO request) {
+        
+		entrega pedido = repository.findById(id).orElseThrow(() -> new ResponseStatusException( NOT_FOUND,"Entrega " + id + " no existe"));
 
-	        entrega.setEstado(nuevoEstado);
-	        entrega = repository.save(entrega);
-
-	        // Log solo si pasa a "Listo" y antes no lo era
-	        if ("ENTREGADO".equalsIgnoreCase(nuevoEstado) && !"ENTREGADO".equalsIgnoreCase(estadoAnterior)) {
-	            logIngreso log = new logIngreso();
-	            log.setIdPedido(entrega.getIdEntrega());
-	            log.setCliente(entrega.getCliente());
-	            log.setProducto(entrega.getProducto());
-	            log.setCantidad(entrega.getCantidad());
-	            log.setTotal(entrega.getTotal());
-	            log.setFechaEntrega(entrega.getFechaEntrega());
-
-	            logRepository.save(log);
-	        }
-
-	        return entrega;
-	    });
+		pedido.setCliente(request.getCliente());
+		pedido.setProducto(request.getProducto());
+		pedido.setCantidad(request.getCantidad());
+		pedido.setFechaEntrega(request.getFechaEntrega());
+		pedido.setEstado(request.getEstado());
+		pedido.setTotal(request.getTotal());
+		
+		repository.save(pedido);
+		
+		return pedido;
     
 	}
 	
+	@Transactional
 	public boolean eliminarEntrega(Integer id) {
-	    Optional<entrega> entrega = repository.findById(id);
-	    
-	    if (entrega.isPresent()) {
-	    	
-	    	repository.deleteById(id);
-	        return true;
-	    } else {
-	        return false;
-	    }
+		
+		if (!repository.existsById(id)) return false; 
+
+		  try {
+		    repository.deleteById(id);
+		    return true;
+		  } catch (org.springframework.dao.DataIntegrityViolationException e) {
+		    return false; 
+		  }
 	}
 	
-
+	@Transactional(readOnly = true) 
     public List<entrega> obtenerPedidosActivos() {
     	
         return repository.findByEstadoIn(List.of("PENDIENTE", "EN_PROCESO"));

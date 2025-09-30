@@ -1,15 +1,17 @@
-// ↑ Al comienzo de tu index.js (entry principal)
+// ===================== SERVICE WORKER =====================
 if ('serviceWorker' in navigator && !window.__swRegistered) {
-  window.__swRegistered = true; // guard simple
+  window.__swRegistered = true;
   window.addEventListener('load', async () => {
     try {
       const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
       console.log('SW OK:', reg.scope);
 
-      // (opcional) auto-actualización
+      // auto-actualización
       let refreshing = false;
       navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (refreshing) return; refreshing = true; window.location.reload();
+        if (refreshing) return;
+        refreshing = true;
+        window.location.reload();
       });
       if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
       reg.addEventListener('updatefound', () => {
@@ -24,26 +26,21 @@ if ('serviceWorker' in navigator && !window.__swRegistered) {
       console.error('SW register failed', e);
     }
   });
-  
-  // Listener para que el SW pueda recibir el “SKIP_WAITING”
-    navigator.serviceWorker.addEventListener('message', (event) => {
-      // (no usamos nada acá, el SW procesa CLEAR_CACHES si querés)
-    });
-  }
 
+  navigator.serviceWorker.addEventListener('message', (_event) => {
+    // hook opcional
+  });
+}
 
+// ===================== CONFIG =====================
+const API_BASE = window.API_BASE ?? window.location.origin;
+const POST_PEDIDO = '/api/v1/pedidos';
+const PUT_ESTADO  = (id, wire) => `/api/v1/pedidos/${encodeURIComponent(id)}/${encodeURIComponent(wire)}`;
 
-
-
-/* ================== CONFIG ================== */
-const API_BASE = 'http://localhost:8080';
-const POST_PEDIDO = '/api/gestor';
-const PUT_ESTADO  = (id, wire) => `/api/gestor/${encodeURIComponent(id)}/${encodeURIComponent(wire)}`;
-
-/* Estados */
-const UI_NEXT      = { 'Pendiente':'En proceso','En proceso':'Entregado','Entregado':'Cancelado','Cancelado':'Cancelado' };
-const WIRE_FROM_UI = { 'Pendiente':'PENDIENTE','En proceso':'EN_PROCESO','Entregado':'ENTREGADO','Cancelado':'CANCELADO' };
-const UI_FROM_WIRE = { PENDIENTE:'Pendiente', EN_PROCESO:'En proceso', ENTREGADO:'Entregado', CANCELADO:'Cancelado' };
+/* Estados: SOLO 3 */
+const UI_NEXT      = { 'Pendiente':'En proceso', 'En proceso':'Entregado', 'Entregado':'Entregado' };
+const WIRE_FROM_UI = { 'Pendiente':'PENDIENTE', 'En proceso':'EN_PROCESO', 'Entregado':'ENTREGADO' };
+const UI_FROM_WIRE = { PENDIENTE:'Pendiente', EN_PROCESO:'En proceso', ENTREGADO:'Entregado' };
 
 /* Estado en memoria */
 let pedidos = [];
@@ -53,16 +50,16 @@ let materiales = [];
 let materialesFiltrados = [];
 let lastAddedId = null;
 
-/* ===== Paginación HISTORIAL ===== */
+/* Paginación HISTORIAL */
 const LOGS_PAGE_SIZE = 20;
 let logsPage = 0;
 let logsLast = false;
 let isLogsLoading = false;
 
-/* ===== NUEVO: control de carga de Materiales ===== */
+/* Carga perezosa Materiales */
 let materialesLoaded = false;
 
-/* ===== Utilidades ===== */
+// ===================== UTILS =====================
 function parseISODateFlexible(v){
   if(!v) return null;
   if(v instanceof Date) return isNaN(v) ? null : v;
@@ -78,9 +75,7 @@ const fmtFecha = iso => { const d=parseISODateFlexible(iso); if(!d) return '—'
 const moneyAR = n => new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS'}).format(Number(n)||0);
 const getNumber = (...cands)=>{ for(const c of cands){ const n = Number(c); if(!isNaN(n)) return n; } return 0; };
 const pick = (...cands)=>{ for(const c of cands){ if(c!==undefined && c!==null) return c; } return undefined; };
-const chipClass = s => ({ 'Pendiente':'state state--pendiente','En proceso':'state state--proceso','Entregado':'state state--listo','Cancelado':'state state--cancelado' }[s] || 'state');
-
-/* Normalizador para búsquedas (quita acentos, pasa a min) */
+const chipClass = s => ({ 'Pendiente':'state state--pendiente','En proceso':'state state--proceso','Entregado':'state state--listo' }[s] || 'state');
 function _norm(v){
   return String(v ?? '')
     .toLowerCase()
@@ -88,11 +83,45 @@ function _norm(v){
     .replace(/[\u0300-\u036f]/g, '');
 }
 
-/* ================== API ================== */
+/* ======= Badge de estado + botón transparente ======= */
+function renderBadgeEstado(estadoUI){
+  const s = String(estadoUI||'').toUpperCase().replace(/\s+/g,'_');
+  if(s==='PENDIENTE' || estadoUI==='Pendiente')    return '<span class="badge badge--pendiente">Pendiente</span>';
+  if(s==='EN_PROCESO' || estadoUI==='En proceso')  return '<span class="badge badge--proceso">En proceso</span>';
+  if(s==='ENTREGADO'  || estadoUI==='Entregado')   return '<span class="badge badge--entregado">Entregado</span>';
+  return `<span class="badge">${estadoUI||'—'}</span>`;
+}
+function stateBtnHTML(estadoUI){
+  return `<button type="button" class="estado-btn ${chipClass(estadoUI)}">${renderBadgeEstado(estadoUI)}</button>`;
+}
+
+/* ======= Íconos SVG editar / eliminar ======= */
+function renderIconosAcciones(id){
+  const safeId = id ?? '';
+  return `
+    <div class="action">
+      <button class="icon-btn btn-editar" title="Editar" data-id="${safeId}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M12 20h9"></path>
+          <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+        </svg>
+      </button>
+      <button class="icon-btn btn-eliminar" title="Eliminar" data-id="${safeId}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M3 6h18"></path>
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+          <path d="M10 11v6"></path><path d="M14 11v6"></path>
+          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+        </svg>
+      </button>
+    </div>`;
+}
+
+// ===================== API =====================
 async function apiCrearPedido(payload){
   const res = await fetch(`${API_BASE}${POST_PEDIDO}`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
   if(!res.ok){ const t = await res.text().catch(()=> ''); throw new Error(`POST ${POST_PEDIDO} -> ${res.status} ${t}`); }
-  const data = await res.json().catch(()=>({})); const id = data.idEntrega;
+  const data = await res.json().catch(()=>({})); const id = data.idEntrega ?? data.id;
   if(!id) throw new Error('El backend no devolvió idEntrega.');
   return { idEntrega:id, data };
 }
@@ -103,54 +132,51 @@ async function apiActualizarEstado(idEntrega, nuevoUI){
   return true;
 }
 async function apiGetPedidos(){
-  const res = await fetch(`${API_BASE}/api/gestor/pedidos`);
-  if(!res.ok) throw new Error(`GET /api/gestor/pedidos -> ${res.status}`);
+  const res = await fetch(`${API_BASE}/api/v1/pedidos`);
+  if(!res.ok) throw new Error(`GET /api/v1/pedidos -> ${res.status}`);
   return res.json();
 }
-async function apiGetLogs(){
-  const res = await fetch(`${API_BASE}/api/gestor/logs`);
-  if(!res.ok) throw new Error(`GET /api/gestor/logs -> ${res.status}`);
-  return res.json();
+
+/* Editar / Eliminar (como tenías) */
+async function apiGetPedido(id){
+  const r = await fetch(`${API_BASE}/api/v1/pedidos/${id}`);
+  if(!r.ok) throw new Error(`GET /api/v1/pedidos/${id} -> ${r.status}`);
+  return r.json();
+}
+async function apiUpdatePedido(id, dto){
+  const r = await fetch(`${API_BASE}/api/v1/pedidos/${id}`, {
+    method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(dto)
+  });
+  if(!r.ok) throw new Error(`PUT /api/v1/pedidos/${id} -> ${r.status}`);
+  return r.json();
+}
+async function apiDeletePedido(id){
+  const r = await fetch(`${API_BASE}/api/v1/pedidos/${id}`, { method:'DELETE' });
+  if(!r.ok) throw new Error(`DELETE /api/v1/pedidos/${id} -> ${r.status}`);
+  return true;
+}
+
+// endpoint paginado oficial
+async function apiGetLogsPage(page=0, size=LOGS_PAGE_SIZE, sort='fechaEntrega,desc'){
+  const url = `${API_BASE}/api/v1/logs/page?page=${page}&size=${size}&sort=${encodeURIComponent(sort)}`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error(`GET ${url} -> ${res.status}`);
+  return res.json(); // {content, number, size, totalPages, last, ...}
 }
 async function apiCrearMaterial(payload){
-  const res = await fetch(`${API_BASE}/api/gestor/material`, {
+  const res = await fetch(`${API_BASE}/api/v1/materiales`, {
     method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
   });
-  if(!res.ok) throw new Error(`POST /api/gestor/material -> ${res.status}`);
+  if(!res.ok) throw new Error(`POST /api/v1/materiales -> ${res.status}`);
   return res.json();
 }
 async function apiGetMateriales(){
-  const res = await fetch(`${API_BASE}/api/gestor/material`);
-  if(!res.ok) throw new Error(`GET /api/gestor/material -> ${res.status}`);
+  const res = await fetch(`${API_BASE}/api/v1/materiales`);
+  if(!res.ok) throw new Error(`GET /api/v1/materiales -> ${res.status}`);
   return res.json();
 }
 
-/* ===== API paginada logs con fallback ===== */
-async function apiGetLogsPage(page=0, size=LOGS_PAGE_SIZE, sort='fechaEntrega,desc'){
-  const url = `${API_BASE}/api/gestor/logs/page?page=${page}&size=${size}&sort=${encodeURIComponent(sort)}`;
-  try{
-    const res = await fetch(url);
-    if(!res.ok) throw new Error('no-page');
-    return await res.json(); // {content, number, size, last, ...}
-  }catch(_){
-    // Fallback: endpoint actual y rebanado front
-    const full = await apiGetLogs().catch(()=>[]);
-    const total = Array.isArray(full) ? full.length : 0;
-    const start = page * size;
-    const slice = Array.isArray(full) ? full.slice(start, start+size) : [];
-    return {
-      content: slice,
-      number: page,
-      size,
-      totalElements: total,
-      totalPages: Math.ceil(total/size) || 1,
-      first: page===0,
-      last: start + slice.length >= total
-    };
-  }
-}
-
-/* ================== FILTROS MATERIALES ================== */
+// ===================== FILTROS MATERIALES =====================
 function applyMatFilters(){
   const q = (document.getElementById('matSearch')?.value || '').trim().toLowerCase();
   const ym = document.getElementById('matMes')?.value || '';
@@ -169,7 +195,7 @@ function applyMatFilters(){
   renderMateriales(materialesFiltrados);
 }
 
-/* ================== RENDER MATERIALES ================== */
+// ===================== RENDER MATERIALES =====================
 let matSort = { key:'fecha', dir:'desc' };
 
 function renderMateriales(list){
@@ -328,32 +354,32 @@ function refrescarDatalistsMateriales(rows){
   $m && $m.addEventListener('change', applyMatFilters);
 })();
 
-/* ================== PEDIDOS ================== */
+// ===================== PEDIDOS =====================
+function kpiCount(list, ui){ return list.filter(x=>x.estado===ui).length; }
 function renderKPIs(list){
-  const p = list.filter(x=>x.estado==='Pendiente').length;
-  const e = list.filter(x=>x.estado==='En proceso').length;
-  const d = list.filter(x=>x.estado==='Entregado').length;
-  document.getElementById('kpiPendientes').textContent = p;
-  document.getElementById('kpiProceso').textContent   = e;
-  document.getElementById('kpiListos').textContent    = d;
+  document.getElementById('kpiPendientes').textContent = kpiCount(list,'Pendiente');
+  document.getElementById('kpiProceso').textContent    = kpiCount(list,'En proceso');
+  document.getElementById('kpiListos').textContent     = kpiCount(list,'Entregado');
 }
+
+/* === TABLA de pedidos (solo Pendiente / En proceso) === */
 function renderTabla(list){
   const tbody = document.getElementById('tbodyPedidos');
   const mostrar = list.filter(p => p.estado==='Pendiente' || p.estado==='En proceso');
-  if(!mostrar.length){ tbody.innerHTML = `<tr><td colspan="6">Sin pedidos pendientes</td></tr>`; return; }
+  if(!mostrar.length){ tbody.innerHTML = `<tr><td colspan="7">Sin pedidos pendientes</td></tr>`; return; }
   tbody.innerHTML = mostrar.map(p => `
-    <tr data-id="${p.idEntrega}">
-      <td>${p.cliente}</td>
-      <td>${p.producto}</td>
-      <td>${p.cantidad}</td>
+    <tr data-id="${p.idEntrega ?? p.id}">
+      <td>${p.cliente ?? '—'}</td>
+      <td>${p.producto ?? '—'}</td>
+      <td>${p.cantidad ?? '—'}</td>
       <td>${fmtFecha(p.fechaEntrega)}</td>
-      <td><button type="button" class="estado-btn ${chipClass(p.estado)}">${p.estado}</button></td>
+      <td>${stateBtnHTML(p.estado)}</td>
       <td>${moneyAR(p.total)}</td>
+      <td class="actions-cell">${renderIconosAcciones(p.idEntrega ?? p.id)}</td>
     </tr>`).join('');
 }
 
-/* ================== HISTORIAL ================== */
-/* Buscador por ID / Cliente / Producto (acentos) + atajos "id:" o "#" */
+// ===================== HISTORIAL =====================
 function aplicarFiltrosLogs(){
   const rawQ = (document.getElementById('logSearch')?.value || '').trim();
   const qNorm = _norm(rawQ);
@@ -396,7 +422,7 @@ function aplicarFiltrosLogs(){
 }
 
 function renderLogs(list){
-  const tbody = document.getElementById('tbodyLogs');
+  const tbody = document.getElementById('tbodyHistorial');
   if(!Array.isArray(list) || !list.length){
     tbody.innerHTML = `<tr><td colspan="7">Sin registros</td></tr>`;
   }else{
@@ -408,8 +434,9 @@ function renderLogs(list){
       const total = getNumber(r.total, r.monto, r.importe);
       return `<tr>
         <td>${i+1}</td><td>${fechaTxt}</td><td>${r.cliente||'—'}</td>
-        <td>${r.producto||'—'}</td><td>${cant}</td><td>${moneyAR(total)}</td>
-        <td>${r.idEntrega ?? r.id ?? '—'}</td>
+        <td>${r.producto||'—'}</td><td style="text-align:right">${cant}</td>
+        <td style="text-align:right">${moneyAR(total)}</td>
+        <td style="text-align:right">${r.idEntrega ?? r.id ?? '—'}</td>
       </tr>`;
     }).join('');
   }
@@ -419,9 +446,9 @@ function renderLogs(list){
   document.getElementById('logTotalGeneral').textContent = moneyAR(totalTodos);
 }
 
-/* -------- Skeleton + LoadMore (logs) -------- */
+/* Skeleton + Load More */
 function showLogsSkeleton(on){
-  const tbody = document.getElementById('tbodyLogs');
+  const tbody = document.getElementById('tbodyHistorial');
   if(!tbody) return;
   if(!on){ tbody.querySelectorAll('.skel-row').forEach(tr=>tr.remove()); return; }
   const rows = 5, cols = 7;
@@ -441,7 +468,7 @@ function toggleLogsLoadMore(show){
   if(el) el.style.display = show ? 'flex' : 'none';
 }
 
-/* Traer una página de logs y acumular */
+/* Traer una página y acumular */
 async function fetchLogsPage(page=0){
   if(isLogsLoading || logsLast) return;
   isLogsLoading = true;
@@ -462,62 +489,183 @@ async function fetchLogsPage(page=0){
   }
 }
 
-/* Botón Cargar más (si existe en el DOM) */
+/* Botón Cargar más */
 document.addEventListener('click', (e)=>{
   if(e.target && e.target.id === 'logs-more'){
     fetchLogsPage(logsPage);
   }
 });
 
-/* ================== Interacción estado pedidos ================== */
+// ===================== ESTADO PEDIDOS (click estado) =====================
 function setupEstadoClicks(){
   const tbody = document.getElementById('tbodyPedidos');
+  if(!tbody) return;
+
   tbody.addEventListener('click', async (e)=>{
-    const btn = e.target.closest('.estado-btn'); if(!btn) return;
-    const tr = btn.closest('tr'); const idEntrega = tr?.dataset?.id;
+    const btn = e.target.closest('.estado-btn');
+    if(!btn) return;
+
+    const tr = btn.closest('tr');
+    const idEntrega = tr?.dataset?.id;
     if(!idEntrega){ alert('Este pedido no tiene idEntrega.'); return; }
-    const actualUI = btn.textContent.trim();
+
+    // estado actual a partir del chip
+    const txt = btn.textContent.trim();
+    const actualUI =
+      txt.includes('Pendiente')  ? 'Pendiente'  :
+      txt.includes('En proceso') ? 'En proceso' :
+      txt.includes('Entregado')  ? 'Entregado'  : 'Pendiente';
+
     const siguienteUI = UI_NEXT[actualUI] || 'Pendiente';
-    btn.textContent = siguienteUI;
+
+    // Optimista: actualizar chip
     btn.className = `estado-btn ${chipClass(siguienteUI)}`;
+    btn.innerHTML = renderBadgeEstado(siguienteUI);
+
     try{
       await apiActualizarEstado(idEntrega, siguienteUI);
+
       const ix = pedidos.findIndex(p => String(p.idEntrega) === String(idEntrega));
-      if(ix>=0) pedidos[ix].estado = siguienteUI;
+      if (ix >= 0) pedidos[ix].estado = siguienteUI;
+
+      // KPIs siempre sobre el array completo (incluye entregados)
       renderKPIs(pedidos);
-      renderTabla(pedidos);
+
+      // si quedó "Entregado", re-renderizamos la tabla para que desaparezca
+      if (siguienteUI === 'Entregado') {
+        renderTabla(pedidos);           // la tabla oculta "Entregado"
+      }
+
       document.getElementById('sonido-estado')?.play().catch(()=>{});
     }catch(err){
-      btn.textContent = actualUI;
+      // rollback visual
       btn.className = `estado-btn ${chipClass(actualUI)}`;
+      btn.innerHTML = renderBadgeEstado(actualUI);
       alert('No pude actualizar el estado en el servidor.');
       console.error(err);
     }
   });
 }
 
-/* ================== VIEW TRANSITIONS (fade/slide) ================== */
+// ===================== ACCIONES (Editar/Eliminar) =====================
+document.addEventListener('click', (e) => {
+  const editBtn = e.target.closest('.btn-editar');
+  const delBtn  = e.target.closest('.btn-eliminar');
+  if (editBtn) abrirModalEditar(editBtn.dataset.id);
+  if (delBtn)  eliminarPedido(delBtn.dataset.id);
+});
+
+/* Modal refs */
+const modalEditar = document.querySelector('#modalEditar');
+const modalClose  = modalEditar?.querySelector('.modal-close');
+const modalCancel = modalEditar?.querySelector('#editCancelar');
+
+function mostrarModal(){ modalEditar?.classList.remove('hidden'); }
+function ocultarModal(){ modalEditar?.classList.add('hidden'); }
+
+modalClose?.addEventListener('click', ocultarModal);
+modalCancel?.addEventListener('click', ocultarModal);
+
+async function abrirModalEditar(id){
+  try{
+    // intentamos traer del backend (si no, caemos al array en memoria)
+    let p;
+    try{
+      p = await apiGetPedido(id);
+    }catch{
+      p = pedidos.find(x => String(x.idEntrega) === String(id));
+      if(!p) throw new Error('No se encontró el pedido.');
+      p = {
+        idEntrega: p.idEntrega,
+        cliente: p.cliente,
+        producto: p.producto,
+        cantidad: p.cantidad,
+        fechaEntrega: p.fechaEntrega,
+        estado: WIRE_FROM_UI[p.estado] || 'PENDIENTE',
+        total: p.total
+      };
+    }
+
+    // precargar
+    document.querySelector('#editId').value = p.idEntrega ?? p.id;
+    document.querySelector('#editCliente').value = p.cliente ?? '';
+    document.querySelector('#editProducto').value = p.producto ?? '';
+    document.querySelector('#editCantidad').value = p.cantidad ?? 1;
+    document.querySelector('#editFechaEntrega').value = (p.fechaEntrega ?? '').slice(0,10);
+    document.querySelector('#editEstado').value = p.estado || 'PENDIENTE'; // WIRE
+    document.querySelector('#editTotal').value = p.total ?? 0;
+
+    mostrarModal();
+  }catch(e){
+    alert(e.message);
+  }
+}
+
+document.querySelector('#formEditar')?.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const id = document.querySelector('#editId').value;
+  const dto = {
+    cliente: document.querySelector('#editCliente').value.trim(),
+    producto: document.querySelector('#editProducto').value.trim(),
+    cantidad: Number(document.querySelector('#editCantidad').value),
+    fechaEntrega: document.querySelector('#editFechaEntrega').value,
+    estado: document.querySelector('#editEstado').value, // WIRE
+    total: Number(document.querySelector('#editTotal').value)
+  };
+
+  try{
+    const saved = await apiUpdatePedido(id, dto);
+    // actualizar array local (convertimos a UI)
+    const ix = pedidos.findIndex(p => String(p.idEntrega) === String(id));
+    if(ix >= 0){
+      pedidos[ix] = {
+        idEntrega: id,
+        cliente: saved.cliente ?? dto.cliente,
+        producto: saved.producto ?? dto.producto,
+        cantidad: saved.cantidad ?? dto.cantidad,
+        fechaEntrega: saved.fechaEntrega ?? dto.fechaEntrega,
+        estado: UI_FROM_WIRE[saved.estado] ?? UI_FROM_WIRE[dto.estado] ?? 'Pendiente',
+        total: saved.total ?? dto.total
+      };
+    }
+    ocultarModal();
+    renderKPIs(pedidos);
+    renderTabla(pedidos);
+    document.querySelector('#sonido-estado')?.play?.();
+  }catch(err){
+    alert('No se pudo actualizar el pedido.');
+    console.error(err);
+  }
+});
+
+async function eliminarPedido(id){
+  const realId = String(id ?? '').trim();
+  if(!realId){ alert('No tengo ID del pedido.'); return; }
+  if(!confirm('¿Eliminar este pedido? Esta acción no se puede deshacer.')) return;
+  try{
+    await apiDeletePedido(realId); // mismo endpoint de siempre
+    pedidos = pedidos.filter(p => String(p.idEntrega ?? p.id) !== realId);
+    renderKPIs(pedidos);
+    renderTabla(pedidos);
+    document.querySelector('#sonido-estado')?.play?.();
+  }catch(err){
+    alert('No se pudo eliminar el pedido.');
+    console.error(err);
+  }
+}
+
+// ===================== VIEW TRANSITIONS =====================
 const VIEW_ANIM_MS = 260;
 
-// Inyecta CSS mínimo de animaciones si no existe
 (function injectViewAnimCSS(){
   if (document.getElementById('view-anim-css')) return;
   const css = `
   .hidden{display:none}
-  .is-visible{
-    animation: viewIn ${VIEW_ANIM_MS}ms ease both;
-  }
-  .is-hiding{
-    animation: viewOut ${VIEW_ANIM_MS}ms ease both;
-  }
-  @keyframes viewIn {
-    from { opacity:.0; transform: translateY(6px); }
-    to   { opacity:1;  transform: translateY(0); }
-  }
-  @keyframes viewOut {
-    from { opacity:1;  transform: translateY(0); }
-    to   { opacity:.0; transform: translateY(-6px); }
-  }`;
+  .is-visible{ animation: viewIn ${VIEW_ANIM_MS}ms ease both; }
+  .is-hiding{  animation: viewOut ${VIEW_ANIM_MS}ms ease both; }
+  @keyframes viewIn { from { opacity:.0; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
+  @keyframes viewOut{ from { opacity:1;  transform: translateY(0); }   to { opacity:.0; transform: translateY(-6px); } }
+  `;
   const tag = document.createElement('style');
   tag.id = 'view-anim-css';
   tag.textContent = css;
@@ -539,23 +687,15 @@ function _currentVisible(){
 }
 function _ensureInitialVisible() {
   const cur = _currentVisible();
-  if (cur) {
-    cur.classList.add('is-visible');
-    return;
-  }
+  if (cur) { cur.classList.add('is-visible'); return; }
   const dash = document.getElementById('view-dashboard');
-  if (dash) {
-    dash.classList.remove('hidden');
-    dash.classList.add('is-visible');
-  }
+  if (dash) { dash.classList.remove('hidden'); dash.classList.add('is-visible'); }
 }
 
-/* ===== NUEVO: carga perezosa de materiales ===== */
 async function loadMaterialesOnce(force=false){
   if(materialesLoaded && !force) return;
   try{
     const data = await apiGetMateriales();
-    // Normalizamos mínimamente para que el render no falle si el backend varía keys
     materiales = (Array.isArray(data) ? data : []).map(m => ({
       id: m.id ?? m.idMaterial ?? m.id_material ?? m._id ?? null,
       fecha: pick(m.fecha, m.fechaCompra, m.createdAt, m.created_at),
@@ -569,7 +709,7 @@ async function loadMaterialesOnce(force=false){
   }catch(err){
     console.error('No se pudieron cargar los materiales', err);
     materiales = [];
-    materialesLoaded = true; // evitamos loop; igual se puede forzar con force=true
+    materialesLoaded = true;
   }
   applyMatFilters();
 }
@@ -578,11 +718,9 @@ function switchViewAnimated(view){
   const toEl = document.getElementById(`view-${view}`);
   if(!toEl) return;
 
-  // Ya visible
   if (toEl.classList.contains('is-visible') && !toEl.classList.contains('hidden')) {
     if(view==='log') aplicarFiltrosLogs();
     if(view==='materiales'){ 
-      // NUEVO: aseguro datos antes de filtrar
       if(!materialesLoaded) { loadMaterialesOnce().catch(()=>{}); }
       else applyMatFilters();
     }
@@ -590,8 +728,6 @@ function switchViewAnimated(view){
   }
 
   const current = _currentVisible();
-
-  // Ocultar actual
   if (current && current !== toEl) {
     current.classList.add('is-hiding');
     setTimeout(() => {
@@ -600,36 +736,43 @@ function switchViewAnimated(view){
     }, VIEW_ANIM_MS);
   }
 
-  // Mostrar destino
   toEl.classList.remove('hidden');
-  void toEl.offsetWidth; // reflow
+  void toEl.offsetWidth;
   toEl.classList.add('is-visible');
+  setActiveNav(view);
 
   if(view==='log') aplicarFiltrosLogs();
-  if(view==='materiales'){
-    // NUEVO: primer carga al entrar
-    loadMaterialesOnce().catch(()=>{});
-  }
+  if(view==='materiales'){ loadMaterialesOnce().catch(()=>{}); }
 }
 
-/* ================== NAV ================== */
-function showView(view){
-  switchViewAnimated(view);
+// ===================== NAV =====================
+function setActiveNav(view){
+  document.querySelectorAll('.nav a').forEach(a=>{
+    const isActive = (a.dataset.view || 'dashboard') === view;
+    a.classList.toggle('active', isActive);
+    a.setAttribute('aria-current', isActive ? 'page' : 'false');
+  });
 }
+function showView(view){ switchViewAnimated(view); }
 function setupNav(){
   _ensureInitialVisible();
+
+  const startEl =
+    document.querySelector('.view-root.is-visible[id]') ||
+    document.querySelector('.view-root:not(.hidden)[id]');
+  const startView = startEl ? startEl.id.replace('view-','') : 'dashboard';
+  setActiveNav(startView);
+
   document.querySelectorAll('.nav a').forEach(a=>{
     a.addEventListener('click', e=>{
       e.preventDefault();
-      document.querySelectorAll('.nav a').forEach(n=>n.classList.remove('active'));
-      a.classList.add('active');
       const v = a.dataset.view || 'dashboard';
       switchViewAnimated(v);
     });
   });
 }
 
-/* ================== FORM PEDIDO ================== */
+// ===================== FORM PEDIDO =====================
 function setupForm(){
   const $cantidad=document.getElementById('cantidad');
   const $valorUnit=document.getElementById('valorUnit');
@@ -642,7 +785,10 @@ function setupForm(){
   ['input','change'].forEach(ev=>{ $cantidad?.addEventListener(ev,calcTotal); $valorUnit?.addEventListener(ev,calcTotal); });
   calcTotal();
 
-  $btnCancelar?.addEventListener('click', ()=>{ $form?.reset(); calcTotal(); document.querySelector('.nav a[data-view="dashboard"]')?.click(); });
+  $btnCancelar?.addEventListener('click', ()=>{
+    $form?.reset(); calcTotal();
+    document.querySelector('.nav a[data-view="dashboard"]')?.click();
+  });
 
   $form?.addEventListener('submit', async (e)=>{
     e.preventDefault();
@@ -681,7 +827,7 @@ function setupForm(){
   });
 }
 
-/* ================== Audio priming ================== */
+// ===================== AUDIO PRIMING =====================
 function primeAudioOnce(){
   const crear = document.getElementById('sonido-crear');
   const estado = document.getElementById('sonido-estado');
@@ -695,14 +841,14 @@ function primeAudioOnce(){
   document.addEventListener('click', handler, { once: true });
 }
 
-/* ================== INIT ================== */
+// ===================== INIT =====================
 (async ()=>{
   primeAudioOnce();
   setupNav();
   setupForm();
   setupEstadoClicks();
 
-  // Tareas (post-its) - cargar desde LS
+  // Carga recordatorios desde localStorage
   (function loadTasks(){
     try{
       const raw = localStorage.getItem('floresca_tasks_v1');
@@ -726,41 +872,47 @@ function primeAudioOnce(){
   try{
     const data = await apiGetPedidos();
     pedidos = (Array.isArray(data) ? data : []).map(p => ({
-      idEntrega: p.idEntrega, cliente: p.cliente, producto: p.producto,
-      cantidad: p.cantidad, fechaEntrega: p.fechaEntrega, total: p.total,
-      estado: UI_FROM_WIRE[p.estado] ?? p.estado ?? 'Pendiente'
+      idEntrega: p.idEntrega ?? p.id,
+      cliente: p.cliente,
+      producto: p.producto,
+      cantidad: p.cantidad,
+      fechaEntrega: p.fechaEntrega,
+      estado: UI_FROM_WIRE[p.estado] ?? p.estado ?? 'Pendiente',
+      total: p.total
     }));
     renderKPIs(pedidos);
     renderTabla(pedidos);
   }catch(err){
     console.error(err);
-    document.getElementById('tbodyPedidos').innerHTML = `<tr><td colspan="6">No se pudieron cargar los pedidos</td></tr>`;
+    const tp = document.getElementById('tbodyPedidos');
+    if (tp) tp.innerHTML = `<tr><td colspan="7">No se pudieron cargar los pedidos</td></tr>`;
   }
 
-  // NUEVO: precargar materiales en background (no bloquea la UI)
+  // Precargar materiales en background
   loadMaterialesOnce().catch(()=>{});
 
-  // Logs: paginación 20 en 20
+  // Logs: paginación
   try{
     logs = []; logsPage = 0; logsLast = false;
-    const tb = document.getElementById('tbodyLogs'); if (tb) tb.innerHTML = '';
+    const tb = document.getElementById('tbodyHistorial'); if (tb) tb.innerHTML = '';
     await fetchLogsPage(0);
   }catch(err){
     console.error(err);
-    document.getElementById('tbodyLogs').innerHTML = `<tr><td colspan="7">No se pudieron cargar los logs</td></tr>`;
+    const tb = document.getElementById('tbodyHistorial');
+    if (tb) tb.innerHTML = `<tr><td colspan="7">No se pudieron cargar los logs</td></tr>`;
   }
 
-  // Botón Actualizar = reset y cargar desde 0
+  // Refresh logs
   document.getElementById('logRefresh')?.addEventListener('click', async ()=>{
     try{
       logs = []; logsPage = 0; logsLast = false;
-      const tb = document.getElementById('tbodyLogs'); if (tb) tb.innerHTML = '';
+      const tb = document.getElementById('tbodyHistorial'); if (tb) tb.innerHTML = '';
       await fetchLogsPage(0);
     }catch(e){ console.error(e); }
   });
 })();
 
-/* ===== Listeners de búsqueda/mes en Historial ===== */
+// ===================== HISTORIAL: BÚSQUEDA / MES =====================
 (function setupLogFilters(){
   const $q  = document.getElementById('logSearch');
   const $m  = document.getElementById('logMes');
@@ -772,7 +924,7 @@ function primeAudioOnce(){
   $m && $m.addEventListener('change', aplicarFiltrosLogs);
 })();
 
-/* ===== TAREAS (post-its): agregar/eliminar + persistencia ===== */
+// ===================== TAREAS (post-its) =====================
 const LS_TASKS_KEY = 'floresca_tasks_v1';
 function crearNodoNota(texto){
   const div = document.createElement("div");
@@ -813,3 +965,4 @@ document.addEventListener('click', (e)=>{
   del.closest('.tarea')?.remove();
   saveTasks();
 });
+

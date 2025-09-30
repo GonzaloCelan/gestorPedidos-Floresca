@@ -16,8 +16,10 @@ import com.floresta.gestor.dto.materialDTO;
 import com.floresta.gestor.model.material;
 import com.floresta.gestor.service.materialService;
 
+import jakarta.validation.Valid;
+
 @RestController
-@RequestMapping("/api/gestor/material")
+@RequestMapping("/api/v1")
 public class materialController {
 
 	private final materialService service;
@@ -26,28 +28,30 @@ public class materialController {
         this.service = materialService;
     }
 	
-    @PostMapping
-    public ResponseEntity<material> crearMaterial(@RequestBody materialDTO request) {
+	
+	 //GUARDA UN MATERIAL NUEVO
+    @PostMapping("/materiales")
+    public ResponseEntity<material> crearMaterial(@Valid @RequestBody materialDTO request) {
     	material nuevo = service.guardarMaterial(request);
         return ResponseEntity.ok(nuevo);
     }
 
-   
-    @GetMapping
+    //OBTIENE TODOS LOS MATERIALES
+    @GetMapping("/materiales")
     public ResponseEntity<List<material>> listarMateriales() {
         return ResponseEntity.ok(service.obtenerTodos());
     }
 
-    
-    @GetMapping("/{id}")
+  //OBTIENE UN MATERIAL POR ID
+    @GetMapping("/materiales/{id}")
     public ResponseEntity<material> obtenerMaterial(@PathVariable Long id) {
         return service.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    
-    @DeleteMapping("/{id}")
+  //ELIMINA UN MATERIAL POR ID
+    @DeleteMapping("/materiales/{id}")
     public ResponseEntity<Void> eliminarMaterial(@PathVariable Long id) {
     	service.eliminarPorId(id);
         return ResponseEntity.noContent().build();

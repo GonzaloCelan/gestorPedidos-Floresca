@@ -3,6 +3,7 @@ package com.floresta.gestor.model;
 
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,7 +30,7 @@ public class material {
     private Long id;
 	
 	@Column(name = "fecha",nullable = false)
-    private java.sql.Date fecha;  
+    private LocalDate fecha;  
 
     @Column(name = "material",nullable = false)
     private String material;

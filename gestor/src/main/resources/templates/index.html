@@ -1,214 +1,338 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<meta name="theme-color" content="#ad5b57">
-<title>Floresca — Gestor</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="theme-color" content="#2f6a4f">
+  <title>Floresca — Gestor</title>
 
-<link rel="manifest" href="/web.webmanifest">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Croissant+One&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/estilos.css">
+  <link rel="manifest" href="/web.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
 </head>
 
 <body>
-<div class="app">
-  <!-- Sidebar -->
-  <aside class="side">
-    <div class="sidebar-logo">
-      <img src="/logo.jpg" alt="Logo de Floresca" class="logo-img">
-    </div>
-    <nav class="nav">
-      <a href="#" class="menu-btn black-shadow" data-view="dashboard">Inicio</a>
-      <a href="#" class="menu-btn black-shadow" data-view="pedido">Pedidos</a>
-      <a href="#" class="menu-btn black-shadow" data-view="materiales">Materiales</a>
-      <a href="#" class="menu-btn black-shadow" data-view="log">Historial</a>
-    </nav>
-  </aside>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <img src="/logo2.jpg" alt="Logo de Floresca">
+        <h1 class="h1">Floresca</h1>
+      </div>
 
-  <!-- Main -->
-  <main class="main">
-    <!-- DASHBOARD -->
-    <div id="view-dashboard" class="viewport view-root">
-      <section class="section">
-        <div class="section-header"><h2>Resumen de pedidos</h2></div>
-        <div class="kpis">
+      <nav class="nav">
+        <a href="#" class="active" data-view="dashboard">
+          <span class="icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 10.5 12 3l9 7.5"></path>
+              <path d="M5 10v10h14V10"></path>
+            </svg>
+          </span> Inicio
+        </a>
+
+        <a href="#" data-view="pedido">
+          <span class="icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+              <path d="M7 8h10M7 12h10M7 16h6"></path>
+            </svg>
+          </span> Pedidos
+        </a>
+
+        <a href="#" data-view="materiales">
+          <span class="icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73L13 2.27a2 2 0 0 0-2 0L4 6.27A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <path d="M3.3 7.7 12 12l8.7-4.3"></path>
+            </svg>
+          </span> Materiales
+        </a>
+
+        <a href="#" data-view="log">
+          <span class="icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="9"></circle>
+              <path d="M12 7v5l3 3"></path>
+            </svg>
+          </span> Historial
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+      <!-- ===== DASHBOARD / INICIO ===== -->
+      <section id="view-dashboard" class="panel view-root">
+        <div class="header">
+          <div class="h1">Resumen de pedidos</div>
+        </div>
+
+        <div class="kpis" style="margin-bottom:18px">
           <div class="kpi"><div class="label">Pendientes</div><div class="value" id="kpiPendientes">0</div></div>
           <div class="kpi"><div class="label">En proceso</div><div class="value" id="kpiProceso">0</div></div>
           <div class="kpi"><div class="label">Entregados</div><div class="value" id="kpiListos">0</div></div>
         </div>
-      </section>
 
-      <section class="tareas">
-        <h2>Recordatorios</h2>
-        <div class="nueva-tarea">
-          <input type="text" id="tareaInput" placeholder="Escribí una tarea...">
-          <button id="btnAgregarTarea">Agregar</button>
+        <h2 class="h2">Recordatorios</h2>
+        <div class="reminders">
+          <input type="text" id="tareaInput" class="input" placeholder="Escribí una tarea…">
+          <button id="btnAgregarTarea" class="btn">Agregar</button>
         </div>
-        <div class="tarea-contenedor" id="tareaLista"></div>
-      </section>
+        <div id="tareaLista"></div>
 
-      <section class="section">
-        <div class="section-header"><h2>Pedidos pendientes</h2></div>
-        <div class="orders-body">
-          <div class="table-wrap">
-            <table>
+       <div class="tabla-card pedidos-card">
+          <div class="tabla-scroll">
+            <table class="tabla pedidos" aria-label="Listado de pedidos">
+              <colgroup>
+              	<col style="width:20%"><!-- Cliente -->
+                <col style="width:30%"><!-- Producto -->
+                <col style="width:110px"><!-- Cantidad -->
+                <col style="width:160px"><!-- Fecha de entrega -->
+                <col style="width:140px"><!-- Estado -->
+                <col style="width:150px"><!-- Total -->
+                <col style="width:120px"><!-- Acciones -->
+              </colgroup>
+
               <thead>
                 <tr>
-                  <th>Cliente</th><th>Producto</th><th>Cantidad</th>
-                  <th>Fecha de entrega</th><th>Estado</th><th>Total</th>
+                  <th>Cliente</th>
+                  <th>Producto</th>
+                  <th>Cantidad</th>
+                  <th>Fecha de entrega</th>
+                  <th>Estado</th>
+                  <th>Total</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
-              <tbody id="tbodyPedidos"></tbody>
+
+              <tbody id="tbodyPedidos">
+                <!-- ejemplo (podés borrar estas filas de demo) -->
+                <!-- mensaje vacío (se muestra si no hay pedidos) -->
+                <tr class="row-empty">
+                  <td colspan="7">Sin pedidos pendientes</td>
+                </tr>
+              </tbody>
             </table>
           </div>
         </div>
       </section>
+
+      <!-- ===== GENERAR PEDIDO ===== -->
+      <section id="view-pedido" class="panel view-root hidden">
+        <div class="header">
+          <div>
+            <div class="h1" style="font-size:24px">Generar pedido</div>
+            <div class="subtitle" style="color:var(--ink-2)">Completá los datos y guardá</div>
+          </div>
+        </div>
+
+        <form id="formPedido" style="margin-top:6px">
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+            <div><label>Cliente</label><input id="cliente" class="input" type="text" required placeholder="Ej: María Pérez"/></div>
+            <div><label>Producto</label><input id="producto" class="input" type="text" required placeholder="Ej: Ramo artesanal"/></div>
+            <div><label>Cantidad</label><input id="cantidad" class="input" type="number" min="1" step="1" required value="1"/></div>
+            <div><label>Fecha de entrega</label><input id="fechaEntrega" class="input" type="date" required/></div>
+            <div><label>Valor individual (ARS)</label><input id="valorUnit" class="input" type="number" min="0" step="0.01" required placeholder="Ej: 12000"/></div>
+            <div><label>Total</label><input id="total" class="input" type="text" readonly value="$ 0,00"/></div>
+          </div>
+          <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
+            <button type="button" class="btn btn-sec" id="btnCancelar">Cancelar</button>
+            <button type="submit" class="btn">Guardar pedido</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ===== HISTORIAL ===== -->
+      <section id="view-log" class="panel view-root hidden">
+        <div class="header">
+          <div>
+            <div class="h1" style="font-size:24px">Historial de ventas</div>
+            <div class="subtitle" style="color:var(--ink-2)">Pedidos guardados y cambios</div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <input id="logSearch" class="input" type="search" placeholder="Buscar cliente, producto o ID" style="width:320px">
+            <input id="logMes" class="input" type="month" title="Filtrar por mes" style="width:170px">
+            <button id="logRefresh" class="btn" type="button">Actualizar</button>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;align-items:center;margin:10px 0">
+          <div class="kpi" style="padding:12px 16px">
+            <div class="label">Ganancia mensual</div>
+            <div class="value" id="logTotalFiltrado" style="font-size:24px">$ 0</div>
+          </div>
+          <div class="kpi" style="padding:12px 16px">
+            <div class="label">Ganancia total</div>
+            <div class="value" id="logTotalGeneral" style="font-size:24px">$ 0</div>
+          </div>
+        </div>
+
+        <!-- HISTORIAL (header fijo + scroll interno) -->
+        <div class="orders-body">
+          <div class="historial-wrap">
+            <div class="tabla-card historial-card">
+              <div class="tabla-scroll">
+                <table class="tabla historial" aria-label="Historial de pedidos">
+                  <colgroup>
+                    <col style="width:80px"><!-- # -->
+                    <col style="width:160px"><!-- Fecha entrega -->
+                    <col style="width:20%"><!-- Cliente -->
+                    <col style="width:30%"><!-- Producto -->
+                    <col style="width:90px"><!-- Cant. -->
+                    <col style="width:150px"><!-- Total -->
+                    <col style="width:110px"><!-- ID -->
+                  </colgroup>
+
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Fecha entrega</th>
+                      <th>Cliente</th>
+                      <th>Producto</th>
+                      <th>Cant.</th>
+                      <th>Total</th>
+                      <th>ID</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="tbodyHistorial">
+                    <tr class="row-empty"><td colspan="7">Sin registros en el historial</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <!-- /tabla-card -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== MATERIALES ===== -->
+      <section id="view-materiales" class="panel view-root hidden">
+        <div class="header">
+          <div>
+            <div class="h1" style="font-size:24px">Materiales</div>
+            <div class="subtitle" style="color:var(--ink-2)">Cargá tus compras para medir costos</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <input id="matSearch" class="input" type="search" placeholder="Buscar material o proveedor">
+            <input id="matMes" class="input" type="month" title="Filtrar por mes">
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;align-items:center;margin:10px 0">
+          <div class="kpi" style="padding:12px 16px">
+            <div class="label">Invertido (mensual)</div>
+            <div class="value" id="matTotalFiltrado" style="font-size:24px">$ 0</div>
+          </div>
+          <div class="kpi" style="padding:12px 16px">
+            <div class="label">Invertido total</div>
+            <div class="value" id="matTotalGeneral" style="font-size:24px">$ 0</div>
+          </div>
+        </div>
+
+        <!-- FORMULARIO -->
+        <form id="formMaterial" style="margin:6px 0 12px 0">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+            <div><label>Fecha</label><input id="matFecha" class="input" type="date" required></div>
+            <div><label>Material</label>
+              <input id="matNombre" class="input" type="text" list="dl-materiales" required placeholder="Ej: Cinta coral">
+              <datalist id="dl-materiales"></datalist>
+            </div>
+            <div><label>Cantidad</label><input id="matCantidad" class="input" type="number" min="0" step="0.01" required value="1"></div>
+            <div><label>Precio unit. (ARS)</label><input id="matPrecioUnit" class="input" type="number" min="0" step="0.01" required placeholder="Ej: 2500"></div>
+            <div><label>Total</label><input id="matTotal" class="input" type="text" readonly value="$ 0,00"></div>
+            <div><label>Proveedor (opcional)</label>
+              <input id="matProveedor" class="input" type="text" list="dl-proveedores" placeholder="Ej: Mayorista Central">
+              <datalist id="dl-proveedores"></datalist>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
+            <button type="submit" class="btn">Guardar material</button>
+          </div>
+        </form>
+
+        <!-- ====== MATERIALES (header fijo + scroll interno) ====== -->
+        <div class="tabla-card materiales-card">
+          <div class="tabla-scroll">
+            <table class="tabla materiales" aria-label="Listado de materiales">
+              <colgroup>
+                <col style="width:60px"><!-- # -->
+                <col style="width:140px"><!-- Fecha -->
+                <col style="width:38%"><!-- Material -->
+                <col style="width:90px"><!-- Cant. -->
+                <col style="width:150px"><!-- Precio unit. -->
+                <col style="width:150px"><!-- Total -->
+                <col style="width:18%"><!-- Proveedor -->
+              </colgroup>
+
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Fecha</th>
+                  <th>Material</th>
+                  <th>Cant.</th>
+                  <th>Precio unit.</th>
+                  <th>Total</th>
+                  <th>Proveedor</th>
+                </tr>
+              </thead>
+
+              <tbody id="tbodyMateriales">
+                <tr class="row-empty"><td colspan="7">Sin materiales cargados</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ===== MODAL EDITAR PEDIDO ===== -->
+  <div id="modalEditar" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Editar pedido</h3>
+        <button type="button" class="modal-close" aria-label="Cerrar">&times;</button>
+      </div>
+
+      <form id="formEditar">
+        <input type="hidden" id="editId">
+        <div class="modal-grid">
+          <div><label>Cliente</label><input id="editCliente" class="input" type="text" required></div>
+          <div><label>Producto</label><input id="editProducto" class="input" type="text" required></div>
+          <div><label>Cantidad</label><input id="editCantidad" class="input" type="number" min="1" step="1" required></div>
+          <div><label>Fecha de entrega</label><input id="editFechaEntrega" class="input" type="date" required></div>
+          <div>
+            <label>Estado</label>
+            <select id="editEstado" class="input" required>
+              <option value="PENDIENTE">Pendiente</option>
+              <option value="EN_PROCESO">En proceso</option>
+              <option value="ENTREGADO">Entregado</option>
+            </select>
+          </div>
+          <div><label>Total (ARS)</label><input id="editTotal" class="input" type="number" min="0" step="0.01" required></div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-sec" id="editCancelar">Cancelar</button>
+          <button type="submit" class="btn">Guardar cambios</button>
+        </div>
+      </form>
     </div>
+  </div>
 
-    <!-- GENERAR PEDIDO -->
-    <section id="view-pedido" class="section hidden view-root">
-      <div class="section-header">
-        <div>
-          <h2>Generar pedido</h2>
-          <p class="subtitle">Completá los datos y guardá</p>
-        </div>
-      </div>
-      <form id="formPedido" style="margin-top:10px">
-        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
-          <div><label>Cliente</label><input id="cliente" type="text" required placeholder="Ej: María Pérez"/></div>
-          <div><label>Producto</label><input id="producto" type="text" required placeholder="Ej: Ramo artesanal"/></div>
-          <div><label>Cantidad</label><input id="cantidad" type="number" min="1" step="1" required value="1"/></div>
-          <div><label>Fecha de entrega</label><input id="fechaEntrega" type="date" required/></div>
-          <div><label>Valor individual (ARS)</label><input id="valorUnit" type="number" min="0" step="0.01" required placeholder="Ej: 12000"/></div>
-          <div><label>Total</label><input id="total" type="text" readonly value="$ 0,00"/></div>
-        </div>
-        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
-          <button type="button" class="btn" id="btnCancelar">Cancelar</button>
-          <button type="submit" class="btn">Guardar pedido</button>
-        </div>
-      </form>
-    </section>
+  <!-- Toggle (no navega entre vistas; eso lo hace tu index.js) -->
 
-    <!-- HISTORIAL -->
-    <section id="view-log" class="section hidden view-root">
-      <div class="section-header">
-        <div>
-          <h2>Historial de ventas</h2>
-          <p class="subtitle">Pedidos guardados y cambios</p>
-        </div>
-        <div class="log-actions" style="display:flex; gap:10px; align-items:center;">
-          <input id="logSearch" type="search" placeholder="Buscar cliente, producto o ID" style="width:320px">
-          <input id="logMes" type="month" title="Filtrar por mes" style="width:170px">
-          <button id="logRefresh" class="btn" type="button">Actualizar</button>
-        </div>
-      </div>
+  <!-- JS principal -->
+  <script src="/index.js"></script>
 
-      <div class="log-summary" style="display:flex;gap:12px;align-items:center;margin:10px 0">
-        <div class="kpi-mini" style="background:#fff;border:1px solid #ead0cd;border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:4px;box-shadow:var(--shadow-sm)">
-          <div class="label" style="font-weight:700;color:#5a4744">Ganancia mensual</div>
-          <div class="value" id="logTotalFiltrado" style="font-weight:700;font-size:20px;color:#ad5b57">$ 0</div>
-        </div>
-        <div class="kpi-mini" style="background:#fff;border:1px solid #ead0cd;border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:4px;box-shadow:var(--shadow-sm)">
-          <div class="label" style="font-weight:700;color:#5a4744">Ganancia total</div>
-          <div class="value" id="logTotalGeneral" style="font-weight:700;font-size:20px;color:#ad5b57">$ 0</div>
-        </div>
-      </div>
-
-      <div class="orders-body">
-        <div class="historial-wrap">
-          <table id="tabla-logs">
-            <thead>
-              <tr>
-                <th>#</th><th>Fecha entrega</th><th>Cliente</th><th>Producto</th>
-                <th>Cant.</th><th>Total</th><th>ID</th>
-              </tr>
-            </thead>
-            <tbody id="tbodyLogs"><tr><td colspan="7">Cargando…</td></tr></tbody>
-          </table>
-          <!-- CARGAR MÁS (paginación) -->
-          <div id="logs-more-wrap" style="display:none;justify-content:center;padding:8px">
-            <button id="logs-more" class="btn" type="button">Cargar más</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- MATERIALES -->
-    <section id="view-materiales" class="section hidden view-root">
-      <div class="section-header">
-        <div>
-          <h2>Materiales</h2>
-          <p class="subtitle">Cargá tus compras de materiales para medir costos</p>
-        </div>
-        <div class="mat-actions" style="display:flex;gap:10px;align-items:center">
-          <input id="matSearch" type="search" placeholder="Buscar material o proveedor">
-          <input id="matMes" type="month" title="Filtrar por mes">
-        </div>
-      </div>
-
-      <div class="mat-summary" style="display:flex;gap:12px;align-items:center;margin:10px 0">
-        <div class="kpi-mini" style="background:#fff;border:1px solid #ead0cd;border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:4px;box-shadow:var(--shadow-sm)">
-          <div class="label" style="font-weight:700;color:#5a4744">Invertido (mensual)</div>
-          <div class="value" id="matTotalFiltrado" style="font-weight:700;font-size:20px;color:#ad5b57">$ 0</div>
-        </div>
-        <div class="kpi-mini" style="background:#fff;border:1px solid #ead0cd;border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:4px;box-shadow:var(--shadow-sm)">
-          <div class="label" style="font-weight:700;color:#5a4744">Invertido total</div>
-          <div class="value" id="matTotalGeneral" style="font-weight:700;font-size:20px;color:#ad5b57">$ 0</div>
-        </div>
-      </div>
-
-      <!-- Formulario alta material -->
-      <form id="formMaterial" style="margin:6px 0 12px 0">
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
-          <div><label>Fecha</label><input id="matFecha" type="date" required></div>
-          <div><label>Material</label>
-            <input id="matNombre" type="text" list="dl-materiales" required placeholder="Ej: Cinta coral">
-            <datalist id="dl-materiales"></datalist>
-          </div>
-          <div><label>Cantidad</label><input id="matCantidad" type="number" min="0" step="0.01" required value="1"></div>
-          <div><label>Precio unit. (ARS)</label><input id="matPrecioUnit" type="number" min="0" step="0.01" required placeholder="Ej: 2500"></div>
-          <div><label>Total</label><input id="matTotal" type="text" readonly value="$ 0,00"></div>
-          <div><label>Proveedor (opcional)</label>
-            <input id="matProveedor" type="text" list="dl-proveedores" placeholder="Ej: Mayorista Central">
-            <datalist id="dl-proveedores"></datalist>
-          </div>
-        </div>
-        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
-          <button type="submit" class="btn">Guardar material</button>
-        </div>
-      </form>
-
-      <div class="orders-body">
-        <div class="mat-table-wrap"><!-- scroll propio -->
-          <table id="tabla-materiales">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th class="sortable" data-key="fecha">Fecha</th>
-                <th class="sortable" data-key="material">Material</th>
-                <th class="sortable" data-key="cantidad">Cant.</th>
-                <th class="sortable" data-key="precio">Precio unit.</th>
-                <th class="sortable" data-key="total">Total</th>
-                <th class="sortable" data-key="proveedor">Proveedor</th>
-              </tr>
-            </thead>
-            <tbody id="tbodyMateriales"><tr><td colspan="10">Sin compras aún</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-  </main>
-</div>
-
-<script src="/index.js"></script>
-
-<!-- Audios -->
-<audio id="sonido-crear" src="/sonidos/crear.wav" preload="auto"></audio>
-<audio id="sonido-estado" src="/sonidos/estado.mp3" preload="auto"></audio>
+  <!-- Audios -->
+  <audio id="sonido-crear" src="/sonidos/crear.wav" preload="auto"></audio>
+  <audio id="sonido-estado" src="/sonidos/estado.mp3" preload="auto"></audio>
 </body>
 </html>
-
-
