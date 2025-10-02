@@ -296,11 +296,25 @@ body{
 
 
 
-/* Pill de estado */
-.pill{
-  display:inline-block; padding:6px 10px; border-radius:0px;
-  font-size:12px; font-weight:700;
+button.pill{
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;   /* limpia fondo nativo */
+  border: none;               /* limpia borde nativo */
+  box-shadow: none;           /* limpia sombra nativa */
+  padding: 0;                 /* vamos a dar padding en .pill */
 }
+
+/* Tu base de pill (queda igual pero aseguramos que se aplique) */
+.pill{
+  display:inline-block;
+  padding:6px 10px;        /* o 999px si lo querés redondo */
+  font-size:12px;
+  font-weight:700;
+  line-height:1;              /* evita alto extra del botón */
+}
+
+/* Variantes (dejé tu lógica de color-mix) */
 .pill--pendiente{
   background: color-mix(in srgb, var(--warn) 20%, white);
   border:1px solid color-mix(in srgb, var(--warn) 35%, white);
@@ -311,8 +325,11 @@ body{
   border:1px solid color-mix(in srgb, var(--ok) 35%, white);
   color:#0f5132;
 }
-.pill--entregado{ background:#e0e7ff; border:1px solid #c7cffd; color:#374151 }
-
+.pill--entregado{
+  background:#e0f7ff;
+  border:1px solid #c7cffd;
+  color:#374151;
+}
 /* ===== Específico: MATERIALES / HISTORIAL tarjetas ===== */
 .pedidos-card,
 .materiales-card,
@@ -350,7 +367,7 @@ body{
 }
 .modal-backdrop.hidden{ display:none }
 .modal{
-  background:#fff; border:1px solid #e6ece7; border-radius:18px;
+  background:#fff; border:1px solid #e6ece7; border-radius:0px;
   box-shadow:0 16px 50px rgba(0,0,0,.18);
   width:min(820px,92vw);
 }
@@ -464,6 +481,159 @@ color:rgb(0, 0, 0);
   outline:2px solid color-mix(in srgb, var(--accent) 70%, #000 0%);
   outline-offset:2px;
   background:#fff;
+}
+
+/* ======= NOTEBOOK RESPONSIVE — Gestor Floresca ======= */
+/* Targets notebooks 1366×768 / 1280×800 aprox. */
+@media (max-width: 1440px) {
+  :root{
+    --gap: max(14px, 1.2vw);
+    --radius: 12px;
+    --shadow: 0 6px 18px rgba(0,0,0,.08);
+  }
+
+  /* Texto & espaciado general */
+  body { font-size: 14px }
+  h1 { font-size: clamp(20px, 2.2vw, 28px); line-height: 1.2 }
+  h2 { font-size: clamp(16px, 1.7vw, 22px) }
+  .content { padding: calc(var(--gap) * .75) }
+  .section { padding: 12px 14px }
+  .section-header { margin-bottom: 10px; font-size: clamp(14px,1.4vw,18px) }
+
+  /* Header compacto */
+  header.site-header { padding: 10px 14px; min-height: 56px }
+
+  /* Sidebar compacto */
+  .aside { width: 72px }
+  .aside .aside-label,
+  .aside .aside-extra { display: none } /* oculta textos largos, deja íconos */
+
+  /* Cards/indicadores */
+  .cards-grid{
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: var(--gap);
+  }
+  .card{ padding: 12px; border-radius: var(--radius) }
+
+  /* Formularios */
+  .form-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: calc(var(--gap) * .75);
+  }
+  .form-grid .form-row{ gap: 8px }
+  .form-grid input,
+  .form-grid select,
+  .form-grid textarea{ padding: 8px 10px }
+
+  /* Botones */
+  .btn{ padding: 8px 12px; border-radius: 10px; font-size: 14px }
+
+  /* Tablas (pedidos/materiales/historial) */
+  /* Si tus wrappers ya se llaman .table-wrap, queda 1:1 */
+  .table-wrap,
+  #tabla-pedidos-wrap,
+  #tabla-materiales-wrap,
+  #tabla-historial-wrap{
+    /* ajustá estos altos a tu UI real */
+    --hdr: 56px;         /* alto del header */
+    --filters: 78px;     /* filtros/botones arriba de la tabla */
+    --footer: 0px;       /* paginación fija si la tenés */
+    max-height: calc(100vh - var(--hdr) - var(--filters) - var(--footer) - 24px);
+    overflow: auto;
+    border-radius: var(--radius);
+  }
+
+  /* Densidad de tabla */
+  table,
+  table.data,
+  table.tabla{
+    font-size: 13px;
+    border-collapse: separate; /* respeta border-radius del wrapper */
+    border-spacing: 0;
+    width: 100%;
+  }
+  thead th{ position: sticky; top:0; z-index:1 }
+  th, td{ padding: 8px 10px; vertical-align: middle }
+
+  /* Columnas utilitarias */
+  .col-nb-hide{ display:none }                 /* ocultar en notebook */
+  .col-nb-tight{ width:1%; white-space:nowrap }/* id/acciones/estado */
+  .td-clip{
+    max-width: 280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+
+  /* Aplicación por tablas concretas (si usás ids) */
+  #tabla-pedidos th.col-comentario,
+  #tabla-pedidos td.col-comentario,
+  #tabla-materiales th.col-ubicacion,
+  #tabla-materiales td.col-ubicacion,
+  #tabla-historial th.col-usuario,
+  #tabla-historial td.col-usuario{
+    display: none; /* ejemplo de columnas no críticas */
+  }
+}
+
+/* Más estricto para <=1280px */
+@media (max-width: 1280px){
+  .cards-grid{ grid-template-columns: 1fr } /* apila cards */
+  .form-grid{ grid-template-columns: 1fr }  /* formulario en 1 col */
+  .aside{ width: 64px }                     /* sidebar aún más angosta */
+  .only-desktop{ display:none !important }  /* ocultar bloques pesados */
+}
+
+/* Por si el alto es el limitante (taskbar/zoom) */
+@media (max-height: 800px){
+  .table-wrap{ max-height: calc(100vh - 180px) }
+}
+
+
+/* ====== Reset fuerte del botón de estado ====== */
+/* apunta SOLO a la 5ta columna (Estado) de tu tabla .pedidos */
+table.pedidos td:nth-child(5) .estado-btn{
+  all: unset;                 /* limpia todos los estilos nativos */
+  display: inline-block;
+  line-height: 1;
+  cursor: default;            /* o pointer si querés que parezca clickeable */
+}
+table.pedidos td:nth-child(5) .estado-btn:focus{ outline: none }
+
+/* ====== Estilo del badge ====== */
+table.pedidos td:nth-child(5) .badge{
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 0px;       /* dejalo 0 si lo querés recto */
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  border: 1px solid transparent; /* para que no baile el layout */
+}
+
+/* Variantes (tus colores) */
+table.pedidos td:nth-child(5) .badge--pendiente{
+  background: color-mix(in srgb, var(--warn) 20%, white);
+  border-color: color-mix(in srgb, var(--warn) 35%, white);
+  color: #5d4517;
+}
+table.pedidos td:nth-child(5) .badge--proceso{
+  background: color-mix(in srgb, var(--ok) 20%, white);
+  border-color: color-mix(in srgb, var(--ok) 35%, white);
+  color: #0f5132;
+}
+table.pedidos td:nth-child(5) .badge--entregado{
+  background: #e0f7ff;
+  border-color: #c7cffd;
+  color: #374151;
+}
+
+/* Si en esa celda también tenés un <select> para editar, ocultalo en vista */
+table.pedidos td:nth-child(5) .control-estado{
+  display: none; pointer-events: none;
+}
+table.pedidos td:nth-child(5).is-editing .badge{ display:none }
+table.pedidos td:nth-child(5).is-editing .control-estado{
+  display:inline-block; pointer-events:auto;
 }
 
 
