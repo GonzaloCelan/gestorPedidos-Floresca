@@ -1,0 +1,156 @@
+
+
+/* ===== Layout: 2/3 (tabla) | detalle fijo ===== */
+:root{
+  --detail-width: 420px;
+  --detail-min: 320px;
+  --split-gap: 20px;
+  --shadow: rgba(0,0,0,0.08) 0 6px 18px; /* o el valor que uses */
+}
+
+#view-dashboard .dashboard-split{
+  display: grid;
+  grid-template-columns: 2fr 1fr;       /* tabla = 2 KPIs, detalle = 1 KPI */
+  gap: var(--gap, 20px);                /* usá el mismo gap que la kpi-grid */
+  align-items: start;
+  width: 100%;
+}
+
+#view-dashboard .dashboard-split > *{
+  min-width: 0;
+}
+/* cards de la columna izquierda (tabla / historial) */
+#view-dashboard .dashboard-split .pedidos-card,
+#view-dashboard .dashboard-split .historial-card{
+  grid-column:1 / 2;
+  min-width:0;                 /* IMPORTANTÍSIMO: permite que la tabla encoja */
+  overflow:hidden;             /* evita que algo ancho rompa la grilla */
+}
+
+/* panel derecho fijo */
+#panelDetalle.dash-detail,
+#panelDetalleLog.dash-detail{
+  grid-column: 2 / 3;
+  margin-top: 30px;
+  width: auto !important;       /* antes: var(--detail-width) */
+  max-width: none;
+  box-shadow: var(--shadow);
+  border: none;
+}
+
+/* responsive: una sola columna */
+@media (max-width:1280px){
+  #view-dashboard .dashboard-split{ grid-template-columns: 1fr; }
+  #panelDetalle.dash-detail,
+  #panelDetalleLog.dash-detail{ grid-column:1 / -1; width:auto; max-width:none; }
+}
+
+/* Para que la tabla sí se achique dentro de la card */
+#view-dashboard .historial-card .table-wrap{ overflow:auto; max-width:100%; }
+#view-dashboard .historial-card table{ width:100%; table-layout:fixed; }
+#view-dashboard .historial-card th,
+#view-dashboard .historial-card td{ min-width:0; word-wrap:break-word; }
+
+
+/* ===== Historial 1366×768 ===== */
+@media (max-width: 1366px), (max-height: 768px) {
+  #view-log .dashboard-split{
+    display: grid;
+    grid-template-columns: minmax(0,1fr) clamp(320px, var(--detail-width), 420px);
+    gap: var(--split-gap);
+    align-items: start;
+    width: 100%;
+  }
+  #view-log .dashboard-split > :first-child{ min-width: 0; } /* 🔑 */
+
+  #view-log .tabla-card .tabla-scroll{
+    width: 100%;
+    max-height: calc(100vh - 260px);
+    overflow: auto;
+  }
+  #view-log .tabla.historial{ width:100%; table-layout: fixed; }
+  #view-log .tabla.historial thead th{ padding: 8px 10px; }
+  #view-log .tabla.historial tbody td{  padding: 10px 10px; }
+
+  #view-log #panelDetalleLog{ max-width:100%; min-width:0; } /* 🔑 */
+  #view-log #panelDetalleLog.detalle-card{
+    padding: 12px 14px;
+    max-height: calc(100vh - 180px);
+  }
+  #view-log .tabla.mini-detalle thead th{ padding: 8px 10px; }
+  #view-log .tabla.mini-detalle tbody td{  padding: 8px 10px; }
+  #view-log .ticket-total{ font-size: 15px; }
+}
+
+
+
+/* ===== Historial 1366×768 específico ===== */
+@media screen and (max-width:1366px) and (max-height:768px) {
+  :root{
+    --split-gap: 18px;
+  }
+
+  /* layout con columna principal flexible y detalle con clamp */
+  #view-log .dashboard-split{
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(var(--detail-min), var(--detail-width), 420px);
+    gap: var(--split-gap);
+    align-items: start;
+    width: 100%;
+  }
+
+  #view-log .dashboard-split > :first-child{ min-width: 0; }
+
+  /* tabla: contenedor scrollable y altura máxima razonable */
+  #view-log .tabla-card .tabla-scroll{
+    width: 100%;
+    max-height: calc(100vh - 240px); /* ajustado para barra superior y padding */
+    overflow: auto;
+  }
+
+  /* tabla fija y compacta */
+  #view-log .tabla.historial{
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  #view-log .tabla.historial thead th{ padding: 8px 10px; font-weight:600; }
+  #view-log .tabla.historial tbody td{ padding: 8px 10px; vertical-align: middle; }
+
+  /* mejorar legibilidad en filas densas */
+  #view-log .tabla.historial tbody tr{ line-height:1.25; }
+
+  /* panel detalle: ancho máximo y scroll interno */
+  #view-log #panelDetalleLog{
+    max-width: 100%;
+    min-width: 0;
+  }
+  #view-log #panelDetalleLog.detalle-card{
+    padding: 12px 14px;
+    max-height: calc(100vh - 160px);
+    overflow: auto;
+  }
+
+  /* mini tablas dentro del detalle */
+  #view-log .tabla.mini-detalle thead th{ padding: 8px 10px; font-size:13px; }
+  #view-log .tabla.mini-detalle tbody td{ padding: 8px 10px; font-size:13px; }
+
+  /* ticket total más compacto */
+  #view-log .ticket-total{ font-size: 15px; font-weight:700; }
+
+  /* pequeños ajustes para evitar que la columna detalle empuje demasiado */
+  #view-log .dashboard-split > *{
+    box-sizing: border-box;
+  }
+
+  /* asegurar que las acciones y botones dentro de la tabla no rompan el ancho */
+  #view-log .tabla.historial button,
+  #view-log .tabla.historial .btn,
+  #view-log .tabla.historial .button-30{
+    white-space: nowrap;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

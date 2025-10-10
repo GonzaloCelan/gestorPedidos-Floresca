@@ -11,13 +11,18 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
-  <link rel="stylesheet" href="/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/navbar.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/pedidos.css">
+  <link rel="stylesheet" href="/css/materiales.css">
+  <link rel="stylesheet" href="/css/historial.css">
+  <link rel="stylesheet" href="/css/modal.css">
 </head>
 
 <body>
   <div class="app">
-    <!-- Sidebar -->
     <aside class="sidebar">
       <div class="logo">
         <img src="/logo2.jpg" alt="Logo de Floresca">
@@ -33,20 +38,10 @@
             </svg>
           </span> Inicio
         </a>
-
-        <a href="#" data-view="pedido">
-          <span class="icon" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="4" width="18" height="16" rx="2"></rect>
-              <path d="M7 8h10M7 12h10M7 16h6"></path>
-            </svg>
-          </span> Pedidos
-        </a>
-
         <a href="#" data-view="materiales">
           <span class="icon" aria-hidden="true">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 16V8a2 2 0 0 0-1-1.73L13 2.27a2 2 0 0 0-2 0L4 6.27A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <path d="M21 16V8a2 2 0 0 0-1-1.73L13 2.27a2 2 0 0 0-2 0L4 6.27A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.73z"></path>
               <path d="M3.3 7.7 12 12l8.7-4.3"></path>
             </svg>
           </span> Materiales
@@ -63,155 +58,198 @@
       </nav>
     </aside>
 
-    <!-- Main -->
     <main class="main">
 
-      <!-- ===== DASHBOARD / INICIO ===== -->
       <section id="view-dashboard" class="panel view-root">
         <div class="header">
           <div class="h1">Resumen de pedidos</div>
         </div>
 
-        <div class="kpis" style="margin-bottom:18px">
-          <div class="kpi"><div class="label">Pendientes</div><div class="value" id="kpiPendientes">0</div></div>
-          <div class="kpi"><div class="label">En proceso</div><div class="value" id="kpiProceso">0</div></div>
-          <div class="kpi"><div class="label">Entregados</div><div class="value" id="kpiListos">0</div></div>
+        <div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label">Pendientes</div>
+    <div class="kpi-value" id="kpiPendientes">0</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">En proceso</div>
+    <div class="kpi-value" id="kpiProceso">0</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Entregados</div>
+    <div class="kpi-value" id="kpiListos">0</div>
+  </div>
+</div>
+
+        <div class="dashboard-actions">
+          <!--<button id="btnAgregarPedido" class="btn-rect">c</button>-->
+          <button id="btnAgregarPedido" class="button-30" role="button">Agregar pedido</button>
         </div>
 
-        <h2 class="h2">Recordatorios</h2>
-        <div class="reminders">
-          <input type="text" id="tareaInput" class="input" placeholder="Escribí una tarea…">
-          <button id="btnAgregarTarea" class="btn">Agregar</button>
-        </div>
-        <div id="tareaLista"></div>
-
-       <div class="tabla-card pedidos-card">
-          <div class="tabla-scroll">
-            <table class="tabla pedidos" aria-label="Listado de pedidos">
-              <colgroup>
-              	<col style="width:20%"><!-- Cliente -->
-                <col style="width:30%"><!-- Producto -->
-                <col style="width:110px"><!-- Cantidad -->
-                <col style="width:160px"><!-- Fecha de entrega -->
-                <col style="width:140px"><!-- Estado -->
-                <col style="width:150px"><!-- Total -->
-                <col style="width:120px"><!-- Acciones -->
-              </colgroup>
-
-              <thead>
-                <tr>
-                  <th>Cliente</th>
-                  <th>Producto</th>
-                  <th>Cantidad</th>
-                  <th>Fecha de entrega</th>
-                  <th>Estado</th>
-                  <th>Total</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-
-              <tbody id="tbodyPedidos">
-              
-              
-                <tr class="row-empty">
-                  <td colspan="7">Sin pedidos pendientes</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===== GENERAR PEDIDO ===== -->
-      <section id="view-pedido" class="panel view-root hidden">
-        <div class="header">
-          <div>
-            <div class="h1" style="font-size:24px">Generar pedido</div>
-            <div class="subtitle" style="color:var(--ink-2)">Completá los datos y guardá</div>
-          </div>
-        </div>
-
-        <form id="formPedido" style="margin-top:6px">
-          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
-            <div><label>Cliente</label><input id="cliente" class="input" type="text" required placeholder="Ej: María Pérez"/></div>
-            <div><label>Producto</label><input id="producto" class="input" type="text" required placeholder="Ej: Ramo artesanal"/></div>
-            <div><label>Cantidad</label><input id="cantidad" class="input" type="number" min="1" step="1" required value="1"/></div>
-            <div><label>Fecha de entrega</label><input id="fechaEntrega" class="input" type="date" required/></div>
-            <div><label>Valor individual (ARS)</label><input id="valorUnit" class="input" type="number" min="0" step="0.01" required placeholder="Ej: 12000"/></div>
-            <div><label>Total</label><input id="total" class="input" type="text" readonly value="$ 0,00"/></div>
-          </div>
-          <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
-            <button type="button" class="btn btn-sec" id="btnCancelar">Cancelar</button>
-            <button type="submit" class="btn">Guardar pedido</button>
-          </div>
-        </form>
-      </section>
-
-      <!-- ===== HISTORIAL ===== -->
-      <section id="view-log" class="panel view-root hidden">
-        <div class="header">
-          <div>
-            <div class="h1" style="font-size:24px">Historial de ventas</div>
-            <div class="subtitle" style="color:var(--ink-2)">Pedidos guardados y cambios</div>
-          </div>
-          <div style="display:flex; gap:10px; align-items:center;">
-            <input id="logSearch" class="input" type="search" placeholder="Buscar cliente, producto o ID" style="width:320px">
-            <input id="logMes" class="input" type="month" title="Filtrar por mes" style="width:170px">
-            <button id="logRefresh" class="btn" type="button">Actualizar</button>
-          </div>
-        </div>
-
-        <div style="display:flex;gap:12px;align-items:center;margin:10px 0">
-          <div class="kpi" style="padding:12px 16px">
-            <div class="label">Ganancia mensual</div>
-            <div class="value" id="logTotalFiltrado" style="font-size:24px">$ 0</div>
-          </div>
-          <div class="kpi" style="padding:12px 16px">
-            <div class="label">Ganancia total</div>
-            <div class="value" id="logTotalGeneral" style="font-size:24px">$ 0</div>
-          </div>
-        </div>
-
-        <!-- HISTORIAL (header fijo + scroll interno) -->
-        <div class="orders-body">
-          <div class="historial-wrap">
-            <div class="tabla-card historial-card">
-              <div class="tabla-scroll">
-                <table class="tabla historial" aria-label="Historial de pedidos">
-                  <colgroup>
-                    <col style="width:80px"><!-- # -->
-                    <col style="width:160px"><!-- Fecha entrega -->
-                    <col style="width:20%"><!-- Cliente -->
-                    <col style="width:30%"><!-- Producto -->
-                    <col style="width:90px"><!-- Cant. -->
-                    <col style="width:150px"><!-- Total -->
-                    <col style="width:110px"><!-- ID -->
-                  </colgroup>
-
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Fecha entrega</th>
-                      <th>Cliente</th>
-                      <th>Producto</th>
-                      <th>Cant.</th>
-                      <th>Total</th>
-                      <th>ID</th>
-                    </tr>
-                  </thead>
-
-                  <tbody id="tbodyHistorial">
-                    <tr class="row-empty"><td colspan="7">Sin registros en el historial</td></tr>
-                  </tbody>
-                </table>
-              </div>
+        <!-- Split: tabla izquierda + panel detalle derecha -->
+        <div class="dashboard-split">
+          <!-- LISTA DE PEDIDOS -->
+          <div class="tabla-card pedidos-card">
+            <div class="tabla-scroll">
+              <table class="tabla pedidos" aria-label="Listado de pedidos">
+                <colgroup>
+                  <col style="width:22%"><!-- Cliente -->
+                  <col style="width:28%"><!-- Producto -->
+                  <col style="width:160px"><!-- Fecha de entrega -->
+                  <col style="width:140px"><!-- Estado -->
+                  <col style="width:150px"><!-- Total -->
+                  <col style="width:120px"><!-- Acciones -->
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>Cliente</th>
+                    <th>Producto</th>
+                    <th>Fecha de entrega</th>
+                    <th>Estado</th>
+                    <th>Total</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyPedidos">
+                  <tr class="row-empty">
+                    <td colspan="6">Sin pedidos pendientes</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-            <!-- /tabla-card -->
           </div>
+
+          <!-- PANEL DETALLE (ticket look) -->
+          <aside id="panelDetalle" class="dash-detail detalle-card">
+            <h4 class="card-title">Detalle del pedido</h4>
+
+            <div id="detalleMeta" class="ticket-meta"> Seleccione un pedido para ver el detalle</div>
+
+            <!-- área scroll de items -->
+            <div class="ticket-body tabla-scroll">
+              <table class="tabla mini-detalle" aria-label="Productos del pedido" style="width:100%">
+                <thead>
+                  <tr>
+                    <th>Producto</th>
+                    <th style="text-align:right">Cant.</th>
+                    <th style="text-align:right">Unitario</th>
+                    <th style="text-align:right">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody id="detalleBodyPanel"><!-- filas dinámicas --></tbody>
+              </table>
+            </div>
+
+            <!-- línea punteada antes del total -->
+            <div class="ticket-sep"></div>
+
+            <!-- total alineado a la derecha -->
+            <div class="ticket-total">
+              <span class="label">Total:</span>
+              <span class="value" id="detalleTotalPanel">$ 0,00</span>
+            </div>
+          </aside>
+
         </div>
       </section>
 
-      <!-- ===== MATERIALES ===== -->
+      <section id="view-log" class="panel view-root hidden">
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <div class="h1" style="font-size:24px">Historial de ventas</div>
+      <div class="subtitle" style="color:var(--ink-2)">Pedidos guardados y cambios</div>
+    </div>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <input id="logSearch" class="input" type="search" placeholder="Buscar cliente, producto o ID" style="width:320px">
+      <input id="logMes" class="input" type="month" title="Filtrar por mes" style="width:170px">
+      <button id="logRefresh" class="btn" type="button">Actualizar</button>
+    </div>
+  </div>
+
+  <!-- KPIs con el mismo look -->
+  <div class="kpi-row" style="display:flex;gap:24px;align-items:center;margin:10px 0">
+    <div class="kpi" style="padding:12px 16px">
+      <div class="label">Ganancia mensual</div>
+      <div class="value" id="logTotalFiltrado" style="font-size:24px">$ 0</div>
+    </div>
+    <div class="kpi" style="padding:12px 16px">
+      <div class="label">Ganancia total</div>
+      <div class="value" id="logTotalGeneral" style="font-size:24px">$ 0</div>
+    </div>
+  </div>
+
+  <!-- Acciones -->
+  <div class="historial-actions" role="toolbar" aria-label="Acciones del historial" style="margin:6px 0 12px 0; display:flex; gap:10px;">
+    <button id="btnAgregarVenta" class="button-30" type="button">Agregar venta</button>
+  </div>
+
+  <!-- === LISTA + DETALLE (mismo layout que Pedidos) === -->
+  <div class="dashboard-split" id="log-split">
+    <!-- LISTA HISTORIAL -->
+    <div class="tabla-card historial-card">
+      <div class="tabla-scroll">
+        <table class="tabla historial" aria-label="Historial de ventas">
+          <colgroup>
+            <col style="width:80px"><!-- # -->
+            <col style="width:160px"><!-- Fecha -->
+            <col style="width:22%"><!-- Cliente -->
+            <col style="width:28%"><!-- Producto -->
+            <col style="width:150px"><!-- Tipo de venta -->
+            <col style="width:150px"><!-- Total -->
+          </colgroup>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Fecha entrega</th>
+              <th>Cliente</th>
+              <th>Producto</th>
+              <th>Tipo de venta</th>
+              <th style="text-align:right">Total</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyHistorial">
+            <!-- El JS de ventas renderea en “Producto”:
+                 <button type="button" class="btn-detalle" data-kind="venta" data-id="ID_PEDIDO">Ver detalle</button>
+            -->
+            <tr class="row-empty"><td colspan="6">Sin registros en el historial</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PANEL DETALLE (IDs únicos para Historial) -->
+    <aside id="panelDetalleLog" class="dash-detail detalle-card">
+      <h4 class="card-title">Detalle de la venta</h4>
+
+      <div id="detalleMetaLog" class="ticket-meta">Seleccioná una venta para ver el detalle</div>
+
+      <div class="ticket-body tabla-scroll">
+        <table class="tabla mini-detalle" aria-label="Productos de la venta" style="width:100%">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th style="text-align:right">Cant.</th>
+              <th style="text-align:right">Unitario</th>
+              <th style="text-align:right">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody id="detalleBodyLog"><tr><td colspan="4">—</td></tr></tbody>
+        </table>
+      </div>
+
+      <div class="ticket-sep"></div>
+
+      <div class="ticket-total">
+        <span class="label">Total:</span>
+        <span class="value" id="detalleTotalLog">$ 0,00</span>
+      </div>
+    </aside>
+  </div>
+</section>
+
+
+      
+
       <section id="view-materiales" class="panel view-root hidden">
         <div class="header">
           <div>
@@ -224,7 +262,7 @@
           </div>
         </div>
 
-        <div style="display:flex;gap:12px;align-items:center;margin:10px 0">
+        <div style="display:flex;gap:24px;align-items:center;margin:10px 0">
           <div class="kpi" style="padding:12px 16px">
             <div class="label">Invertido (mensual)</div>
             <div class="value" id="matTotalFiltrado" style="font-size:24px">$ 0</div>
@@ -235,8 +273,7 @@
           </div>
         </div>
 
-        <!-- FORMULARIO -->
-        <form id="formMaterial" style="margin:6px 0 12px 0">
+        <form id="formMaterial">
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
             <div><label>Fecha</label><input id="matFecha" class="input" type="date" required></div>
             <div><label>Material</label>
@@ -256,18 +293,17 @@
           </div>
         </form>
 
-        <!-- ====== MATERIALES (header fijo + scroll interno) ====== -->
         <div class="tabla-card materiales-card">
           <div class="tabla-scroll">
             <table class="tabla materiales" aria-label="Listado de materiales">
               <colgroup>
-                <col style="width:60px"><!-- # -->
-                <col style="width:140px"><!-- Fecha -->
-                <col style="width:38%"><!-- Material -->
-                <col style="width:90px"><!-- Cant. -->
-                <col style="width:150px"><!-- Precio unit. -->
-                <col style="width:150px"><!-- Total -->
-                <col style="width:18%"><!-- Proveedor -->
+                <col style="width:60px">
+                <col style="width:140px">
+                <col style="width:38%">
+                <col style="width:90px">
+                <col style="width:150px">
+                <col style="width:150px">
+                <col style="width:18%">
               </colgroup>
 
               <thead>
@@ -293,45 +329,198 @@
     </main>
   </div>
 
-  <!-- ===== MODAL EDITAR PEDIDO ===== -->
-  <div id="modalEditar" class="modal-backdrop hidden">
-    <div class="modal">
-      <div class="modal-header">
-        <h3>Editar pedido</h3>
-        <button type="button" class="modal-close" aria-label="Cerrar">&times;</button>
-      </div>
+  <!-- Modal crear pedido (reemplazo) -->
+<div id="modalPedido" class="modal-backdrop hidden">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="crearTitle">
+    <header class="modal-header">
+      <h3 id="crearTitle" class="modal-title">Nuevo pedido</h3>
+      <button class="modal-close" aria-label="Cerrar">×</button>
+    </header>
 
-      <form id="formEditar">
-        <input type="hidden" id="editId">
-        <div class="modal-grid">
-          <div><label>Cliente</label><input id="editCliente" class="input" type="text" required></div>
-          <div><label>Producto</label><input id="editProducto" class="input" type="text" required></div>
-          <div><label>Cantidad</label><input id="editCantidad" class="input" type="number" min="1" step="1" required></div>
-          <div><label>Fecha de entrega</label><input id="editFechaEntrega" class="input" type="date" required></div>
-          <div>
-            <label>Estado</label>
-            <select id="editEstado" class="input" required>
-              <option value="PENDIENTE">Pendiente</option>
-              <option value="EN_PROCESO">En proceso</option>
-              <option value="ENTREGADO">Entregado</option>
-            </select>
+    <div class="modal-body">
+      <form id="formPedido">
+        <!-- Datos principales en dos columnas -->
+        <div class="form-two-cols">
+          <div class="field">
+            <label for="cliente">Cliente</label>
+            <input id="cliente" class="input" required placeholder="Ej: María Pérez" />
           </div>
-          <div><label>Total (ARS)</label><input id="editTotal" class="input" type="number" min="0" step="0.01" required></div>
+          <div class="field">
+            <label for="fechaEntrega">Fecha de entrega</label>
+            <input id="fechaEntrega" type="date" class="input" required />
+          </div>
         </div>
-        <div class="modal-actions">
-          <button type="button" class="btn btn-sec" id="editCancelar">Cancelar</button>
-          <button type="submit" class="btn">Guardar cambios</button>
-        </div>
+
+        <!-- Items -->
+        <section class="pedido-items">
+          <header class="pedido-items__head">
+            <h4>Productos</h4>
+            <button type="button" id="addItemBtn" class="btn btn-sec btn-sm">+ Producto</button>
+          </header>
+
+          <div class="pedido-items__labels">
+            <span>Producto</span>
+            <span>Cant.</span>
+            <span>Unitario</span>
+            <span>Subtotal</span>
+            <span></span>
+          </div>
+
+          <div id="itemsContainer" class="pedido-items__list"></div>
+
+          <!-- Template de fila -->
+          <template id="itemTemplate">
+            <div data-item class="pedido-items__row">
+              <input class="input" data-field="producto" placeholder="Ej: Ramo artesanal" />
+              <input class="input ta-right" data-field="cantidad" type="number" min="1" value="1" />
+              <input class="input ta-right" data-field="valorUnitario" inputmode="decimal" placeholder="0" />
+              <input class="input ta-right" data-field="totalLinea" value="$ 0,00" readonly />
+              <button type="button" class="btn-icon btn-danger" title="Quitar" data-action="remove">✕</button>
+            </div>
+          </template>
+
+          <div class="pedido-items__footer">
+            <span>Total del pedido:</span>
+            <strong id="totalPedido">$ 0,00</strong>
+          </div>
+        </section>
+
+        <footer class="modal-actions">
+          <button type="button" id="btnCancelar" class="btn btn-sec">Cancelar</button>
+          <button type="submit" id="guardarPedidoBtn" class="btn">Guardar</button>
+        </footer>
       </form>
     </div>
   </div>
+</div>
 
-  <!-- Toggle (no navega entre vistas; eso lo hace tu index.js) -->
+<!-- Modal Editar Pedido -->
+<div id="modalEditar" class="modal hidden">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h3>Editar pedido</h3>
+      <button type="button" class="modal-close" aria-label="Cerrar">×</button>
+    </div>
 
-  <!-- JS principal -->
-  <script src="/index.js"></script>
+    <form id="formEditar">
+      <div class="modal-body">
+        <div class="form-row">
+          <label>Cliente</label>
+          <input name="cliente" type="text" required />
+        </div>
 
-  <!-- Audios -->
+        <div class="form-row">
+          <label>Fecha de entrega</label>
+          <input name="fechaEntrega" type="date" required />
+        </div>
+
+        <!-- líneas -->
+        <div class="form-row">
+          <div class="flex-between">
+            <label>Productos</label>
+            <button type="button" id="editAddItemBtn" class="btn-sec">+ Agregar ítem</button>
+          </div>
+          <div id="editItemsContainer"></div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-sec modal-close">Cancelar</button>
+        <button type="submit" class="btn-prim">Guardar cambios</button>
+      </div>
+    </form>
+
+    <!-- Template de fila -->
+    <template id="editItemTemplate">
+      <div class="item-row" data-item>
+        <input data-field="producto" type="text" placeholder="Producto" required />
+        <input data-field="cantidad" type="number" min="1" step="1" placeholder="Cant." required />
+        <input data-field="valorUnitario" type="number" min="0" step="0.01" placeholder="Unitario" required />
+        <input data-field="totalLinea" type="text" readonly />
+        <button type="button" data-action="remove" class="btn-mini">×</button>
+      </div>
+    </template>
+  </div>
+</div>
+
+<!-- Modal Agregar venta -->
+<div id="modalVenta" class="modal-backdrop hidden">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="ventaTitle">
+    <header class="modal-header">
+      <h3 id="ventaTitle" class="modal-title">Agregar venta</h3>
+      <button type="button" class="modal-close" id="ventaCerrar" aria-label="Cerrar">×</button>
+    </header>
+
+    <div class="modal-body">
+      <form id="formVenta">
+        <input type="hidden" id="ventaEstado" value="ENTREGADO" data-field="estado">
+
+        <!-- Datos principales en dos columnas -->
+        <div class="form-two-cols">
+          <div class="field">
+            <label for="ventaCliente">Cliente</label>
+            <input id="ventaCliente" class="input" type="text" required placeholder="Ej: María Pérez">
+          </div>
+          <div class="field">
+            <label for="ventaFecha">Fecha de entrega</label>
+            <input id="ventaFecha" class="input" type="date" required>
+          </div>
+          <div class="field">
+            <label for="ventaTipo">Tipo de venta</label>
+            <select id="ventaTipo" class="input" required>
+              <option value="PEDIDO">Pedido</option>
+              <option value="DIRECTO">Directo</option>
+              <option value="OTRO">Otro</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Items (mismas clases que pedidos, sin “Cantidad”) -->
+        <section class="pedido-items">
+          <header class="pedido-items__head">
+            <h4>Productos</h4>
+            <button type="button" id="addItemVentaBtn" class="btn btn-sec btn-sm">+ Producto</button>
+          </header>
+
+          <div class="pedido-items__labels">
+            <span>Producto</span>
+            <span>Unitario</span>
+            <span>Subtotal</span>
+            <span></span>
+          </div>
+
+          <div id="itemsContainerVenta" class="pedido-items__list"></div>
+
+          <!-- Fila de ejemplo que tu JS va a clonar/crear con la misma estructura -->
+          <!--
+          <div data-item class="pedido-items__row">
+            <input class="input" data-field="producto" placeholder="Ej: Ramo artesanal" />
+            <input class="input ta-right" data-field="valorUnitario" inputmode="decimal" placeholder="0" />
+            <input class="input ta-right" data-field="totalLinea" value="$ 0,00" readonly />
+            <button type="button" class="btn-icon btn-danger" title="Quitar" data-action="remove">✕</button>
+          </div>
+          -->
+
+          <div class="pedido-items__footer">
+            <span>Total de la venta:</span>
+            <strong id="totalVenta">$ 0,00</strong>
+          </div>
+        </section>
+
+        <footer class="modal-actions">
+          <button type="button" class="btn btn-sec" id="ventaCancelar">Cancelar</button>
+          <button type="submit" class="btn" id="guardarVentaBtn">Guardar venta</button>
+        </footer>
+      </form>
+    </div>
+  </div>
+</div>
+
+  <script src="/js/index.js"  defer></script>
+  <script src="/js/pedidos.js"  defer></script>
+  <script src="/js/material.js"  defer></script>
+	<script src="/js/ventas.js"  defer></script>
+
   <audio id="sonido-crear" src="/sonidos/crear.wav" preload="auto"></audio>
   <audio id="sonido-estado" src="/sonidos/estado.mp3" preload="auto"></audio>
 </body>

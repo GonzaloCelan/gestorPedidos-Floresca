@@ -8,34 +8,41 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.floresta.gestor.model.logIngreso;
-import com.floresta.gestor.repository.logIngresoRepository;
+
+
+
+import com.floresta.gestor.model.venta;
+
+import com.floresta.gestor.repository.ventaRepository;
+
 
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin(origins = "*")
-public class logIngresoController {
+public class ventasController {
 
 	
-	private final logIngresoRepository logRepository;
+	private final ventaRepository ventaRepository;
 
-    public logIngresoController(logIngresoRepository logRepository) {
-        this.logRepository = logRepository;
+    public ventasController(ventaRepository ventaRepository) {
+        this.ventaRepository = ventaRepository;
     }
 
-    @GetMapping("/logs")
-    public List<logIngreso> obtenerLogs() {
-        return logRepository.findAll(Sort.by(Sort.Direction.DESC, "fechaEntrega")); // ordenado por fecha
+    @GetMapping("/ventas")
+    public List<venta> obtenerLogs() {
+        return ventaRepository.findAll(Sort.by(Sort.Direction.DESC, "fechaEntrega")); // ordenado por fecha
     }
     
     
-    @GetMapping("/logs/page")
-    public Page<logIngreso> obtenerLogsPaginado(
+    @GetMapping("/ventas/page")
+    public Page<venta> obtenerLogsPaginado(
         @PageableDefault(sort = "fechaEntrega", direction = Sort.Direction.DESC, size = 10)
         Pageable pageable) {
-      return logRepository.findAllByOrderByFechaEntregaDesc(pageable);
+      return ventaRepository.findAllByOrderByFechaEntregaDesc(pageable);
     }
+    
 }

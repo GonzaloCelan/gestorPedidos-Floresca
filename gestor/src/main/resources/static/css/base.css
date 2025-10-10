@@ -1,0 +1,185 @@
+:root{
+  --bg:#f3f5f3; --panel:#fff; --panel-2:#eef3ef;
+  --ink:#1f2937; --ink-2:#475569; --brand:#2f6a4f; --muted:#6b7280;
+  --accent:#bcd1bb; --aside-olive:#bcd1bb;
+  --radius:12px; --shadow:0 6px 18px rgba(15,23,42,.10);
+  --ring:0 0 0 3px rgba(47,106,79,.15);
+  --sb-w:12px; --sb-track:#e7efe9; --sb-thumb:#bcd1c6; --sb-thumb-hover:#9bb8aa;
+  --ok:#2fa26a; --warn:#d9a441;
+}
+*{box-sizing:border-box} html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+
+.app{display:grid;grid-template-columns:280px minmax(0,1fr);min-height:100dvh}
+.main{padding:0;min-width:0}
+.panel{background:var(--panel);padding:28px 32px;border-left:1px solid #d8e3dc}
+.view-root{min-height:100vh}
+
+/* inputs/botones */
+.input{width:100%;background:#fff;border:1px solid #e6ece7;border-radius:0;padding:12px 14px;outline:none}
+.input:focus{box-shadow:var(--ring);border-color:transparent}
+.btn{background:var(--brand);color:#fff;border:0;border-radius:0;padding:12px 16px;font-weight:600;cursor:pointer}
+.btn-sec{background:#f6f8f6;border:1px solid #e6ece7;color:var(--ink)}
+.badge{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700}
+
+/* encabezados/estructura */
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.h1{font-size:28px;font-weight:700}
+
+/* scrollbar util */
+.table::-webkit-scrollbar{width:var(--sb-w)}
+.table::-webkit-scrollbar-track{background:var(--sb-track)}
+.table::-webkit-scrollbar-thumb{background:var(--sb-thumb)}
+.table::-webkit-scrollbar-thumb:hover{background:var(--sb-thumb-hover)}
+
+/* ============ BOTÓN RECTO (sin border-radius) ============ */
+:root{
+  --g-900:#1e3d2f;   /* verde oscuro */
+  --g-700:#2f6a4f;   /* verde marca */
+  --g-600:#295c44;   /* verde profundo */
+  --g-100:#e8f0ec;   /* verde muy claro */
+  --ink:#0b1210;
+  --muted:#6b7c6e;
+  --line:#e6ece7;
+}
+
+
+
+
+
+.button-30 {
+margin-top:70px;
+  align-items: center;
+  appearance: none;
+  background-color: #FCFCFD;
+  border-radius: 0px;
+  border-width: 0;
+  box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px,rgba(45, 35, 66, 0.3) 0 7px 13px -3px,#D6D6E7 0 -3px 0 inset;
+  box-sizing: border-box;
+  color: #000000;
+  cursor: pointer;
+  display: inline-flex;
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  height: 38px;
+  justify-content: center;
+  line-height: 1;
+  list-style: none;
+  overflow: hidden;
+  padding-left: 16px;
+  padding-right: 16px;
+  position: relative;
+  text-align: left;
+  text-decoration: none;
+  transition: box-shadow .15s,transform .15s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  will-change: box-shadow,transform;
+  font-size: 15px;
+}
+
+.button-30:focus {
+  box-shadow: #D6D6E7 0 0 0 1.5px inset, rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+}
+
+.button-30:hover {
+  box-shadow: rgba(45, 35, 66, 0.4) 0 4px 8px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+  transform: translateY(-2px);
+}
+
+.button-30:active {
+  box-shadow: #D6D6E7 0 3px 7px inset;
+  transform: translateY(2px);
+}
+
+/* =========================================================
+   BASE — ADAPTACIÓN 1366 × 768
+   (se activa solo en pantallas ≤1366px de ancho o ≤768px de alto)
+   ========================================================= */
+@media (max-width: 1366px), (max-height: 768px) {
+
+  /* ——— Ajustes suaves de escala global ——— */
+  :root{
+    /* sombras un toque más cortas para no “engordar” los bloques */
+    --shadow: 0 5px 14px rgba(15,23,42,.10);
+    --sb-w: 10px;                /* scrollbar levemente más fina */
+  }
+  
+  .button-30 {
+    margin-top: 40px;
+    font-size: 13px;
+    padding: 0 12px;
+    height: 34px;
+  }
+
+  /* ——— Layout principal: sidebar + contenido ——— */
+  /* En base tenés .app con 280px. Lo compactamos a ~236px. */
+  .app{
+    display: grid;
+    grid-template-columns: 236px minmax(0, 1fr);
+    min-height: 100dvh;
+  }
+
+  /* En conjunto con el CSS del sidebar “responsive” que ya te pasé,
+     esto alinea perfecto el ancho del aside con el contenido. */
+
+  /* ——— Panel y main ——— */
+  .main{ min-width: 0; }
+  .panel{
+    padding: 20px 22px;          /* 28/32 → 20/22 */
+    border-left: 1px solid #d8e3dc;
+  }
+
+  /* ——— Títulos / encabezados ——— */
+  .header{
+    gap: 12px;
+    margin-bottom: 14px;         /* 18 → 14 */
+  }
+  .h1{
+    font-size: 24px;             /* 28 → 24 */
+    font-weight: 700;
+  }
+
+  .input {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .btn {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  .btn-sec {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  .badge {
+    padding: 5px 8px;
+    font-size: 11px;
+  }
+
+
+  /* ——— Scrollbars de tablas ——— */
+  .table::-webkit-scrollbar{ width: var(--sb-w); }
+  .table::-webkit-scrollbar-thumb{ background: var(--sb-thumb); }
+  .table::-webkit-scrollbar-thumb:hover{ background: var(--sb-thumb-hover); }
+
+  /* ——— Alturas útiles (para evitar scroll “raro” en 768p) ——— */
+  /* Si tenés contenedores que hagan overflow: auto, conviene esta pauta: */
+  .panel .tabla-scroll{
+    /* Ajustá este calc si el header de esa pantalla es más alto/bajo */
+    max-height: calc(100vh - 300px);
+  }
+
+  /* ——— Tipografía general un pelín más compacta en paneles densos ——— */
+  .panel{
+    font-size: 15px;             /* mantiene legibilidad */
+    line-height: 1.35;
+  }
+}
+
+
+

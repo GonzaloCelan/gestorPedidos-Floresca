@@ -1,0 +1,264 @@
+/* ===================== Vista: MATERIALES ===================== */
+#view-materiales{ --gap:12px; }
+
+/* Header */
+#view-materiales .header{
+  display:flex; align-items:flex-start; justify-content:space-between;
+  gap:16px; margin-bottom:10px;
+}
+#view-materiales .h1{ font-weight:800; color:#2f3b35; }
+#view-materiales .subtitle{ color:var(--ink-2,#5b6a64); }
+
+/* Filtros (buscar / mes) */
+#view-materiales .header .input{
+  height:36px; padding:0 12px; border:1px solid #e6ece7; border-radius:0px;
+  background:#fff; outline:0; min-width:220px;
+}
+#view-materiales .header .input:focus{
+  box-shadow:0 0 0 3px #e2f3ea; border-color:#cfe4d9;
+}
+
+/* KPIs */
+#view-materiales .kpi{
+  background:#fff; border:1px solid #e6ece7; border-radius:0px;
+  box-shadow:
+  rgba(48, 90, 70, 0.40) 5px 5px,
+  rgba(48, 90, 70, 0.30) 10px 10px,
+  rgba(48, 90, 70, 0.20) 15px 15px,
+  rgba(48, 90, 70, 0.10) 20px 20px,
+  rgba(48, 90, 70, 0.05) 25px 25px;
+}
+#view-materiales .kpi .label{ color:#6b7a73; font-weight:600; }
+#view-materiales .kpi .value{ font-weight:800; font-variant-numeric:tabular-nums; }
+
+/* Formulario */
+#view-materiales #formMaterial{ margin-top:40px; margin-bottom:20px; }
+#view-materiales #formMaterial label{
+  display:block; font-weight:600; color:#6b7a73; margin-bottom:6px;
+}
+#view-materiales #formMaterial .input{
+  width:100%; height:38px; padding:0 12px; border:1px solid #e6ece7; border-radius:0px;
+  background:#fff; outline:0;
+}
+#view-materiales #formMaterial .input:focus{
+  box-shadow:0 0 0 3px #e2f3ea; border-color:#cfe4d9;
+}
+#view-materiales #formMaterial .btn{
+  display:inline-flex; align-items:center; gap:8px; height:38px;
+  padding:0 14px; border-radius:0px; border:1px solid #e6ece7;
+  background:#fff; color:#2f6a4f; box-shadow:0 1px 0 rgba(16,24,20,.06);
+  cursor:pointer; transition:.15s ease;
+}
+#view-materiales #formMaterial .btn:hover{ background:#f6faf7; border-color:#dfebe4; }
+#view-materiales #formMaterial .btn:active{ transform:translateY(1px); box-shadow:none; }
+
+/* ===== Tabla en card ===== */
+#view-materiales .tabla-card{
+  background:#fff; border:0px solid #e6ece7; border-radius:0px;
+  box-shadow:var(--shadow, 0 4px 16px rgba(0,0,0,.04));
+}
+#view-materiales .tabla-scroll{
+  overflow:auto; border-radius:0px; /* redondeo visual del scroll */
+  max-height: 460px;; /* ajustá si hace falta */
+}
+#view-materiales table.tabla{
+  width:100%; border-collapse:separate; border-spacing:0; table-layout:fixed;
+  font-variant-numeric:tabular-nums;
+}
+
+/* Thead oliva sticky */
+#view-materiales thead{ position:sticky; top:0; z-index:2;box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px; }
+#view-materiales thead::before{
+  content:""; position:absolute; inset:0; background:var(--aside-olive,#b8cdb6); z-index:-1;
+}
+#view-materiales thead th{
+  background:transparent; color:#000000; font-weight:700;
+  padding:10px; text-align:left; white-space:nowrap;
+}
+
+/* Celdas */
+#view-materiales tbody td{
+  padding:10px; border-bottom:0px solid #eef2ef; color:#000000;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+#view-materiales tbody tr:last-child td{ border-bottom:0; }
+#view-materiales tbody tr:hover td{ background:#f9fbfa; }
+
+/* Alineaciones por columna (según tu colgroup) */
+#view-materiales .materiales td:nth-child(1){ text-align:left; }     /* # */
+#view-materiales .materiales td:nth-child(2){ text-align:left; }       /* Fecha */
+#view-materiales .materiales td:nth-child(3){ text-align:left; }       /* Material */
+#view-materiales .materiales td:nth-child(4){ text-align:left; }      /* Cant. */
+#view-materiales .materiales td:nth-child(5){ text-align:left; }      /* Precio unit. */
+#view-materiales .materiales td:nth-child(6){ text-align:left; }      /* Total */
+#view-materiales .materiales td:nth-child(7){ text-align:left; }  
+
+#view-materiales .materiales th:nth-child(1){ text-align:left; }     /* # */
+#view-materiales .materiales th:nth-child(2){ text-align:left; }       /* Fecha */
+#view-materiales .materiales th:nth-child(3){ text-align:left; }       /* Material */
+#view-materiales .materiales th:nth-child(4){ text-align:left; }      /* Cant. */
+#view-materiales .materiales th:nth-child(5){ text-align:left; }      /* Precio unit. */
+#view-materiales .materiales th:nth-child(6){ text-align:left; }      /* Total */
+#view-materiales .materiales th:nth-child(7){ text-align:left; }     /* Proveedor */
+
+/* Fila vacía */
+#view-materiales .row-empty td{
+  text-align:center; color:#6b7a73; padding:20px;
+}
+
+/* Scrollbars suaves (opcional) */
+#view-materiales .tabla-scroll::-webkit-scrollbar{ height:10px; width:10px; }
+#view-materiales .tabla-scroll::-webkit-scrollbar-thumb{ background:#dfe7e3; border-radius:0px; }
+#view-materiales .tabla-scroll::-webkit-scrollbar-thumb:hover{ background:#cfdad4; }
+
+/* ===== Responsivo ===== */
+@media (max-width: 900px){
+  #view-materiales #formMaterial > div{
+    display:grid; grid-template-columns:1fr 1fr; gap:12px !important;
+  }
+  #view-materiales .header .input{ min-width:160px; }
+}
+@media (max-width: 600px){
+  #view-materiales .header{ flex-direction:column; align-items:stretch; }
+  #view-materiales #formMaterial > div{
+    grid-template-columns:1fr; gap:10px ;
+  }
+  #view-materiales .tabla-scroll{ max-height: clamp(360px, calc(100vh - 260px), 400px); overflow:auto; }
+}
+
+/* ===== Detalles visuales extra (consistencia) ===== */
+#view-materiales .btn:focus-visible,
+#view-materiales .input:focus-visible{
+  outline:0; box-shadow:0 0 0 3px #e2f3ea;
+}
+
+/* Si en el futuro agregás columna de acciones, usá esto: */
+#view-materiales .td-acciones{
+  display:flex; gap:8px; align-items:center; white-space:nowrap;
+}
+#view-materiales .icon-btn{
+  --btn-size:32px; width:var(--btn-size); height:var(--btn-size);
+  display:grid; place-items:center; padding:0;
+  background:#fff; border:1px solid #e6ece7; border-radius:0px;
+  color:#2f6a4f; box-shadow:0 1px 0 rgba(16,24,20,.06);
+  cursor:pointer; transition:.15s ease;
+}
+#view-materiales .icon-btn:hover{ background:#f6faf7; border-color:#dfebe4; }
+#view-materiales .icon-btn.delete{ color:#b42318; border-color:#f0d4d2; }
+#view-materiales .icon-btn.delete:hover{ background:#fbeeee; border-color:#e9b7b4; }
+
+
+/* =========================================================
+   MATERIALES — ADAPTACIÓN 1366 × 768
+   (solo aplica en ≤1366px de ancho o ≤768px de alto)
+   ========================================================= */
+@media (max-width: 1366px), (max-height: 768px) {
+
+  /* -------- Header -------- */
+  #view-materiales .header{
+    gap:12px;
+    margin-bottom:8px;                 /* 10 → 8 */
+  }
+  #view-materiales .h1{
+    font-size:22px;                    /* levemente más compacto */
+  }
+  #view-materiales .subtitle{
+    font-size:13px;
+  }
+  #view-materiales .header .input{
+    height:34px;                       /* 36 → 34 */
+    min-width:200px;                   /* 220 → 200 */
+    padding:0 10px;                    /* 12 → 10 */
+  }
+
+  /* -------- KPIs -------- */
+  #view-materiales .kpi{
+    padding:12px 14px;                 /* compacta sombra/aire */
+  }
+  #view-materiales .kpi .label{
+    font-size:12.5px;
+  }
+  #view-materiales .kpi .value{
+    font-size:22px;                    /* mantiene jerarquía */
+  }
+
+  /* -------- Formulario -------- */
+  #view-materiales #formMaterial{
+    margin-top:28px;                   /* 40 → 28 */
+    margin-bottom:14px;                /* 20 → 14 */
+  }
+  #view-materiales #formMaterial label{
+    margin-bottom:4px;                 /* 6 → 4 */
+    font-size:13px;
+  }
+  #view-materiales #formMaterial .input{
+    height:36px;                       /* 38 → 36 */
+    padding:0 10px;                    /* 12 → 10 */
+  }
+  #view-materiales #formMaterial .btn{
+    height:36px;                       /* 38 → 36 */
+    padding:0 12px;                    /* 14 → 12 */
+    font-size:14px;
+  }
+
+  /* -------- Tabla / Card -------- */
+  #view-materiales .tabla-card{
+    box-shadow: var(--shadow, 0 5px 14px rgba(0,0,0,.06));
+  }
+
+  /* Altura útil: cabe en 768px sin que se corte el thead */
+  /* Ajusta esta fórmula si tu header/KPI/form cambian de alto. */
+  #view-materiales .tabla-scroll{
+    max-height: calc(100vh - 320px);
+    /* 320px ≈ header + kpis + form + paddings en 1366x768 */
+    overflow: auto;
+  }
+
+  /* Asegurar que la tabla no “desborde” y mantenga proporción */
+  #view-materiales table.tabla{
+    width: 100% !important;
+    table-layout: fixed;               /* columnas estables */
+  }
+  #view-materiales thead th{
+    padding: 8px 10px;                 /* 10 → 8/10 */
+    font-size: 13px;
+  }
+  #view-materiales tbody td{
+    padding: 8px 10px;                 /* 10 → 8/10 */
+    font-size: 14px;
+  }
+
+  /* Sin horizontal-scroll inesperado: recorte elegante */
+  #view-materiales th, #view-materiales td{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Fila vacía, un poco más compacta */
+  #view-materiales .row-empty td{
+    padding: 16px;                     /* 20 → 16 */
+    font-size: 14px;
+  }
+
+  /* -------- Grids del form en 1366 (2 columnas cómodas) -------- */
+  #view-materiales #formMaterial > div{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;                         /* 12 → 10 */
+  }
+
+  /* Si el ancho disponible queda justo, pasá a 2 columnas */
+  @media (max-width: 1280px){
+    #view-materiales #formMaterial > div{
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* -------- Ajustes finos de foco -------- */
+  #view-materiales .input:focus,
+  #view-materiales #formMaterial .input:focus{
+    box-shadow: 0 0 0 3px #e2f3ea;
+  }
+}
+

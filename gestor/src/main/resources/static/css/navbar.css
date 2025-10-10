@@ -1,0 +1,111 @@
+/* ===== Sidebar Floresca ===== */
+.sidebar{
+  position: sticky; top:0; height:100dvh; overflow:auto;
+  width:280px; background:#fff; border-right:1px solid #e5e7eb;
+  box-shadow:0 10px 30px rgba(18,40,33,.06);
+  padding:28px 0;
+}
+
+/* Logo */
+.sidebar .logo{
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  padding:6px 8px 14px;
+}
+.sidebar .logo img{ width:86px; height:auto; object-fit:contain; border-radius:0px;}
+.sidebar .logo .h1{ font-size:28px; font-weight:800; margin:2px 0 0; color:var(--ink); }
+
+/* Nav */
+.sidebar .nav{ display:flex; flex-direction:column; gap:4px; margin-top:8px; }
+.sidebar .nav a{
+  position:relative; display:flex; align-items:center; gap:10px;
+  padding:12px 12px 12px 14px; border-radius:0px;
+  color:#475569; text-decoration:none; font-weight:600;
+  transition: background .18s ease, color .18s ease;
+}
+.sidebar .nav a .icon{ width:24px; height:24px; color:#6b7a73; display:inline-grid; place-items:center; }
+.sidebar .nav a:hover{ background:#eef5f2; }
+
+.sidebar .nav a.active{ background:#eef5f2; color:#2f6a4f; }
+.sidebar .nav a.active .icon{ color:#2f6a4f; }
+.sidebar .nav a.active::before{
+  content:""; position:absolute; left:-8px; top:50%; transform:translateY(-50%);
+  width:4px; height:60%; background:#2f6a4f; border-radius:0 0px 0px 0;
+  box-shadow: rgba(47,106,79,.35) 4px 0, rgba(47,106,79,.20) 8px 0, rgba(47,106,79,.10) 12px 0;
+}
+
+/* Responsive: colapsa a iconos */
+@media (max-width:900px){
+  .app{ grid-template-columns:84px minmax(0,1fr); }
+  .sidebar{ width:84px; }
+  .sidebar .logo .h1{ display:none; }
+  .sidebar .nav a{ justify-content:center; gap:0; padding:12px 10px; }
+  .sidebar .nav a::before{ display:none; }
+  .sidebar .nav a span.icon + *{ display:none; }
+  .sidebar .nav a::after{
+    content: attr(data-view);
+    position:absolute; left:90px; top:50%; transform:translateY(-50%);
+    background:#0f1720; color:#fff; font-size:12px; font-weight:700;
+    padding:4px 8px; border-radius:6px; opacity:0; pointer-events:none; white-space:nowrap;
+    transition:opacity .15s ease;
+  }
+  .sidebar .nav a:hover::after{ opacity:.95; }
+}
+
+
+@media (max-width: 1366px), (max-height: 768px) {
+
+  /* Si tu layout usa grid con aside+main, aseguramos la columna del aside
+     (si tu .app ya define columnas, este bloque no molesta) */
+  .app{
+    display: grid;
+    grid-template-columns: 236px 1fr; /* sidebar + contenido */
+  }
+
+  /* Sidebar compacto (antes 280px) */
+  .sidebar{
+    width: 236px;
+    min-width: 236px;
+    padding: 22px 0;                /* un poco menos alto que 28px */
+    border-right: 1px solid #e5e7eb;
+    box-shadow: 0 8px 24px rgba(18,40,33,.06);
+  }
+
+  /* Logo proporcional */
+  .sidebar .logo{
+    gap: 8px;
+    padding: 4px 8px 12px;
+  }
+  .sidebar .logo img{
+    width: 72px;                    /* 86 → 72 */
+  }
+  .sidebar .logo .h1{
+    font-size: 22px;                /* 28 → 22 */
+    margin: 0;
+    font-weight: 800;
+  }
+
+  /* Navegación: paddings y tipografía compactos */
+  .sidebar .nav{
+    gap: 2px;                       /* 4 → 2 */
+    margin-top: 6px;
+  }
+  .sidebar .nav a{
+    padding: 10px 10px 10px 12px;   /* 12/14 → 10/12 */
+    font-size: 14px;                /* ~0.9em del original */
+  }
+  .sidebar .nav a .icon{
+    width: 20px;                    /* 24 → 20 */
+    height: 20px;
+  }
+
+  /* Barra activa: misma estética, menor “tira” a la izquierda */
+  .sidebar .nav a.active::before{
+    left: -6px;                     /* -8 → -6 */
+    width: 3px;                     /* 4 → 3 */
+    height: 56%;                    /* leve ajuste para verse igual */
+    box-shadow:
+      rgba(47,106,79,.35) 3px 0,
+      rgba(47,106,79,.20) 6px 0,
+      rgba(47,106,79,.10) 9px 0;
+  }
+}

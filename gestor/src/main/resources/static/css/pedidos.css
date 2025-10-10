@@ -1,0 +1,833 @@
+/* ===========================
+   RESUMEN DE PEDIDOS (Inicio)
+   Scope: #view-dashboard
+   =========================== */
+
+/* KPIs */
+#view-dashboard .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+#view-dashboard .kpi{background:#fff;padding:18px}
+
+/* ===== KPIs ===== */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+.kpi-card {
+  background: #fff;
+  border:1px solid #e6ece7;
+  border-radius: 0px;
+  padding: 16px 18px;
+  box-shadow:
+  rgba(48, 90, 70, 0.40) 5px 5px,
+  rgba(48, 90, 70, 0.30) 10px 10px,
+  rgba(48, 90, 70, 0.20) 15px 15px,
+  rgba(48, 90, 70, 0.10) 20px 20px,
+  rgba(48, 90, 70, 0.05) 25px 25px;
+
+}
+.kpi-label {
+  font-size: 13px;
+  color: #6b7280; /* slate-500 */
+  margin-bottom: 8px;
+}
+.kpi-value {
+  font-size: 32px;              /* << más grande */
+  line-height: 1.1;
+  font-weight: 800;
+  color: #111827;               /* slate-900 */
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== Estado (chip) ===== */
+/* “Resetea” el <button> para que NO se vea como botón */
+.estado-btn{
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  line-height: 1;
+}
+.estado-btn:focus-visible {
+  outline: 2px solid #2563eb33;    /* focus suave */
+  outline-offset: 2px;
+  border-radius: 9999px;
+}
+
+/* Chip visual */
+.badge{
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 9999px;
+  letter-spacing: .02em;
+  user-select: none;
+  border: 1px solid transparent;
+}
+
+/* Colores */
+.badge--pendiente{
+  color: #92400e;
+  background: #fef3c7;       /* amber-100 */
+  border-color: #f59e0b33;
+}
+.badge--proceso{
+  color: #1e3a8a;
+  background: #dbeafe;       /* blue-100 */
+  border-color: #3b82f633;
+}
+.badge--entregado{
+  color: #065f46;
+  background: #d1fae5;       /* emerald-100 */
+  border-color: #10b98133;
+}
+
+/* (opcional) achicar el padding dentro de la celda para que respire la tabla */
+td .badge { transform: translateY(-1px); }
+
+
+/* Card & scroll */
+#view-dashboard .pedidos-card{
+	
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  width: 100%;
+  margin-top:30px;
+}
+#view-dashboard .pedidos-card .tabla-scroll{
+	 position: relative;
+  max-height: calc(100vh - 360px); /* igual que antes */
+  overflow: auto;
+  scrollbar-gutter: auto;
+}
+
+#view-dashboard .pedidos-card .tabla-scroll::-webkit-scrollbar{ height:10px; width:10px; }
+#view-dashboard .pedidos-card .tabla-scroll::-webkit-scrollbar-thumb{ background:#dfe7e3; border-radius:0px; }
+#view-dashboard .pedidos-card .tabla-scroll::-webkit-scrollbar-thumb:hover{ background:#cfdad4; }
+/* Tabla base */
+#view-dashboard .tabla.pedidos{
+	
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;       /* respeta colgroup y evita saltos */
+  font-size: 0.95rem;
+}
+
+/* Encabezado OLIVA fijo */
+#view-dashboard .tabla.pedidos thead{
+  position: sticky; top: 0; z-index: 3;
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+}
+#view-dashboard .tabla.pedidos thead::before{
+  content: ""; position: absolute; inset: 0;
+  background: var(--aside-olive);
+  z-index: -1;
+}
+#view-dashboard .tabla.pedidos thead th{
+  background:rgba(48, 90, 70, 0.10); /* deja ver el oliva del ::before */
+  color: #000000;
+  font-weight: 600;
+  padding: 10px 12px;
+  white-space: nowrap;
+}
+
+/* Celdas del cuerpo */
+#view-dashboard .tabla.pedidos tbody td{
+  padding: 12px 12px;
+  vertical-align: middle;
+}
+#view-dashboard .tabla.pedidos tbody tr:last-child td{
+  border-bottom: 0;
+}
+
+/* Alineaciones por columna: 
+   1 Cliente (L), 2 Producto (L), 3 Fecha (L), 4 Estado (L), 
+   5 Total (R), 6 Acciones (C) */
+#view-dashboard .tabla.pedidos th:nth-child(1),
+#view-dashboard .tabla.pedidos td:nth-child(1),
+#view-dashboard .tabla.pedidos th:nth-child(2),
+#view-dashboard .tabla.pedidos td:nth-child(2),
+#view-dashboard .tabla.pedidos th:nth-child(3),
+#view-dashboard .tabla.pedidos td:nth-child(3),
+#view-dashboard .tabla.pedidos th:nth-child(4),
+#view-dashboard .tabla.pedidos td:nth-child(4){
+  text-align: left;
+}
+#view-dashboard .tabla.pedidos th:nth-child(5),
+#view-dashboard .tabla.pedidos td:nth-child(5){
+  text-align: left;
+}
+#view-dashboard .tabla.pedidos th:nth-child(6),
+#view-dashboard .tabla.pedidos td:nth-child(6){
+  text-align: left;
+}
+
+/* Texto largo en Producto: elipsis, no rompe layout */
+#view-dashboard .tabla.pedidos td:nth-child(2){
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* Hover sutil para filas */
+#view-dashboard .tabla.pedidos tbody tr:hover{
+  background: #fafcfb;
+}
+
+/* Fila vacía */
+#view-dashboard .tabla.pedidos .row-empty td{
+  padding: 22px 12px; color: var(--ink-2); text-align: center;
+}
+
+/* -------- Estado (badge) -------- */
+#view-dashboard .tabla.pedidos td:nth-child(4) .badge{
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 0;      /* recto, como pediste */
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  border: 1px solid transparent;
+}
+#view-dashboard .tabla.pedidos td:nth-child(4) .badge--pendiente{
+  background: color-mix(in srgb, var(--warn) 20%, white);
+  border-color: color-mix(in srgb, var(--warn) 35%, white);
+  color: #5d4517;
+}
+#view-dashboard .tabla.pedidos td:nth-child(4) .badge--proceso{
+  background: color-mix(in srgb, var(--ok) 20%, white);
+  border-color: color-mix(in srgb, var(--ok) 35%, white);
+  color: #0f5132;
+}
+#view-dashboard .tabla.pedidos td:nth-child(4) .badge--entregado{
+  background: #e0f7ff;
+  border-color: #c7cffd;
+  color: #374151;
+}
+
+/* -------- Columna Acciones -------- */
+#view-dashboard .tabla.pedidos td:nth-child(6){
+  white-space: nowrap;
+}
+#view-dashboard .tabla.pedidos .action{
+  display: inline-flex;
+  gap: 8px;
+}
+#view-dashboard .tabla.pedidos .btn-ico{
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: #eef3ef;
+  border: 1px solid #dfe8e2;
+  display: inline-grid; place-items: center;
+  padding: 0;
+}
+#view-dashboard .tabla.pedidos .btn-ico:hover{
+  border-color: #cfdad3; filter: brightness(.98);
+}
+
+/* -------- “Ver detalle” como link/pill en la columna Producto (opcional) -------- */
+#view-dashboard .tabla.pedidos .ver-detalle{
+  display: inline-block;
+  padding: 4px 8px;
+  border: 1px solid #dbe2dd;
+  background: #fff;
+  font-size: 12px;
+  border-radius: 0;
+  color: var(--ink);
+  text-decoration: none;
+  margin-left: 8px;
+}
+#view-dashboard .tabla.pedidos .ver-detalle:hover{
+  background: #f6f8f6;
+}
+
+/* -------- Responsivo -------- */
+@media (max-width: 1280px){
+  /* si el panel derecho baja, la tabla puede respirar un poco más */
+  #view-dashboard .pedidos-card .tabla-scroll{
+    max-height: none;
+  }
+}
+
+
+/* ===== PANEL DETALLE (match con ensureDetallePanelSkeleton) ===== */
+/* ===== Detalle de PRODUCTO — idéntico a Detalle de la venta ===== */
+#view-dashboard #panelDetalle .detalle-card{
+  margin-top:20px;
+  background:#fff;
+  border:0px solid transparent;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em,
+              rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em,
+              rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
+  border-radius:0px;
+  padding:12px;
+  max-height:620px; overflow:auto;
+  font-size:14px;
+  line-height:1.35;
+  min-width:0;
+}
+#view-dashboard #panelDetalle .card-title{
+  margin:2px 0 6px;
+  font-weight:700;
+  font-size:18px;     /* título claro */
+  color:#233127;
+}
+
+#view-dashboard #panelDetalle .ticket-meta{
+  color:#6c7a72;
+  font-size:13px;     /* meta legible */
+  margin-bottom:10px;
+}
+
+#view-dashboard .tabla.mini-detalle{
+  width:100%;
+  border-collapse:separate; border-spacing:0; table-layout:fixed;
+  border:0px solid #e6ece7; border-radius:0px; overflow:hidden;
+}
+
+#view-dashboard tabla.mini-detalle thead th{
+  background:#f3f7f4; color:#415247; font-weight:600;
+  padding:8px 10px;               /* más compacto */
+  text-align:left;
+  font-size:13px;                 /* header apenas menor */
+  letter-spacing:.2px;
+}
+
+#view-dashboard .tabla.mini-detalle tbody td{
+  padding:8px 10px;               /* más compacto */
+  border-top:0px solid #eef2ef;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  font-size:14px;                 /* cuerpo legible */
+  line-height:1.3;
+}
+
+#view-dashboard .tabla.mini-detalle thead th:nth-child(2),
+#view-dashboard .tabla.mini-detalle thead th:nth-child(3),
+#view-dashboard .tabla.mini-detalle thead th:nth-child(4),
+#view-dashboard .tabla.mini-detalle tbody td:nth-child(2),
+#view-dashboard .tabla.mini-detalle tbody td:nth-child(3),
+#view-dashboard .tabla.mini-detalle tbody td:nth-child(4){
+  text-align:right;               /* antes estaba left */
+  font-variant-numeric:tabular-nums;
+}
+
+#view-dashboard .ticket-sep{
+  margin:12px 0; height:12px;
+  background:
+    linear-gradient(90deg, #e6ece7 8px, transparent 8px) top/16px 1px no-repeat,
+    radial-gradient(6px 6px at 6px 6px, transparent 6px, #fff 7px) left/12px 100% repeat-y,
+    radial-gradient(6px 6px at 6px 6px, transparent 6px, #fff 7px) right/12px 100% repeat-y;
+  border-top:1px dashed #d9e3dd;
+}
+
+#view-dashboard .ticket-total{
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:16px;                 /* total destacado */
+  font-weight:800;
+  
+}
+
+#view-dashboard .ticket-total .label{ color:#4a5a50; }
+#view-dashboard .ticket-total .value{ font-variant-numeric:tabular-nums; }
+
+#view-dashboard #panelDetalle.detalle-card{
+  padding:16px 18px 14px;   /* antes 12px: más colchón interno */
+}
+
+#view-dashboard #panelDetalle .card-title{
+  margin:0 0 8px;           /* separa título de la meta */
+}
+
+#view-dashboard #panelDetalle .ticket-meta{
+  margin-bottom:12px;       /* separa meta de la tabla */
+}
+
+/* Tabla con celdas más cómodas y bordes suaves */
+#view-dashboard .tabla.mini-detalle{
+  border-radius:6px;
+  overflow:hidden;
+}
+
+#view-dashboard .tabla.mini-detalle thead th{
+  padding:10px 14px;        /* +padding horizontal/vertical */
+}
+
+#view-dashboard .tabla.mini-detalle tbody td{
+  padding:10px 14px;        /* +padding en filas */
+  line-height:1.35;
+}
+
+/* Separador y total con más respiro */
+#view-dashboard .ticket-sep{
+  margin:14px 0;            /* más espacio entre tabla y total */
+}
+
+#view-dashboard .ticket-total{
+  padding:0 2px;            /* leve inset para que no “pegue” al borde */
+}
+
+#view-dashboard .tabla.mini-detalle{
+  table-layout:auto;                 /* permite que la 1ª col. crezca */
+}
+
+#view-dashboard .tabla.mini-detalle th:first-child,
+#view-dashboard .tabla.mini-detalle td:first-child{
+  white-space:normal;                /* permite salto de línea */
+  overflow:visible;
+  text-overflow:clip;
+  word-break:break-word;             /* por si hay palabras largas */
+}
+
+/* Reparto de ancho orientativo */
+#view-dashboard .tabla.mini-detalle th:first-child{ width:54%; }
+#view-dashboard .tabla.mini-detalle th:nth-child(2){ width:12%; text-align:right; }
+#view-dashboard .tabla.mini-detalle th:nth-child(3){ width:17%; text-align:right; }
+#view-dashboard .tabla.mini-detalle th:nth-child(4){ width:17%; text-align:right; }
+
+/* Mantener números alineados a la derecha en body */
+#view-dashboard .tabla.mini-detalle tbody td:nth-child(2),
+#view-dashboard .tabla.mini-detalle tbody td:nth-child(3),
+#view-dashboard .tabla.mini-detalle tbody td:nth-child(4){
+  text-align:right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Footer / Total (idéntico) */
+#panelDetalle.card-detalle .footer{
+  display:flex;
+  justify-content:flex-end;
+  align-items:baseline;
+  gap:10px;
+  padding:0 2px 2px;                     /* mismo padding que venta */
+  border-top:1px solid #e6ece7;          /* misma línea superior */
+  margin-top:6px;                        /* mismo espacio arriba */
+}
+#panelDetalle.card-detalle .total-label{
+  font-size:13px;
+  color:#6b7a73;
+  font-weight:600;
+}
+#panelDetalle.card-detalle .total-value{
+  font-size:16px;                        /* si en venta lo ves +grande, subilo a 18px */
+  font-weight:800;
+  letter-spacing:.2px;
+  font-variant-numeric: tabular-nums;
+}
+
+
+
+
+#view-dashboard .btn-detalle{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:6px 12px;
+  border:1px solid #d7e3dc;
+  background:#f7fbf8;
+  border-radius:0px;
+  font-weight:600; font-size:13px; line-height:1;
+  cursor:pointer; user-select:none;
+  transition:transform .06s ease, background .2s ease, box-shadow .2s ease, border-color .2s ease;
+  text-decoration:none; color:inherit;
+}
+#view-dashboard .btn-detalle::before{
+  font-family:"Material Symbols Rounded";
+  content:"visibility";
+  font-size:18px; line-height:1;
+}
+#view-dashboard .btn-detalle:hover{
+  background:#eef6f1; border-color:#cfe1d7;
+  box-shadow:0 1px 0 rgba(0,0,0,.03), inset 0 0 0 1px #e6f0ea;
+  transform:translateY(-1px);
+}
+#view-dashboard .btn-detalle:active{ transform:translateY(0); }
+
+
+/* Responsivo: meta baja abajo cuando no entra */
+@media (max-width: 900px){
+  #panelDetalle.card-detalle .header{ grid-template-columns: 1fr; }
+  #panelDetalle.card-detalle .meta{ justify-self:start; white-space:normal; }
+}
+
+/* === Acciones en tabla === */
+.td-acciones{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  white-space:nowrap;            /* evita salto de línea de los botones */
+}
+
+/* Botón base */
+.btn-icon{
+  --btn-size: 36px;
+
+  width:var(--btn-size);
+  height:var(--btn-size);
+  display:inline-grid;
+  place-items:center;
+
+  background:#fff;
+  border:0px solid #e6ece7;
+  border-radius:0px;
+  color:#2f6a4f;                 /* verde base */
+  cursor:pointer;
+
+  padding:0;
+  line-height:1;
+  appearance:none;
+  transition:transform .06s ease,
+             box-shadow .15s ease,
+             background-color .15s ease,
+             border-color .15s ease,
+             color .15s ease;
+}
+.btn-icon .material-symbols-rounded,
+.btn-icon svg{
+  font-size:20px;
+  width:20px; height:20px;
+}
+
+/* Estados comunes */
+.btn-icon:hover{ background:#f6faf7; border-color:#dfebe4; }
+.btn-icon:active{ transform:translateY(1px); box-shadow:none; }
+.btn-icon:focus-visible{ outline:0; box-shadow:0 0 0 3px #e2f3ea; }
+.btn-icon:disabled{ opacity:.5; cursor:not-allowed; filter:grayscale(.2); }
+
+/* Variantes */
+.btn-icon.action-edit{
+  color:#2f6a4f;                 /* editar = verde */
+}
+.btn-icon.action-edit:hover{
+  background:#e9f6ef;
+}
+
+.btn-icon.action-delete{
+  color:#b42318;                 /* borrar = rojo */
+  border-color:#f0d4d2;
+}
+.btn-icon.action-delete:hover{
+  background:#fbeeee;
+  border-color:#e9b7b4;
+}
+
+/* Tamaño chico opcional */
+.btn-icon.sm{ --btn-size:30px; border-radius:8px; }
+
+
+/* ============================================================
+   DETALLE DE PRODUCTO (Dashboard) — estilos espejo de venta.css
+   Scope: #view-dashboard
+   ============================================================ */
+
+/* Card del panel */
+#view-dashboard #panelDetalle.detalle-card{
+  margin-top:30px;
+  background:#fff;
+  border:0px solid transparent;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em,
+              rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em,
+              rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
+  border-radius:0px;
+  padding:16px 18px 14px;
+  max-height:620px;
+  overflow:auto;
+  font-size:14px;
+  line-height:1.35;
+  min-width:0;
+}
+
+/* Título y meta */
+#view-dashboard #panelDetalle .card-title{
+  margin:0 0 8px;
+  font-weight:700;
+  font-size:18px;
+  color:#233127;
+}
+#view-dashboard #panelDetalle .ticket-meta{
+  color:#6c7a72;
+  font-size:13px;
+  margin-bottom:12px;
+}
+
+/* Tabla mini del detalle */
+#view-dashboard .tabla.mini-detalle{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  table-layout:auto;          /* deja crecer la 1ª col. */
+  border:0px solid #e6ece7;
+  border-radius:6px;
+  overflow:hidden;
+}
+
+/* Encabezado */
+#view-dashboard .tabla.mini-detalle thead th{
+  background:#f3f7f4;
+  color:#415247;
+  font-weight:600;
+  padding:10px 14px;
+  text-align:left;
+  font-size:13px;
+  letter-spacing:.2px;
+}
+
+/* Cuerpo */
+#view-dashboard .tabla.mini-detalle tbody td{
+  padding:10px 14px;
+  border-top:0px solid #eef2ef;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:14px;
+  line-height:1.35;
+}
+
+/* “Producto” puede partir línea */
+#view-dashboard .tabla.mini-detalle th:first-child,
+#view-dashboard .tabla.mini-detalle td:first-child{
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+  word-break:break-word;
+}
+
+/* Reparto orientativo de ancho */
+#view-dashboard .tabla.mini-detalle th:first-child{ width:54%; }
+#view-dashboard .tabla.mini-detalle th:nth-child(2){ width:12%; text-align:right; }
+#view-dashboard .tabla.mini-detalle th:nth-child(3){ width:17%; text-align:right; }
+#view-dashboard .tabla.mini-detalle th:nth-child(4){ width:17%; text-align:right; }
+
+/* Números a la derecha + tabular-nums */
+#view-dashboard .tabla.mini-detalle thead th:nth-child(2),
+#view-dashboard .tabla.mini-detalle thead th:nth-child(3),
+#view-dashboard .tabla.mini-detalle thead th:nth-child(4),
+#view-dashboard .tabla.mini-detalle tbody td:nth-child(2),
+#view-dashboard .tabla.mini-detalle tbody td:nth-child(3),
+#view-dashboard .tabla.mini-detalle tbody td:nth-child(4){
+  text-align:right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Separador y total */
+#view-dashboard .ticket-sep{
+  margin:14px 0;
+  height:12px;
+  background:
+    linear-gradient(90deg, #e6ece7 8px, transparent 8px) top/16px 1px no-repeat,
+    radial-gradient(6px 6px at 6px 6px, transparent 6px, #fff 7px) left/12px 100% repeat-y,
+    radial-gradient(6px 6px at 6px 6px, transparent 6px, #fff 7px) right/12px 100% repeat-y;
+  border-top:1px dashed #d9e3dd;
+}
+#view-dashboard .ticket-total{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:16px;
+  font-weight:800;
+  padding:0 2px;
+}
+#view-dashboard .ticket-total .label{ color:#4a5a50; }
+#view-dashboard .ticket-total .value{ font-variant-numeric: tabular-nums; }
+
+
+@media screen and (max-width:1366px) and (max-height:768px) {
+  /* contenedor general: más compacto y con gap reducido */
+  #view-dashboard .kpis{
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  /* asegurar que la grid se adapte en pantallas largas pero estrechas */
+  .kpi-grid{
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+  }
+
+  /* tarjetas KPI más compactas */
+  .kpi-card{
+    padding: 12px 14px;
+    box-shadow:
+  rgba(48, 90, 70, 0.40) 5px 5px,
+  rgba(48, 90, 70, 0.30) 10px 10px,
+  rgba(48, 90, 70, 0.20) 15px 15px,
+  rgba(48, 90, 70, 0.10) 20px 20px,
+  rgba(48, 90, 70, 0.05) 25px 25px;
+  }
+
+  /* etiquetas y valores adaptados para legibilidad */
+  .kpi-label{
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+  .kpi-value{
+    font-size: 26px;
+    line-height: 1.08;
+    word-break: normal;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* evitar que contenidos internos forcen el ancho */
+  .kpi-card *{
+    box-sizing: border-box;
+    min-width: 0;
+  }
+
+  /* si hay muchos KPIs en pantalla, permitir 2 columnas como fallback */
+  @media screen and (max-width:1100px){
+    #view-dashboard .kpis,
+    .kpi-grid{
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .kpi-value{ font-size: 24px; }
+  }
+}
+
+
+@media screen and (max-width:1366px) and (max-height:768px) {
+  /* Card: reducir top margin y ajustar max-height del scroll */
+  #view-dashboard .pedidos-card{
+    margin-top: 20px;
+  }
+  #view-dashboard .pedidos-card .tabla-scroll{
+    max-height: calc(100vh - 260px); /* más espacio para header y detalle */
+    overflow: auto;
+  }
+
+  /* Scrollbar más pequeño y menos intrusivo */
+  #view-dashboard .pedidos-card .tabla-scroll::-webkit-scrollbar{ height:8px; width:8px; }
+  #view-dashboard .pedidos-card .tabla-scroll::-webkit-scrollbar-thumb{ background:#e6efea; border-radius:0; }
+  #view-dashboard .pedidos-card .tabla-scroll::-webkit-scrollbar-thumb:hover{ background:#d5e6df; }
+
+  /* Tabla: fuente y paddings más compactos */
+  #view-dashboard .tabla.pedidos{ font-size: 0.9rem; table-layout: fixed; }
+  #view-dashboard .tabla.pedidos thead th{ padding: 8px 10px; font-size: 13px; }
+  #view-dashboard .tabla.pedidos tbody td{ padding: 8px 10px; font-size: 13px; }
+
+  /* Ajuste de columnas para evitar overflow (usar colgroup si existe) */
+  #view-dashboard .tabla.pedidos th:nth-child(1),
+  #view-dashboard .tabla.pedidos td:nth-child(1){ width: 60px; }
+  #view-dashboard .tabla.pedidos th:nth-child(2),
+  #view-dashboard .tabla.pedidos td:nth-child(2){ width: 28%; } /* Producto */
+  #view-dashboard .tabla.pedidos th:nth-child(3),
+  #view-dashboard .tabla.pedidos td:nth-child(3){ width: 16%; } /* Fecha */
+  #view-dashboard .tabla.pedidos th:nth-child(4),
+  #view-dashboard .tabla.pedidos td:nth-child(4){ width: 14%; } /* Estado */
+  #view-dashboard .tabla.pedidos th:nth-child(5),
+  #view-dashboard .tabla.pedidos td:nth-child(5){ width: 14%; } /* Total */
+  #view-dashboard .tabla.pedidos th:nth-child(6),
+  #view-dashboard .tabla.pedidos td:nth-child(6){ width: 10%; } /* Acciones */
+
+  /* Producto: permitir ellipsis y que no rompa la grilla */
+  #view-dashboard .tabla.pedidos td:nth-child(2){
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Encabezado: mantener legible pero compacto */
+  #view-dashboard .tabla.pedidos thead{ position: sticky; top: 56px; } /* si hay header global */
+  #view-dashboard .tabla.pedidos thead th{ font-size: 13px; padding: 8px 10px; }
+
+  /* Badges y botones más compactos */
+  #view-dashboard .tabla.pedidos td:nth-child(4) .badge{ padding: 4px 8px; font-size: 11px; }
+  #view-dashboard .tabla.pedidos .btn-ico{ width: 30px; height: 30px; border-radius: 6px; }
+
+  /* Evitar que botones y etiquetas forcen ancho: truncar con ellipsis */
+  #view-dashboard .tabla.pedidos button,
+  #view-dashboard .tabla.pedidos .btn,
+  #view-dashboard .tabla.pedidos .button-30{
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Si la tabla sigue muy apretada, activar scroll horizontal sólo en contenedor */
+  #view-dashboard .pedidos-card .tabla-scroll.force-x{
+    overflow-x: auto;
+  }
+}
+
+
+@media screen and (max-width:1366px) and (max-height:768px) {
+  /* Panel: reducir padding, max-height y mejorar scroll */
+  #view-dashboard #panelDetalle.detalle-card{
+    margin-top:20px;
+    padding:12px 14px 10px;
+    max-height: calc(100vh - 120px); /* deja espacio para header y contornos */
+    font-size:13px;
+    line-height:1.32;
+  }
+
+  /* Título y meta más compactos */
+  #view-dashboard #panelDetalle .card-title{
+    font-size:16px;
+    margin-bottom:6px;
+  }
+  #view-dashboard #panelDetalle .ticket-meta{
+    font-size:12px;
+    margin-bottom:10px;
+  }
+
+  /* Tabla mini: paddings y fuentes reducidas para evitar overflow */
+  #view-dashboard .tabla.mini-detalle thead th{
+    padding:8px 10px;
+    font-size:12px;
+  }
+  #view-dashboard .tabla.mini-detalle tbody td{
+    padding:8px 10px;
+    font-size:13px;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    overflow:hidden;
+  }
+
+  /* Producto permite salto de línea pero con límite práctico */
+  #view-dashboard .tabla.mini-detalle th:first-child,
+  #view-dashboard .tabla.mini-detalle td:first-child{
+    white-space:normal;
+    word-break:break-word;
+    overflow-wrap:break-word;
+    max-width:100%;
+  }
+
+  /* Ajuste de reparto de ancho para evitar que columnas numéricas compriman texto */
+  #view-dashboard .tabla.mini-detalle th:first-child{ width:56%; }
+  #view-dashboard .tabla.mini-detalle th:nth-child(2){ width:11%; }
+  #view-dashboard .tabla.mini-detalle th:nth-child(3){ width:16%; }
+  #view-dashboard .tabla.mini-detalle th:nth-child(4){ width:17%; }
+
+  /* Números: tamaño y tabular-nums */
+  #view-dashboard .tabla.mini-detalle thead th:nth-child(2),
+  #view-dashboard .tabla.mini-detalle thead th:nth-child(3),
+  #view-dashboard .tabla.mini-detalle thead th:nth-child(4),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(2),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(3),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(4){
+    font-size:13px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Separador y total: compacto y pegado */
+  #view-dashboard .ticket-sep{ margin:10px 0; height:10px; }
+  #view-dashboard .ticket-total{
+    font-size:15px;
+    gap:8px;
+  }
+  #view-dashboard .ticket-total .label{ font-size:14px; }
+  #view-dashboard .ticket-total .value{ font-size:15px; }
+
+  /* Forzar que el panel no empuje la grid y permita scroll interno */
+  #view-dashboard #panelDetalle.detalle-card{ min-width:0; max-width:100%; overflow:auto; box-sizing:border-box; }
+
+  /* Asegurar que tablas y elementos internos no forcen ancho */
+  #view-dashboard #panelDetalle .tabla.mini-detalle,
+  #view-dashboard #panelDetalle .tabla.mini-detalle *{
+    box-sizing:border-box; min-width:0;
+  }
+
+  /* Si el contenido sigue muy ancho, permitir scroll horizontal mínimo dentro del panel */
+  #view-dashboard #panelDetalle.detalle-card.force-x{ overflow-x:auto; }
+}

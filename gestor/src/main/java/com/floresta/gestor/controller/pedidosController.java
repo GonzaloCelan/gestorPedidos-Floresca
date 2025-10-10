@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.floresta.gestor.dto.entregaDTO;
-import com.floresta.gestor.model.entrega;
-import com.floresta.gestor.service.entregaService;
+import com.floresta.gestor.dto.ProductoDTO;
+import com.floresta.gestor.dto.pedidoDTO;
+import com.floresta.gestor.dto.pedidoUpdateDTO;
+import com.floresta.gestor.model.pedido;
+import com.floresta.gestor.service.pedidoService;
 
 import jakarta.validation.Valid;
 
@@ -24,21 +26,21 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1")
-public class entregaController {
+public class pedidosController {
 	
 	
 	
-	private final entregaService service;
+	private final pedidoService service;
 
-    public entregaController(entregaService service) {
+    public pedidosController(pedidoService service) {
         this.service = service;
     }
     
     //GUARDA UN PEDIDO NUEVO
     @PostMapping ("/pedidos")
-    public ResponseEntity<entrega> guardarEntrega(@Valid @RequestBody entregaDTO dto) {
+    public ResponseEntity<pedido> guardarEntrega(@Valid @RequestBody pedidoDTO dto) {
     	
-    	entrega response = service.generarEntrega(dto);
+    	pedido response = service.generarPedido(dto);
     	
         return ResponseEntity.ok(response);
     }
@@ -46,11 +48,11 @@ public class entregaController {
     //ACTUALIZA ESTADO DEL PEDIDO
     
     @PutMapping("/pedidos/{id}/{estado}")
-    public ResponseEntity<entrega> actualizarEntrega(
+    public ResponseEntity<pedido> actualizarEntrega(
     		@PathVariable Integer id,
     		@PathVariable String estado) {
     	
-    	entrega response = service.actualizarEstado(id, estado);
+    	pedido response = service.actualizarEstado(id, estado);
     	
     	return ResponseEntity.ok(response);
     	
@@ -59,11 +61,11 @@ public class entregaController {
   //ACTUALIZA PEDIDO ENTERO
     
     @PutMapping("/pedidos/{id}")
-    public ResponseEntity<entrega> actualizarEntregaCompleto(
+    public ResponseEntity<pedido> actualizarEntregaCompleto(
     		@PathVariable Integer id,
-    		@RequestBody entregaDTO dto) {
+    		@RequestBody pedidoUpdateDTO dto) {
     	
-    	entrega response = service.actualizarPedido(id,dto);
+    	pedido response = service.actualizarPedido(id,dto);
     	
 
     	return ResponseEntity.ok(response);
@@ -84,10 +86,21 @@ public class entregaController {
     
     //OBTENGO TODOS LOS PEDIDOS ACTIVOS
     @GetMapping("/pedidos")
-    public ResponseEntity<List<entrega>> getPedidosActivos(){
+    public ResponseEntity<List<pedido>> getPedidosActivos(){
     	
-    	List<entrega> response = service.obtenerPedidosActivos();
+    	List<pedido> response = service.obtenerPedidosActivos();
+    	return ResponseEntity.ok(response);
+    	
+    }
+    
+  //OBTENGO PRODUCTOS DE CADA PEDIDO
+    @GetMapping("/pedidos/producto/{id}")
+    public ResponseEntity<List<ProductoDTO>> getProductosByIdPedido(@PathVariable Integer id){
+    	
+    	List<ProductoDTO> response = service.obtenerProductosById(id);
+    	
     	return ResponseEntity.ok(response);
     	
     }
 }
+

@@ -1,0 +1,504 @@
+
+
+/* Backdrop + estado cerrado */
+#modalPedido {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,.45);
+  z-index: 1000;
+}
+#modalPedido.hidden { display: none !important; }
+
+/* Panel */
+#modalPedido .modal{
+  width: min(900px, 96vw);
+  background: #fff;
+  border-radius: 0px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.25);
+  overflow: hidden;
+  transform: translateY(2px);
+}
+
+/* Header */
+#modalPedido .modal-header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px; border-bottom:1px solid #eef2ef;
+}
+#modalPedido .modal-title{ margin:0; font-size:18px; font-weight:700; }
+#modalPedido .modal-close{
+  border:0; background:transparent; font-size:22px; line-height:1; cursor:pointer;
+  color:#62756b; padding:4px 6px; border-radius:8px;
+}
+#modalPedido .modal-close:hover{ background:#f1f4f2; }
+
+/* Body */
+#modalPedido .modal-body{ padding:16px 18px 6px; }
+
+/* Form: dos columnas */
+#modalPedido .form-two-cols{
+  display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;
+}
+#modalPedido .field label{ display:block; font-weight:600; margin-bottom:6px; color:#213a2c; }
+#modalPedido .input{ width:100%; height:38px; padding:8px 10px; border:1px solid #e4ebe6; border-radius:0px; background:#fff; }
+#modalPedido .input:focus{ outline:2px solid #cfe7da; border-color:#b7d3c3; }
+#modalPedido .ta-right{ text-align:right; }
+
+/* Items */
+#modalPedido .pedido-items{
+  border:1px solid #e6ece7; border-radius:0px; padding:14px; background:#fcfdfc;
+}
+#modalPedido .pedido-items__head{
+  display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;
+}
+#modalPedido .pedido-items__head h4{ margin:0; font-size:16px; font-weight:700; }
+
+#modalPedido .pedido-items__labels{
+  display:grid; grid-template-columns: 1fr 100px 160px 160px 46px;
+  gap:10px; font-weight:600; color:var(--ink-2, #5c6f64); font-size:13px; margin-bottom:6px;
+}
+
+#modalPedido .pedido-items__list{
+  display:flex; flex-direction:column; gap:8px; max-height:45vh; overflow:auto; padding-right:2px;
+}
+#modalPedido .pedido-items__row{
+  display:grid; grid-template-columns: 1fr 100px 160px 160px 46px; gap:10px; align-items:center;
+}
+
+/* Total */
+#modalPedido .pedido-items__footer{
+  display:flex; justify-content:flex-end; align-items:center; gap:10px;
+  padding-top:10px; margin-top:12px; border-top:1px dashed #dfe7e2; font-size:15px;
+}
+
+/* Footer acciones */
+#modalPedido .modal-actions{
+  display:flex; justify-content:flex-end; gap:10px; padding:12px 0 6px;
+}
+
+/* Botones (scopeados para no chocar) */
+#modalPedido .btn{ background:#2f6a4f; color:#fff; border:0; border-radius:0px; height:38px; padding:0 14px; font-weight:600; cursor:pointer; }
+#modalPedido .btn:hover{ filter:brightness(.95); }
+#modalPedido .btn:disabled{ opacity:.55; cursor:not-allowed; }
+#modalPedido .btn-sec{ background:#eef5f0; color:#214233; }
+#modalPedido .btn-sm{ height:32px; padding:0 10px; font-size:13px; border-radius:8px; }
+#modalPedido .btn-icon{ display:inline-flex; align-items:center; justify-content:center; height:38px; width:38px; border-radius:10px; border:1px solid #e5ebe7; background:#fff; cursor:pointer; }
+#modalPedido .btn-icon:hover{ background:#f5faf7; }
+#modalPedido .btn-danger{ color:#9a2a2a; border-color:#f1d5d5; }
+#modalPedido .btn-danger:hover{ background:#fdeeee; }
+
+
+/* ===========================
+   MODAL EDITAR: #modalEditar
+   Estructura:
+   <div id="modalEditar" class="modal hidden">
+     <div class="modal-dialog"> ... </div>
+   </div>
+   Aquí #modalEditar funciona como BACKDROP.
+   =========================== */
+
+/* Backdrop + estado cerrado */
+#modalEditar{
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,.45);
+  z-index: 1000;
+}
+#modalEditar.hidden{ display: none !important; }
+
+/* Panel */
+#modalEditar .modal-dialog{
+  width: min(760px, 96vw);
+  background:#fff;
+  border-radius:0px;
+  box-shadow:0 10px 40px rgba(0,0,0,.25);
+  overflow:hidden;
+  transform: translateY(2px);
+}
+
+/* Header */
+#modalEditar .modal-header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px; border-bottom:1px solid #eef2ef;
+}
+#modalEditar .modal-header h3{ margin:0; font-size:18px; font-weight:700; }
+#modalEditar .modal-close{
+  border:0; background:transparent; font-size:22px; line-height:1; cursor:pointer;
+  color:#62756b; padding:4px 6px; border-radius:8px;
+}
+#modalEditar .modal-close:hover{ background:#f1f4f2; }
+
+/* Body */
+#modalEditar .modal-body{ padding:16px 18px 6px; }
+
+/* Filas simples */
+#modalEditar .form-row{ display:flex; flex-direction:column; gap:6px; margin-bottom:12px; }
+#modalEditar .form-row label{ font-weight:600; color:#213a2c; }
+#modalEditar .form-row input{
+  width:100%; height:38px; padding:8px 10px; border:1px solid #e4ebe6; border-radius:0px; background:#fff;
+}
+#modalEditar .form-row input:focus{ outline:2px solid #cfe7da; border-color:#b7d3c3; }
+
+/* Items en editar */
+#modalEditar .flex-between{ display:flex; justify-content:space-between; align-items:center; }
+#modalEditar #editItemsContainer{ display:flex; flex-direction:column; gap:8px; max-height:45vh; overflow:auto; padding-right:2px; }
+
+#modalEditar .item-row{
+  display:grid; grid-template-columns: 1fr 100px 160px 160px 36px;
+  gap:10px; align-items:center;
+}
+#modalEditar .item-row input[type="text"],
+#modalEditar .item-row input[type="number"]{
+  height:38px; padding:8px 10px; border:1px solid #e4ebe6; border-radius:0px; background:#fff;
+}
+#modalEditar .item-row [data-field="totalLinea"]{ text-align:right; }
+
+/* Footer */
+#modalEditar .modal-footer{
+  display:flex; justify-content:flex-end; gap:10px; padding:12px 18px 14px; border-top:1px solid #eef2ef;
+}
+
+/* Botones (scopeados) */
+#modalEditar .btn-sec{
+  background:#eef5f0; color:#214233; border:0; height:38px; padding:0 14px; font-weight:600; cursor:pointer;
+}
+#modalEditar .btn-sec:hover{ filter:brightness(.97); }
+
+#modalEditar .btn-prim{
+  background:#2f6a4f; color:#fff; border:0; height:38px; padding:0 14px; font-weight:600; cursor:pointer;
+}
+#modalEditar .btn-prim:hover{ filter:brightness(.95); }
+
+#modalEditar .btn-mini{
+  height:32px; width:32px; border-radius:8px; border:1px solid #e5ebe7; background:#fff; cursor:pointer;
+}
+#modalEditar .btn-mini:hover{ background:#f5faf7; }
+
+/* Seguridad global (puede ir en base.css si querés) */
+body.modal-open{ overflow:hidden; }
+
+
+
+
+/* Backdrop + estado cerrado */
+#modalPedido,
+#modalVenta{
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,.45);
+  z-index: 1100; /* un poco más alto por seguridad */
+}
+#modalPedido.hidden,
+#modalVenta.hidden{ display: none !important; }
+
+/* Panel */
+#modalPedido .modal,
+#modalVenta .modal{
+  width: min(900px, 96vw);
+  background: #fff;
+  border-radius: 0px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.25);
+  overflow: hidden;
+  transform: translateY(2px);
+}
+
+/* Header */
+#modalPedido .modal-header,
+#modalVenta  .modal-header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px; border-bottom:1px solid #eef2ef;
+}
+#modalPedido .modal-title,
+#modalVenta  .modal-title{ margin:0; font-size:18px; font-weight:700; }
+#modalPedido .modal-close,
+#modalVenta  .modal-close{
+  border:0; background:transparent; font-size:22px; line-height:1; cursor:pointer;
+  color:#62756b; padding:4px 6px; border-radius:8px;
+}
+#modalPedido .modal-close:hover,
+#modalVenta  .modal-close:hover{ background:#f1f4f2; }
+
+/* Body */
+#modalPedido .modal-body,
+#modalVenta  .modal-body{ padding:16px 18px 6px; }
+
+/* Form: dos columnas */
+#modalPedido .form-two-cols,
+#modalVenta  .form-two-cols{
+  display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;
+}
+#modalPedido .field label,
+#modalVenta  .field label{ display:block; font-weight:600; margin-bottom:6px; color:#213a2c; }
+#modalPedido .input,
+#modalVenta  .input{ width:100%; height:38px; padding:8px 10px; border:1px solid #e4ebe6; border-radius:0px; background:#fff; }
+#modalPedido .input:focus,
+#modalVenta  .input:focus{ outline:2px solid #cfe7da; border-color:#b7d3c3; }
+#modalPedido .ta-right,
+#modalVenta  .ta-right{ text-align:right; }
+
+/* Items */
+#modalPedido .pedido-items,
+#modalVenta  .pedido-items{
+  border:1px solid #e6ece7; border-radius:0px; padding:14px; background:#fcfdfc;
+}
+#modalPedido .pedido-items__head,
+#modalVenta  .pedido-items__head{
+  display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;
+}
+#modalPedido .pedido-items__head h4,
+#modalVenta  .pedido-items__head h4{ margin:0; font-size:16px; font-weight:700; }
+
+#modalPedido .pedido-items__labels,
+#modalVenta  .pedido-items__labels{
+  display:grid; grid-template-columns: 1fr 100px 160px 160px 46px;
+  gap:10px; font-weight:600; color:var(--ink-2, #5c6f64); font-size:13px; margin-bottom:6px;
+}
+/* Para VENTA, si usás 3 columnas (Producto, Unitario, Subtotal), ajustá: */
+#modalVenta .pedido-items__labels{ grid-template-columns: 1fr 160px 160px 46px; }
+
+#modalPedido .pedido-items__list,
+#modalVenta  .pedido-items__list{
+  display:flex; flex-direction:column; gap:8px; max-height:45vh; overflow:auto; padding-right:2px;
+}
+#modalPedido .pedido-items__row,
+#modalVenta  .pedido-items__row{
+  display:grid; grid-template-columns: 1fr 100px 160px 160px 46px; gap:10px; align-items:center;
+}
+/* Para VENTA, filas sin “Cantidad”: */
+#modalVenta .pedido-items__row{ grid-template-columns: 1fr 160px 160px 46px; }
+
+/* Total */
+#modalPedido .pedido-items__footer,
+#modalVenta  .pedido-items__footer{
+  display:flex; justify-content:flex-end; align-items:center; gap:10px;
+  padding-top:10px; margin-top:12px; border-top:1px dashed #dfe7e2; font-size:15px;
+}
+
+/* Footer acciones */
+#modalPedido .modal-actions,
+#modalVenta  .modal-actions{ display:flex; justify-content:flex-end; gap:10px; padding:12px 0 6px; }
+
+/* Botones (scopeados) */
+#modalPedido .btn, #modalVenta .btn{ background:#2f6a4f; color:#fff; border:0; border-radius:0px; height:38px; padding:0 14px; font-weight:600; cursor:pointer; }
+#modalPedido .btn:hover, #modalVenta .btn:hover{ filter:brightness(.95); }
+#modalPedido .btn:disabled, #modalVenta .btn:disabled{ opacity:.55; cursor:not-allowed; }
+#modalPedido .btn-sec, #modalVenta .btn-sec{ background:#eef5f0; color:#214233; }
+#modalPedido .btn-sm,  #modalVenta .btn-sm{ height:32px; padding:0 10px; font-size:13px; border-radius:8px; }
+#modalPedido .btn-icon,#modalVenta .btn-icon{ display:inline-flex; align-items:center; justify-content:center; height:38px; width:38px; border-radius:10px; border:1px solid #e5ebe7; background:#fff; cursor:pointer; }
+#modalPedido .btn-icon:hover,#modalVenta .btn-icon:hover{ background:#f5faf7; }
+#modalPedido .btn-danger,#modalVenta .btn-danger{ color:#9a2a2a; border-color:#f1d5d5; }
+#modalPedido .btn-danger:hover,#modalVenta .btn-danger:hover{ background:#fdeeee; }
+
+/* Seguridad global */
+body.modal-open{ overflow:hidden; }
+
+
+/* ===== FIX definitivo para #modalVenta ===== */
+#modalVenta{
+  position: fixed !important;
+  inset: 0 !important;                 /* top/right/bottom/left = 0 */
+  display: grid !important;            /* centrado simple */
+  place-items: center !important;      /* centra el .modal */
+  background: rgba(0,0,0,.45) !important; /* oscurece fondo */
+  z-index: 2000 !important;            /* sobre todo */
+  padding: 16px !important;            /* respiración en mobile */
+}
+
+#modalVenta.hidden{ display: none !important; }
+
+#modalVenta .modal{
+  background: #fff !important;
+  width: min(900px, 96vw) !important;
+  max-height: 90vh !important;
+  overflow: auto !important;
+  margin: 0 !important;                /* evita offset a la izquierda */
+  box-shadow: 0 10px 40px rgba(0,0,0,.25) !important;
+  border-radius: 0 !important;
+}
+
+/* Ajuste de columnas para “Venta” (sin Cantidad) */
+#modalVenta .pedido-items__labels{ 
+  display:grid; grid-template-columns: 1fr 160px 160px 46px; gap:10px;
+}
+#modalVenta .pedido-items__row{
+  display:grid; grid-template-columns: 1fr 160px 160px 46px; gap:10px; align-items:center;
+}
+
+/* Seguridad: bloquear scroll del fondo (el JS ya lo setea) */
+body.modal-open{ overflow:hidden !important; }
+
+
+/* =========================================================
+   MODALES — ADAPTACIÓN 1366 × 768
+   Aplica a: #modalPedido, #modalVenta, #modalEditar
+   ========================================================= */
+@media (max-width: 1366px), (max-height: 768px){
+
+  /* Backdrop siempre centrado y bloqueando scroll de fondo */
+  #modalPedido,
+  #modalVenta,
+  #modalEditar{
+    position: fixed !important;
+    inset: 0 !important;
+    display: grid !important;
+    place-items: center !important;
+    background: rgba(0,0,0,.45) !important;
+    z-index: 2000 !important;
+    padding: 12px !important; /* respiración para pantallas más bajas */
+  }
+  body.modal-open{ overflow:hidden !important; }
+
+  /* Paneles (contenedor blanco) */
+  #modalPedido .modal,
+  #modalVenta  .modal,
+  #modalEditar .modal-dialog{
+    width: min(760px, 94vw) !important;   /* 900 → 760 para 1366 */
+    max-height: 90vh !important;          /* nunca se sale de viewport */
+    margin: 0 !important;
+    overflow: auto !important;
+    box-shadow: 0 10px 36px rgba(0,0,0,.22) !important;
+  }
+
+  /* Header compacto */
+  #modalPedido .modal-header,
+  #modalVenta  .modal-header,
+  #modalEditar .modal-header{
+    padding: 12px 14px !important;        /* 14/18 → 12/14 */
+  }
+  #modalPedido .modal-title,
+  #modalVenta  .modal-title,
+  #modalEditar .modal-header h3{
+    font-size: 17px !important;
+  }
+  #modalPedido .modal-close,
+  #modalVenta  .modal-close,
+  #modalEditar .modal-close{
+    font-size: 20px !important;
+    padding: 2px 4px !important;
+  }
+
+  /* Body compacto */
+  #modalPedido .modal-body,
+  #modalVenta  .modal-body,
+  #modalEditar .modal-body{
+    padding: 12px 14px 6px !important;    /* 16/18/6 → 12/14/6 */
+  }
+
+  /* Inputs/labels más bajos */
+  #modalPedido .input,
+  #modalVenta  .input,
+  #modalEditar .form-row input{
+    height: 34px !important;              /* 38 → 34 */
+    padding: 6px 10px !important;         /* 8/10 → 6/10 */
+  }
+  #modalPedido .field label,
+  #modalVenta  .field label,
+  #modalEditar .form-row label{
+    margin-bottom: 4px !important;        /* 6 → 4 */
+    font-size: 13px !important;
+  }
+
+  /* Grillas de cabecera del formulario (2 columnas) */
+  #modalPedido .form-two-cols,
+  #modalVenta  .form-two-cols{
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;                 /* 12 → 10 */
+    margin-bottom: 12px !important;       /* 14 → 12 */
+  }
+
+  /* Sección Items */
+  #modalPedido .pedido-items,
+  #modalVenta  .pedido-items{
+    padding: 12px !important;             /* 14 → 12 */
+  }
+  #modalPedido .pedido-items__head h4,
+  #modalVenta  .pedido-items__head h4{
+    font-size: 15px !important;
+  }
+
+  /* Etiquetas (cambia anchos de columnas para que entre cómodo) */
+  #modalPedido .pedido-items__labels{
+    grid-template-columns: 1fr 90px 140px 140px 40px !important; /* 100/160/160/46 → 90/140/140/40 */
+    gap: 8px !important;                                         /* 10 → 8 */
+    font-size: 12.5px !important;
+  }
+  #modalVenta .pedido-items__labels{
+    grid-template-columns: 1fr 150px 150px 40px !important;      /* Venta: sin Cantidad */
+    gap: 8px !important;
+    font-size: 12.5px !important;
+  }
+
+  /* Filas */
+  #modalPedido .pedido-items__row{
+    grid-template-columns: 1fr 90px 140px 140px 40px !important;
+    gap: 8px !important;
+    align-items: center !important;
+  }
+  #modalVenta .pedido-items__row{
+    grid-template-columns: 1fr 150px 150px 40px !important;
+    gap: 8px !important;
+  }
+
+  /* Altura útil del listado de ítems: calcula según viewport */
+  #modalPedido .pedido-items__list,
+  #modalVenta  .pedido-items__list,
+  #modalEditar #editItemsContainer{
+    max-height: clamp(260px, 52vh, 420px) !important;
+    overflow: auto !important;
+    padding-right: 2px !important;
+  }
+
+  /* Totales + acciones con menos aire */
+  #modalPedido .pedido-items__footer,
+  #modalVenta  .pedido-items__footer{
+    padding-top: 8px !important;
+    margin-top: 10px !important;
+    font-size: 14px !important;
+  }
+  #modalPedido .modal-actions,
+  #modalVenta  .modal-actions,
+  #modalEditar .modal-footer{
+    gap: 8px !important;
+    padding: 10px 14px 10px !important;
+  }
+
+  /* Botones, tamaño acorde */
+  #modalPedido .btn,
+  #modalVenta  .btn{
+    height: 36px !important;              /* 38 → 36 */
+    padding: 0 12px !important;           /* 14 → 12 */
+    font-size: 14px !important;
+  }
+  #modalPedido .btn-sm,
+  #modalVenta  .btn-sm{
+    height: 30px !important;
+    padding: 0 8px !important;
+    font-size: 12.5px !important;
+  }
+  #modalPedido .btn-icon,
+  #modalVenta  .btn-icon{
+    height: 34px !important;
+    width: 34px  !important;
+    border-radius: 8px !important;
+  }
+
+  /* Modal EDITAR: columnas de ítems algo más angostas */
+  #modalEditar .item-row{
+    grid-template-columns: 1fr 90px 140px 140px 32px !important; /* 100/160/160/36 → 90/140/140/32 */
+    gap: 8px !important;
+  }
+  #modalEditar .btn-mini{
+    height: 30px !important;
+    width: 30px  !important;
+    border-radius: 8px !important;
+  }
+}
+
