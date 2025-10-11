@@ -92,9 +92,7 @@
   async function apiGetPedidoItems(id) {
     if (typeof window.apiGetPedidoProductos === 'function')
       return window.apiGetPedidoProductos(id);
-    const r = await fetch(
-      `${APIB}/api/v1/pedidos/producto/${encodeURIComponent(id)}`
-    );
+    const r = await fetch(`${APIB}/api/v1/pedidos/producto/${encodeURIComponent(id)}`);
     if (r.status === 404) return [];
     if (!r.ok) throw new Error(`GET productos/${id} -> ${r.status}`);
     return r.json();
@@ -102,9 +100,7 @@
 
   // ---------- Normalizador ----------
   const normVenta = v => ({
-    idPedido: String(
-      v.id_pedido ?? v.idPedido ?? v.pedidoId ?? v.pedidoID ?? ''
-    ),
+    idPedido: String(v.id_pedido ?? v.idPedido ?? v.pedidoId ?? v.pedidoID ?? ''),
     cliente: v.cliente ?? v.nombreCliente ?? '—',
     fecha: v.fecha_entrega ?? v.fechaEntrega ?? v.fecha ?? null,
     total: Number(v.total) || 0,
@@ -117,8 +113,7 @@
     if (!tb) return;
 
     if (!Array.isArray(list) || !list.length) {
-      tb.innerHTML =
-        '<tr class="row-empty"><td colspan="6">Sin registros en el historial</td></tr>';
+      tb.innerHTML = '<tr class="row-empty"><td colspan="6">Sin registros en el historial</td></tr>';
       return;
     }
 
@@ -136,7 +131,7 @@
               </button>
             </td>
             <td>${v.tipo ?? '—'}</td>                                   <!-- Tipo de venta -->
-            <td>${money(v.total)}</td>         <!-- Total -->
+            <td>${money(v.total)}</td>                                  <!-- Total -->
           </tr>
         `;
       })
@@ -149,23 +144,16 @@
     const elM = document.getElementById('logTotalFiltrado');
     const inp = document.getElementById('logMes');
 
-    const totG = (Array.isArray(list) ? list : []).reduce(
-      (a, v) => a + (Number(v.total) || 0),
-      0
-    );
+    const totG = (Array.isArray(list) ? list : []).reduce((a, v) => a + (Number(v.total) || 0), 0);
 
     const now = new Date();
-    const [yy, mm] = (inp?.value ||
-      `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-    )
+    const [yy, mm] = (inp?.value || `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`)
       .split('-')
       .map(Number);
 
     const totM = (Array.isArray(list) ? list : []).reduce((a, v) => {
       const d = parse(v.fecha);
-      return !d || d.getFullYear() !== yy || d.getMonth() + 1 !== mm
-        ? a
-        : a + (Number(v.total) || 0);
+      return !d || d.getFullYear() !== yy || d.getMonth() + 1 !== mm ? a : a + (Number(v.total) || 0);
     }, 0);
 
     if (elG) elG.textContent = money(totG);
@@ -215,8 +203,7 @@
         .map(it => {
           const q = it.cantidad;
           const pu = it.precio;
-          const st =
-            it.sub == null || isNaN(Number(it.sub)) ? q * pu : Number(it.sub);
+          const st = it.sub == null || isNaN(Number(it.sub)) ? q * pu : Number(it.sub);
           t += st;
           return `
             <tr>
@@ -232,21 +219,20 @@
       total.textContent = money(t);
     } catch (err) {
       console.error(err);
-      body.innerHTML =
-        '<tr><td colspan="4">No se pudo cargar el detalle</td></tr>';
+      body.innerHTML = '<tr><td colspan="4">No se pudo cargar el detalle</td></tr>';
     }
   }
 
-  // ---------- Modal Agregar Venta (sin “Cantidad”) ----------
+  // ---------- Modal Agregar Venta (con “Cantidad”) ----------
   function setupVentaModal() {
     if (window.Ventas?.__boundVentaModal) return; // evita doble bind del modal
 
-    const modal = document.getElementById('modalVenta');
-    const form = document.getElementById('formVenta');
-    const addBtn = document.getElementById('addItemVentaBtn');
-    const list = document.getElementById('itemsContainerVenta');
-    const cancelar = document.getElementById('ventaCancelar');
-    const cerrar = document.getElementById('ventaCerrar');
+    const modal   = document.getElementById('modalVenta');
+    const form    = document.getElementById('formVenta');
+    const addBtn  = document.getElementById('addItemVentaBtn');
+    const list    = document.getElementById('itemsContainerVenta');
+    const cancelar= document.getElementById('ventaCancelar');
+    const cerrar  = document.getElementById('ventaCerrar');
     const totalEl = document.getElementById('totalVenta');
 
     if (!modal || !form || !list || !totalEl) {
@@ -275,53 +261,36 @@
 
     // Bind directo si el botón existe ya
     const openBtn = document.getElementById('btnAgregarVenta');
-    if (openBtn) openBtn.onclick = e => {
-      e.preventDefault();
-      open();
-    };
+    if (openBtn) openBtn.onclick = e => { e.preventDefault(); open(); };
 
     // Delegación por si el botón se monta después o hay re-render
     const openDelegated = e => {
       const btn = e.target.closest('#btnAgregarVenta');
-      if (btn) {
-        e.preventDefault();
-        open();
-      }
+      if (btn) { e.preventDefault(); open(); }
     };
     document.addEventListener('click', openDelegated);
 
-    cancelar && (cancelar.onclick = e => {
-      e.preventDefault();
-      close();
-    });
-    cerrar && (cerrar.onclick = e => {
-      e.preventDefault();
-      close();
-    });
+    cancelar && (cancelar.onclick = e => { e.preventDefault(); close(); });
+    cerrar   && (cerrar.onclick   = e => { e.preventDefault(); close(); });
 
     // Cerrar por click en el fondo
-    modal.addEventListener('click', e => {
-      if (e.target === modal) close();
-    });
+    modal.addEventListener('click', e => { if (e.target === modal) close(); });
 
     // Cerrar por ESC
-    const escHandler = e => {
-      if (e.key === 'Escape' && !modal.classList.contains('hidden')) close();
-    };
+    const escHandler = e => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) close(); };
     document.addEventListener('keydown', escHandler);
 
+    // ==== NUEVO: cálculo con CANTIDAD ====
     const recalcTotal = () => {
       let t = 0;
       list.querySelectorAll('.pedido-items__row').forEach(r => {
-        const pu =
-          Number(
-            String(
-              r.querySelector('[data-field="valorUnitario"]').value || ''
-            )
-              .replace(/\./g, '')
-              .replace(/,/g, '.')
-          ) || 0;
-        t += pu; // sin cantidad: subtotal = unitario
+        const qty = Math.max(1, Number(r.querySelector('[data-field="cantidad"]')?.value || 0));
+        const pu  = Number(String(r.querySelector('[data-field="valorUnitario"]')?.value || '')
+                    .replace(/\./g, '').replace(/,/g, '.')) || 0;
+        const st  = qty * pu;
+        const $tl = r.querySelector('[data-field="totalLinea"]');
+        if ($tl) $tl.value = money(st);
+        t += st;
       });
       totalEl.textContent = money(t);
     };
@@ -332,72 +301,59 @@
       row.setAttribute('data-item', '');
       row.innerHTML = `
         <input class="input" data-field="producto" placeholder="Ej: Ramo artesanal" value="${pref.producto ?? ''}">
+        <input class="input ta-right" data-field="cantidad" type="number" min="1" step="1" value="${pref.cantidad ?? 1}">
         <input class="input ta-right" data-field="valorUnitario" inputmode="decimal" placeholder="0" value="${pref.precioUnitario ?? 0}">
-        <input class="input ta-right" data-field="totalLinea" value="${money(pref.precioUnitario ?? 0)}" readonly>
+        <input class="input ta-right" data-field="totalLinea" value="${money((pref.cantidad ?? 1) * (pref.precioUnitario ?? 0))}" readonly>
         <button type="button" class="btn-icon btn-danger" data-action="remove" title="Quitar">✕</button>
       `;
-      const $vu = row.querySelector('[data-field="valorUnitario"]');
-      const $tl = row.querySelector('[data-field="totalLinea"]');
-      const recalc = () => {
-        const pu = Number(String($vu.value || '').replace(/\./g, '').replace(/,/g, '.')) || 0;
-        $tl.value = money(pu);
-        recalcTotal();
-      };
+
+      const $qty = row.querySelector('[data-field="cantidad"]');
+      const $vu  = row.querySelector('[data-field="valorUnitario"]');
+
+      const recalc = () => recalcTotal();
+      $qty.addEventListener('input', recalc);
       $vu.addEventListener('input', recalc);
+
       row.querySelector('[data-action="remove"]').addEventListener('click', () => {
         row.remove();
         recalcTotal();
       });
+
       list.appendChild(row);
-      recalc();
+      recalcTotal();
     };
 
     // Botón “+ Producto”
     if (addBtn) {
-      addBtn.onclick = e => {
-        e.preventDefault();
-        addRow();
-      };
+      addBtn.onclick = e => { e.preventDefault(); addRow(); };
     } else {
       // fallback por delegación si ese botón cambia
       document.addEventListener('click', e => {
         const plus = e.target.closest('#addItemVentaBtn');
-        if (plus) {
-          e.preventDefault();
-          addRow();
-        }
+        if (plus) { e.preventDefault(); addRow(); }
       });
     }
 
     // Submit
     form.onsubmit = async e => {
       e.preventDefault();
-      const cliente = document.getElementById('ventaCliente')?.value?.trim();
+      const cliente      = document.getElementById('ventaCliente')?.value?.trim();
       const fechaEntrega = document.getElementById('ventaFecha')?.value;
-      const tipoVenta = document.getElementById('ventaTipo')?.value || 'PEDIDO';
+      const tipoVenta    = document.getElementById('ventaTipo')?.value || 'PEDIDO';
 
       const rows = [...list.querySelectorAll('[data-item]')];
       const items = rows
         .map(r => {
           const prod = r.querySelector('[data-field="producto"]').value.trim();
-          const pu =
-            Number(
-              String(
-                r.querySelector('[data-field="valorUnitario"]').value || ''
-              ).replace(/\./g, '').replace(/,/g, '.')
-            ) || 0;
-          return { producto: prod, cantidad: 1, precioUnitario: pu, subTotal: pu };
+          const qty  = Math.max(1, Number(r.querySelector('[data-field="cantidad"]').value || 0));
+          const pu   = Number(String(r.querySelector('[data-field="valorUnitario"]').value || '')
+                        .replace(/\./g, '').replace(/,/g, '.')) || 0;
+          return { producto: prod, cantidad: qty, precioUnitario: pu, subTotal: qty * pu };
         })
         .filter(it => it.producto && it.precioUnitario >= 0);
 
-      if (!cliente || !fechaEntrega) {
-        alert('Completá cliente y fecha.');
-        return;
-      }
-      if (!items.length) {
-        alert('Agregá al menos un producto.');
-        return;
-      }
+      if (!cliente || !fechaEntrega) { alert('Completá cliente y fecha.'); return; }
+      if (!items.length) { alert('Agregá al menos un producto.'); return; }
 
       const payload = { cliente, fechaEntrega, estado: 'ENTREGADO', tipoVenta, items };
 
@@ -439,8 +395,8 @@
     try {
       const data = await apiGetVentas();
       const arr = Array.isArray(data) ? data
-                 : Array.isArray(data?.content) ? data.content
-                 : [];
+               : Array.isArray(data?.content) ? data.content
+               : [];
       ventas = arr.map(normVenta).filter(v => v.idPedido);
 
       // asegurar mes actual en input y render con filtro
@@ -450,9 +406,7 @@
     } catch (err) {
       console.error(err);
       const tb = document.getElementById('tbodyHistorial');
-      if (tb)
-        tb.innerHTML =
-          '<tr class="row-empty"><td colspan="6">No se pudo cargar el historial</td></tr>';
+      if (tb) tb.innerHTML = '<tr class="row-empty"><td colspan="6">No se pudo cargar el historial</td></tr>';
       const g = document.getElementById('logTotalGeneral');
       if (g) g.textContent = money(0);
       const m = document.getElementById('logTotalFiltrado');

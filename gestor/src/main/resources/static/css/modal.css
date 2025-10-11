@@ -336,6 +336,69 @@ body.modal-open{ overflow:hidden; }
 body.modal-open{ overflow:hidden !important; }
 
 
+/* ====== OVERRIDE final para #modalVenta (CON Cantidad) ====== */
+/* Grid:  Producto | Cant. | Unitario | Subtotal | [X]  */
+#modalVenta .pedido-items__labels,
+#modalVenta .pedido-items__row{
+  display: grid;
+  /* achico Producto y hago caber todo en 1366px */
+  grid-template-columns: minmax(200px, 0.65fr) 92px 120px 130px 46px;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Alineaciones: números a la derecha */
+#modalVenta .pedido-items__labels > *:nth-child(2),
+#modalVenta .pedido-items__labels > *:nth-child(3),
+#modalVenta .pedido-items__labels > *:nth-child(4){
+  text-align: right;
+}
+#modalVenta .pedido-items__row [data-field="cantidad"],
+#modalVenta .pedido-items__row [data-field="valorUnitario"],
+#modalVenta .pedido-items__row [data-field="totalLinea"]{
+  text-align: right;
+}
+
+/* Evitar que Producto “empuje” la grilla */
+#modalVenta .pedido-items__row [data-field="producto"]{
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Botón quitar compacto */
+#modalVenta .pedido-items__row .btn-danger{
+  width: 46px;
+  height: 38px;
+  padding: 0;
+}
+
+/* Ajuste fino para pantallas 1366px */
+@media (max-width: 1400px){
+  #modalVenta .pedido-items__labels,
+  #modalVenta .pedido-items__row{
+    grid-template-columns: minmax(190px, 0.6fr) 86px 112px 120px 46px;
+  }
+}
+
+/* Mobile: apilar sin romper */
+@media (max-width: 680px){
+  #modalVenta .pedido-items__head{ display:none; }
+  #modalVenta .pedido-items__row{
+    grid-template-columns: 1fr 90px;
+    row-gap: 8px;
+  }
+  #modalVenta .pedido-items__row [data-field="valorUnitario"],
+  #modalVenta .pedido-items__row [data-field="totalLinea"],
+  #modalVenta .pedido-items__row .btn-danger{
+    grid-column: 1 / -1;
+    justify-self: end;
+    width: 220px;
+  }
+}
+
+
 /* =========================================================
    MODALES — ADAPTACIÓN 1366 × 768
    Aplica a: #modalPedido, #modalVenta, #modalEditar
@@ -501,4 +564,66 @@ body.modal-open{ overflow:hidden !important; }
     border-radius: 8px !important;
   }
 }
+
+
+/* ===== Ajustes finos para 1366 × 768 (o menor) ===== */
+@media (max-width: 1366px), (max-height: 768px){
+  /* Modal un poco más angosto para que nada desborde */
+  #modalVenta .modal{ width: min(880px, 96vw) !important; }
+  #modalPedido .modal{ width: min(880px, 96vw) !important; }
+
+  /* Top del formulario (si usás .venta-top) */
+  #modalVenta .venta-top{ grid-template-columns: 1fr 160px 160px; gap: 10px; }
+  #modalPedido .venta-top{ grid-template-columns: 1fr 160px 160px; gap: 10px; }
+
+  /* Etiquetas un pelín más compactas */
+  #modalVenta .pedido-items__labels,
+  #modalPedido .pedido-items__labels{ font-size: 12.5px; }
+
+  /* ===== Grilla de Productos: Producto | Cant. | Unitario | Subtotal | [X] ===== */
+  /* Achico “Producto” y compacto números para 1366 */
+  #modalVenta .pedido-items__labels,
+  #modalVenta .pedido-items__row{
+    grid-template-columns: minmax(190px, 0.60fr) 86px 112px 120px 44px !important;
+    gap: 8px;
+  }
+  /* Si también querés lo mismo en el modal de pedido/editar */
+  #modalPedido .pedido-items__labels,
+  #modalPedido .pedido-items__row{
+    grid-template-columns: minmax(190px, 0.60fr) 86px 112px 120px 44px;
+    gap: 8px;
+  }
+
+  /* Alineación y compactación de inputs numéricos */
+  #modalVenta .pedido-items__row [data-field="cantidad"],
+  #modalVenta .pedido-items__row [data-field="valorUnitario"],
+  #modalVenta .pedido-items__row [data-field="totalLinea"],
+  #modalPedido .pedido-items__row [data-field="cantidad"],
+  #modalPedido .pedido-items__row [data-field="valorUnitario"],
+  #modalPedido .pedido-items__row [data-field="totalLinea"]{
+    text-align: right;
+    height: 36px;            /* -2px */
+    padding: 6px 8px;        /* más compacto */
+  }
+
+  /* Evitar que “Producto” empuje */
+  #modalVenta .pedido-items__row [data-field="producto"],
+  #modalPedido .pedido-items__row [data-field="producto"]{
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Botón quitar más compacto */
+  #modalVenta .pedido-items__row .btn-danger,
+  #modalPedido .pedido-items__row .btn-danger{
+    width: 44px; height: 36px; padding: 0;
+  }
+
+  /* Línea de total con tipografía un toque menor */
+  #modalVenta .pedido-items__footer,
+  #modalPedido .pedido-items__footer{ font-size: 14px; }
+}
+
 
