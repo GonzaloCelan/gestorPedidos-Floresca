@@ -1,7 +1,8 @@
 /* ===========================
    RESUMEN DE PEDIDOS (Inicio)
    Scope: #view-dashboard
-   =========================== */
+   =========================== 
+*/
 
 /* KPIs */
 #view-dashboard .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
@@ -160,8 +161,8 @@ td .badge { transform: translateY(-1px); }
 #view-dashboard .tabla.pedidos td:nth-child(5){
   text-align: left;
 }
-#view-dashboard .tabla.pedidos th:nth-child(6),
-#view-dashboard .tabla.pedidos td:nth-child(6){
+#view-dashboard .tabla.pedidos th:last-child(6),
+#view-dashboard .tabla.pedidos td:last-child(6){
   text-align: left;
 }
 
@@ -208,6 +209,7 @@ td .badge { transform: translateY(-1px); }
 
 /* -------- Columna Acciones -------- */
 #view-dashboard .tabla.pedidos td:nth-child(6){
+	text-align:left;
   white-space: nowrap;
 }
 #view-dashboard .tabla.pedidos .action{
@@ -686,11 +688,9 @@ td .badge { transform: translateY(-1px); }
 
 @media screen and (max-width:1366px) and (max-height:768px) {
   /* Card: reducir top margin y ajustar max-height del scroll */
-  #view-dashboard .pedidos-card{
-    margin-top: 20px;
-  }
+  
   #view-dashboard .pedidos-card .tabla-scroll{
-    max-height: calc(100vh - 260px); /* más espacio para header y detalle */
+    max-height: 460px; /* más espacio para header y detalle */
     overflow: auto;
   }
 
@@ -700,23 +700,10 @@ td .badge { transform: translateY(-1px); }
   #view-dashboard .pedidos-card .tabla-scroll::-webkit-scrollbar-thumb:hover{ background:#d5e6df; }
 
   /* Tabla: fuente y paddings más compactos */
-  #view-dashboard .tabla.pedidos{ font-size: 0.9rem; table-layout: fixed; }
-  #view-dashboard .tabla.pedidos thead th{ padding: 8px 10px; font-size: 13px; }
-  #view-dashboard .tabla.pedidos tbody td{ padding: 8px 10px; font-size: 13px; }
-
-  /* Ajuste de columnas para evitar overflow (usar colgroup si existe) */
-  #view-dashboard .tabla.pedidos th:nth-child(1),
-  #view-dashboard .tabla.pedidos td:nth-child(1){ width: 60px; }
-  #view-dashboard .tabla.pedidos th:nth-child(2),
-  #view-dashboard .tabla.pedidos td:nth-child(2){ width: 28%; } /* Producto */
-  #view-dashboard .tabla.pedidos th:nth-child(3),
-  #view-dashboard .tabla.pedidos td:nth-child(3){ width: 16%; } /* Fecha */
-  #view-dashboard .tabla.pedidos th:nth-child(4),
-  #view-dashboard .tabla.pedidos td:nth-child(4){ width: 14%; } /* Estado */
-  #view-dashboard .tabla.pedidos th:nth-child(5),
-  #view-dashboard .tabla.pedidos td:nth-child(5){ width: 14%; } /* Total */
-  #view-dashboard .tabla.pedidos th:nth-child(6),
-  #view-dashboard .tabla.pedidos td:nth-child(6){ width: 10%; } /* Acciones */
+  #view-dashboard .tabla.pedidos{ font-size: 10px; table-layout: fixed; }
+  #view-dashboard .tabla.pedidos thead th{ padding: 8px 10px; font-size: 5px; }
+  #view-dashboard .tabla.pedidos tbody td{ padding: 8px 10px; font-size: 10px; }
+ 
 
   /* Producto: permitir ellipsis y que no rompa la grilla */
   #view-dashboard .tabla.pedidos td:nth-child(2){
@@ -727,13 +714,28 @@ td .badge { transform: translateY(-1px); }
   }
 
   /* Encabezado: mantener legible pero compacto */
-  #view-dashboard .tabla.pedidos thead{ position: sticky; top: 56px; } /* si hay header global */
-  #view-dashboard .tabla.pedidos thead th{ font-size: 13px; padding: 8px 10px; }
+  #view-dashboard .tabla.pedidos thead{ position: sticky; top: 0; z-index: 3;} 
+  #view-dashboard .tabla.pedidos thead th{ font-size: 12px; padding: 8px 10px; }
 
   /* Badges y botones más compactos */
   #view-dashboard .tabla.pedidos td:nth-child(4) .badge{ padding: 4px 8px; font-size: 11px; }
-  #view-dashboard .tabla.pedidos .btn-ico{ width: 30px; height: 30px; border-radius: 6px; }
+  #view-dashboard .tabla.pedidos .btn-ico{ width: 10px; height: 10px; border-radius: 0px; }
+  
+    #tablaPedidos{ table-layout:fixed; width:100%; }
 
+  /* Orden: Cliente, Producto, Fecha, Estado, Total, Acciones */
+  .tabla.pedidos col:nth-child(1){ width:16% !important; }           /* Cliente */
+  .tabla.pedidos col:nth-child(2){ width:16% !important; }           /* Producto */
+  .tabla.pedidos col:nth-child(3){ width:18% !important; }           /* Fecha */
+  .tabla.pedidos col:nth-child(4){ width:15% !important; }           /* Estado */
+  .tabla.pedidos col:nth-child(5){ width:15% !important; }           /* Total */
+  .tabla.pedidos col:nth-child(6){ width:14% !important; }           /* Acciones */
+
+#view-dashboard .btn-detalle {
+    padding: 2px 4px;
+    font-size: 8px;
+    gap: 6px;
+  }
   /* Evitar que botones y etiquetas forcen ancho: truncar con ellipsis */
   #view-dashboard .tabla.pedidos button,
   #view-dashboard .tabla.pedidos .btn,
@@ -754,7 +756,7 @@ td .badge { transform: translateY(-1px); }
 @media screen and (max-width:1366px) and (max-height:768px) {
   /* Panel: reducir padding, max-height y mejorar scroll */
   #view-dashboard #panelDetalle.detalle-card{
-    margin-top:20px;
+    margin-top:30px;
     padding:12px 14px 10px;
     max-height: calc(100vh - 120px); /* deja espacio para header y contornos */
     font-size:13px;

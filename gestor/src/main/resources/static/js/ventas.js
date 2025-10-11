@@ -136,7 +136,7 @@
               </button>
             </td>
             <td>${v.tipo ?? '—'}</td>                                   <!-- Tipo de venta -->
-            <td style="text-align:left">${money(v.total)}</td>         <!-- Total -->
+            <td>${money(v.total)}</td>         <!-- Total -->
           </tr>
         `;
       })

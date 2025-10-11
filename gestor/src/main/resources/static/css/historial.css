@@ -369,7 +369,17 @@ border:none;}
 
 
 /* 📐 Media query para pantallas 1366x768 */
-@media screen and (max-width: 1366px) and (max-height: 768px) {
+@media (max-width: 1366px), (max-height: 768px) {
+	
+	#view-log .btn-detalle {
+    padding: 2px 6px;
+    font-size: 8px;
+    gap: 6px;
+  }
+
+  #view-log .btn-detalle::before {
+    font-size: 16px;
+  }
   #view-log .kpi {
     box-shadow:
   rgba(48, 90, 70, 0.40) 5px 5px,
@@ -388,42 +398,38 @@ border:none;}
     font-size: 15px;
   }
   
-  #view-log .tabla.historial th:nth-child(1),
-  #view-log .tabla.historial td:nth-child(1) {
-    width: 50px;
-  }
-
-  #view-log .tabla.historial th:nth-child(2),
-  #view-log .tabla.historial td:nth-child(2) {
-    width: 120px;
-  }
-
-  #view-log .tabla.historial th:nth-child(3),
-  #view-log .tabla.historial td:nth-child(3) {
-    width: 20%;
-  }
-
-  #view-log .tabla.historial th:nth-child(4),
-  #view-log .tabla.historial td:nth-child(4) {
-    width: 25%;
-  }
-
-  #view-log .tabla.historial th:nth-child(5),
-  #view-log .tabla.historial td:nth-child(5) {
-    width: 120px;
-  }
-
-  #view-log .tabla.historial th:nth-child(6),
-  #view-log .tabla.historial td:nth-child(6) {
-    width: 120px;
-  }
+  #view-log .tabla.historial{ 
+  border-collapse: collapse;
+  border-spacing: 0;
+  width:800px;}
+  
+  #view-log .tabla.historial thead{ position:sticky; top:0; z-index:3;}
+	#view-log .tabla.historial thead th{font-size: 12px; padding: 8px 10px;}
+  
+  /* Orden: Cliente, Producto, Fecha, Estado, Total, Acciones */
+  #view-log .tabla.historial col:nth-child(1){ width:8% !important; }           /* Cliente */
+  #view-log .tabla.historial col:nth-child(2){ width:20% !important; }           /* Producto */
+  #view-log .tabla.historial col:nth-child(3){ width:22% !important; }           /* Fecha */
+  #view-log .tabla.historial col:nth-child(4){ width:12% !important; }           /* Estado */
+  #view-log .tabla.historial col:nth-child(5){ width:20% !important; }           /* Total */
+  #view-log .tabla.historial col:nth-child(6){ width:16% !important; }           /* Acciones */
+  
+  #view-log .historial-card .tabla-scroll{ max-height: 440px; overflow:auto; }
+  
+	#view-log .tabla.historial td:last-child{
+   text-align:left; font-variant-numeric:tabular-nums;}
+  
+    /* Tabla: fuente y paddings más compactos */
+  #view-log .tabla.historial{ font-size: 10px; table-layout: fixed; }
+  #view-log .tabla.historial tbody td{ padding: 8px 10px; font-size: 10px; }
 }
 
 /* ===== Adaptaciones específicas para 1366×768 ===== */
-@media screen and (max-width:1366px) and (max-height:768px) {
+@media  (max-width:1366px), (max-height:768px) {
+	
+	
   /* Panel: más acolchado y scroll controlado */
   #view-log #panelDetalleLog.detalle-card{
-    margin-top:16px;
     padding:14px;
     max-height: calc(100vh - 160px);
     font-size:13px;

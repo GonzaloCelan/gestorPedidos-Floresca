@@ -209,7 +209,7 @@
   /* Altura útil: cabe en 768px sin que se corte el thead */
   /* Ajusta esta fórmula si tu header/KPI/form cambian de alto. */
   #view-materiales .tabla-scroll{
-    max-height: calc(100vh - 320px);
+    max-height: 360px;
     /* 320px ≈ header + kpis + form + paddings en 1366x768 */
     overflow: auto;
   }
