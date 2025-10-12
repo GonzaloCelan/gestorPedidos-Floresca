@@ -702,7 +702,7 @@ td .badge { transform: translateY(-1px); }
   /* Tabla: fuente y paddings más compactos */
   #view-dashboard .tabla.pedidos{ font-size: 10px; table-layout: fixed; }
   #view-dashboard .tabla.pedidos thead th{ padding: 8px 10px; font-size: 5px; }
-  #view-dashboard .tabla.pedidos tbody td{ padding: 8px 10px; font-size: 10px; }
+  #view-dashboard .tabla.pedidos tbody td{ padding: 8px 10px; font-size: 11px; }
  
 
   /* Producto: permitir ellipsis y que no rompa la grilla */
@@ -733,7 +733,7 @@ td .badge { transform: translateY(-1px); }
 
 #view-dashboard .btn-detalle {
     padding: 2px 4px;
-    font-size: 8px;
+    font-size: 10px;
     gap: 6px;
   }
   /* Evitar que botones y etiquetas forcen ancho: truncar con ellipsis */

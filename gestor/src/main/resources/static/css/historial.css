@@ -373,7 +373,7 @@ border:none;}
 	
 	#view-log .btn-detalle {
     padding: 2px 6px;
-    font-size: 8px;
+    font-size: 10px;
     gap: 6px;
   }
 
@@ -421,7 +421,7 @@ border:none;}
   
     /* Tabla: fuente y paddings más compactos */
   #view-log .tabla.historial{ font-size: 10px; table-layout: fixed; }
-  #view-log .tabla.historial tbody td{ padding: 8px 10px; font-size: 10px; }
+  #view-log .tabla.historial tbody td{ padding: 8px 10px; font-size: 11px; }
 }
 
 /* ===== Adaptaciones específicas para 1366×768 ===== */
