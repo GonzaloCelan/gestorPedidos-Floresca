@@ -33,7 +33,7 @@
       return isNaN(d) ? null : d;
     });
 
-  let ventas = []; // [{idPedido, cliente, fecha, total, tipo}]
+  let ventas = []; // [{idVenta, idPedido, cliente, fecha, total, tipo}]
 
   // ---------- Helpers de mes / filtro ----------
   function setMesActualSiVacio() {
@@ -98,22 +98,30 @@
     return r.json();
   }
 
-  // ==== NUEVO: eliminar venta
-  async function apiDeleteVenta(id) {
-    const r = await fetch(`${APIB}/api/v1/ventas/${encodeURIComponent(id)}`, { method: 'DELETE' });
-    return r;
+  // ==== DELETE venta (con fallback opcional por pedido) ====
+  async function apiDeleteVentaPorIdVenta(idVenta) {
+    return fetch(`${APIB}/api/v1/ventas/${encodeURIComponent(idVenta)}`, { method: 'DELETE' });
+  }
+  async function apiBuscarIdVentaPorPedido(idPedido) {
+    // Usá este endpoint si lo tenés en tu backend; si no existe, devolverá 404 y seguimos.
+    const r = await fetch(`${APIB}/api/v1/ventas/by-pedido/${encodeURIComponent(idPedido)}`);
+    if (!r.ok) return null;
+    const data = await r.json().catch(() => null);
+    // Se espera { id: <idVenta> } o { idVenta: ... }
+    return data?.id ?? data?.idVenta ?? null;
   }
 
   // ---------- Normalizador ----------
   const normVenta = v => ({
-    idPedido: String(v.id_pedido ?? v.idPedido ?? v.pedidoId ?? v.pedidoID ?? ''), // usado como {id} en DELETE
+    idVenta : String(v.id ?? v.id_venta ?? v.ventaId ?? v.idVenta ?? ''),   // 👈 ID real de venta
+    idPedido: String(v.id_pedido ?? v.idPedido ?? v.pedidoId ?? v.pedidoID ?? ''), // pedido asociado
     cliente: v.cliente ?? v.nombreCliente ?? '—',
-    fecha: v.fecha_entrega ?? v.fechaEntrega ?? v.fecha ?? null,
-    total: Number(v.total) || 0,
-    tipo: v.tipo_venta ?? v.tipoVenta ?? v.tipo ?? '—',
+    fecha  : v.fecha_entrega ?? v.fechaEntrega ?? v.fecha ?? null,
+    total  : Number(v.total) || 0,
+    tipo   : v.tipo_venta ?? v.tipoVenta ?? v.tipo ?? '—',
   });
 
-  // ---------- Render tabla (6 columnas exactas) ----------
+  // ---------- Render tabla (6 columnas) ----------
   function renderTabla(list) {
     const tb = document.getElementById('tbodyHistorial');
     if (!tb) return;
@@ -124,38 +132,42 @@
     }
 
     tb.innerHTML = list
-      .map((v) => {
-        const id = v.idPedido ?? '';
+      .map(v => {
+        const idVenta  = v.idVenta || '';
+        const idPedido = v.idPedido || '';
         return `
-          <tr data-id="${id}">
-            
+          <tr data-id-venta="${idVenta}" data-id-pedido="${idPedido}">
+            <!-- # (botón eliminar) -->
             
 
-            <!-- Columna 12: Fecha -->
+            <!-- Fecha -->
             <td>${fmt(v.fecha)}</td>
 
-            <!-- Columna 2: Cliente -->
+            <!-- Cliente -->
             <td>${v.cliente ?? '—'}</td>
 
-            <!-- Columna 3: Detalle -->
+            <!-- Detalle -->
             <td>
-              <button type="button" class="btn-detalle" data-kind="venta" data-id="${id}">
+              <button type="button" class="btn-detalle" data-kind="venta" data-id="${idPedido}">
                 Ver detalle
               </button>
             </td>
 
-            <!-- Columna 4: Tipo -->
+            <!-- Tipo -->
             <td>${v.tipo ?? '—'}</td>
 
-            <!-- Columna 5: Total -->
+            <!-- Total -->
             <td>${money(v.total)}</td>
 			
-			<!-- Columna 6 (# → botón eliminar) -->
 			<td style="text-align:center">
-			              <button type="button" class="btn-icon btn-danger btn-del-venta" title="Eliminar" data-id="${id}">
+			              <button type="button"
+			                      class="btn-icon btn-danger btn-del-venta"
+			                      title="Eliminar"
+			                      data-id-venta="${idVenta}"
+			                      data-id-pedido="${idPedido}">
 			                <span class="material-symbols-rounded">delete</span>
 			              </button>
-			 </td>
+			</td>
           </tr>
         `;
       })
@@ -194,7 +206,7 @@
     // marcar fila activa (visual)
     const rows = document.querySelectorAll('#tbodyHistorial tr');
     rows.forEach(tr =>
-      tr.dataset.id === String(idPedido)
+      (tr.dataset.idPedido || tr.getAttribute('data-id-pedido')) === String(idPedido)
         ? tr.classList.add('is-active')
         : tr.classList.remove('is-active')
     );
@@ -213,8 +225,8 @@
       const items = (await apiGetPedidoItems(idPedido)).map(it => ({
         producto: it.producto ?? it.productoNombre ?? it.nombre ?? '—',
         cantidad: Number(it.cantidad) || 0,
-        precio: Number(it.precioUnit ?? it.precioUnitario) || 0,
-        sub: it.subtotal ?? it.subTotal,
+        precio  : Number(it.precioUnit ?? it.precioUnitario) || 0,
+        sub     : it.subtotal ?? it.subTotal,
       }));
 
       if (!items.length) {
@@ -260,7 +272,6 @@
     const totalEl = document.getElementById('totalVenta');
 
     if (!modal || !form || !list || !totalEl) {
-      // Si aún no están en DOM, reintenta al próximo frame
       requestAnimationFrame(setupVentaModal);
       return;
     }
@@ -268,7 +279,7 @@
     const open = () => {
       modal.classList.remove('hidden');
       modal.removeAttribute('aria-hidden');
-      document.body.style.overflow = 'hidden'; // bloquea scroll fondo
+      document.body.style.overflow = 'hidden';
       const firstInput = modal.querySelector('input, select, button');
       setTimeout(() => firstInput?.focus(), 0);
     };
@@ -283,11 +294,9 @@
       } catch {}
     };
 
-    // Bind directo si el botón existe ya
     const openBtn = document.getElementById('btnAgregarVenta');
     if (openBtn) openBtn.onclick = e => { e.preventDefault(); open(); };
 
-    // Delegación por si el botón se monta después o hay re-render
     const openDelegated = e => {
       const btn = e.target.closest('#btnAgregarVenta');
       if (btn) { e.preventDefault(); open(); }
@@ -297,14 +306,10 @@
     cancelar && (cancelar.onclick = e => { e.preventDefault(); close(); });
     cerrar   && (cerrar.onclick   = e => { e.preventDefault(); close(); });
 
-    // Cerrar por click en el fondo
     modal.addEventListener('click', e => { if (e.target === modal) close(); });
-
-    // Cerrar por ESC
     const escHandler = e => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) close(); };
     document.addEventListener('keydown', escHandler);
 
-    // ==== NUEVO: cálculo con CANTIDAD ====
     const recalcTotal = () => {
       let t = 0;
       list.querySelectorAll('.pedido-items__row').forEach(r => {
@@ -347,18 +352,15 @@
       recalcTotal();
     };
 
-    // Botón “+ Producto”
     if (addBtn) {
       addBtn.onclick = e => { e.preventDefault(); addRow(); };
     } else {
-      // fallback por delegación si ese botón cambia
       document.addEventListener('click', e => {
         const plus = e.target.closest('#addItemVentaBtn');
         if (plus) { e.preventDefault(); addRow(); }
       });
     }
 
-    // Submit
     form.onsubmit = async e => {
       e.preventDefault();
       const cliente      = document.getElementById('ventaCliente')?.value?.trim();
@@ -395,9 +397,7 @@
         close();
         await (window.Ventas?.cargar?.() || Promise.resolve());
 
-        // al guardar, quedate en el historial y mantené el filtro del mes seleccionado
         if (typeof window.switchViewAnimated === 'function') window.switchViewAnimated('log');
-        // re-render con filtro vigente
         renderTabla(filtrarPorMes(ventas));
         renderKPIs(ventas);
       } catch (err) {
@@ -406,7 +406,6 @@
       }
     };
 
-    // Exponer open/close y marcar modal bindeado
     window.Ventas = Object.assign({}, window.Ventas, {
       openVentaModal: open,
       closeVentaModal: close,
@@ -421,12 +420,11 @@
       const arr = Array.isArray(data) ? data
                : Array.isArray(data?.content) ? data.content
                : [];
-      ventas = arr.map(normVenta).filter(v => v.idPedido);
+      ventas = arr.map(normVenta).filter(v => v.idPedido || v.idVenta);
 
-      // asegurar mes actual en input y render con filtro
       setMesActualSiVacio();
-      renderTabla(filtrarPorMes(ventas));  // <-- TABLA SOLO DEL MES SELECCIONADO
-      renderKPIs(ventas);                   // KPIs: total general + mensual segun #logMes
+      renderTabla(filtrarPorMes(ventas));
+      renderKPIs(ventas);
     } catch (err) {
       console.error(err);
       const tb = document.getElementById('tbodyHistorial');
@@ -450,31 +448,41 @@
       openDetalleVenta(btn.dataset.id);
     });
 
-    // ==== NUEVO: eliminar venta (delegación)
+    // Eliminar venta
     document.addEventListener('click', async e => {
       const del = e.target.closest('.btn-del-venta');
       if (!del) return;
       e.preventDefault();
-      const id = del.dataset.id;
-      if (!id) return;
 
-      if (!confirm(`¿Eliminar la venta #${id}? Esta acción no se puede deshacer.`)) return;
+      const idVenta  = del.dataset.idVenta  || del.closest('tr')?.dataset.idVenta  || '';
+      const idPedido = del.dataset.idPedido || del.closest('tr')?.dataset.idPedido || '';
+
+      if (!idVenta && !idPedido) { alert('No se encontró el identificador de la venta.'); return; }
+      const label = idVenta ? `#${idVenta}` : `(por pedido #${idPedido})`;
+      if (!confirm(`¿Eliminar la venta ${label}? Esta acción no se puede deshacer.`)) return;
 
       del.disabled = true;
       try {
-        const res = await apiDeleteVenta(id);
+        let res;
+        if (idVenta) {
+          res = await apiDeleteVentaPorIdVenta(idVenta);
+        } else {
+          const resolvedId = await apiBuscarIdVentaPorPedido(idPedido);
+          if (!resolvedId) { alert('No se encontró el ID de venta para ese pedido.'); return; }
+          res = await apiDeleteVentaPorIdVenta(resolvedId);
+        }
+
         if (res.ok) {
-          // quitar de memoria
-          ventas = ventas.filter(v => v.idPedido !== String(id));
-          // quitar fila del DOM
+          // quitar de memoria (prioriza idVenta; si no, idPedido)
+          ventas = ventas.filter(v =>
+            (idVenta  && v.idVenta  !== String(idVenta)) ||
+            (!idVenta && v.idPedido !== String(idPedido))
+          );
           del.closest('tr')?.remove();
-          // re-render KPIs (y, por consistencia, refrescar tabla del mes)
           renderTabla(filtrarPorMes(ventas));
           renderKPIs(ventas);
-          // opcional: si usás algún toast(), llamalo acá
-          // toast?.('Venta eliminada.');
         } else if (res.status === 404) {
-          alert('La venta no existe (404).');
+          alert('La venta no existe (404). Verificá que estés enviando el ID de venta.');
         } else if (res.status === 409) {
           alert('No se puede eliminar: la venta tiene registros asociados.');
         } else {
@@ -488,7 +496,7 @@
       }
     });
 
-    // Cambio de mes: filtra tabla y recalcula KPIs
+    // Cambio de mes
     document.getElementById('logMes')?.addEventListener('change', () => {
       renderTabla(filtrarPorMes(ventas));
       renderKPIs(ventas);
@@ -505,43 +513,32 @@
 
   // ---------- Public + init ----------
   window.Ventas = Object.assign({}, window.Ventas, {
-    __inited: yaIniciado || false, // se pondrá en true tras primera carga
+    __inited: yaIniciado || false,
     cargar: cargarVentasYRender,
     aplicarFiltros: () => {
-      // por si te llaman desde index.js al cambiar de vista
       setMesActualSiVacio();
       renderTabla(filtrarPorMes(ventas));
       renderKPIs(ventas);
     },
   });
 
-  // hace visible el panel y carga datos
   (function init() {
-    // aseguro layout del split (detalle a la derecha)
     const split = document.querySelector('#view-log .dashboard-split');
     if (split) {
       split.style.display = 'grid';
+      // Usamos variables para que la media query pueda cambiar tamaños
       split.style.gridTemplateColumns = 'var(--log-list-width) var(--detail-log-width)';
       split.style.gap = '20px';
       split.style.alignItems = 'start';
     }
 
-    // bindear SIEMPRE el modal; protegido por flag interno
     setupVentaModal();
-
-    // eventos generales del historial (una sola vez)
     bind();
-
-    // por defecto, setear el mes actual en el input si está vacío
     setMesActualSiVacio();
 
-    // sólo la primera vez hacemos fetch + render
     if (!yaIniciado) {
-      cargarVentasYRender().finally(() => {
-        window.Ventas.__inited = true;
-      });
+      cargarVentasYRender().finally(() => { window.Ventas.__inited = true; });
     } else {
-      // si ya había datos, aplicar filtro con el mes actual/seleccionado
       window.Ventas.aplicarFiltros();
     }
   })();
@@ -549,3 +546,4 @@
   // Integra con index.js (cuando cambias a “Historial”)
   window.aplicarFiltrosLogs = () => window.Ventas.aplicarFiltros();
 })();
+
