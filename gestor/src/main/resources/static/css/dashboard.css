@@ -3,9 +3,11 @@
 /* ===== Layout: 2/3 (tabla) | detalle fijo ===== */
 :root{
   --detail-width: 420px;
+  --detail-log-width: 520px;
   --detail-min: 320px;
   --split-gap: 20px;
-  --shadow: rgba(0,0,0,0.08) 0 6px 18px; /* o el valor que uses */
+  --shadow: rgba(0,0,0,0.08) 0 6px 18px; 
+  --log-list-width: 1000px;
 }
 
 #view-dashboard .dashboard-split{
@@ -20,16 +22,20 @@
   min-width: 0;
 }
 /* cards de la columna izquierda (tabla / historial) */
-#view-dashboard .dashboard-split .pedidos-card,
-#view-dashboard .dashboard-split .historial-card{
+#view-dashboard .dashboard-split .pedidos-card{
   grid-column:1 / 2;
   min-width:0;                 /* IMPORTANTÍSIMO: permite que la tabla encoja */
   overflow:hidden;             /* evita que algo ancho rompa la grilla */
 }
 
+/*#view-dashboard .historial-card{
+	width:400px;
+  	min-width:0;                 /* IMPORTANTÍSIMO: permite que la tabla encoja */
+  	/*overflow:hidden;             /* evita que algo ancho rompa la grilla */
+/*}
+
 /* panel derecho fijo */
-#panelDetalle.dash-detail,
-#panelDetalleLog.dash-detail{
+#panelDetalle.dash-detail{
   grid-column: 2 / 3;
   margin-top: 30px;
   width: auto !important;       /* antes: var(--detail-width) */
@@ -38,11 +44,53 @@
   border: none;
 }
 
+#panelDetalleLog.dash-detail{
+  margin-top: 30px;
+  width: 100px;       /* antes: var(--detail-width) */
+  box-shadow: var(--shadow);
+  border: none;
+}
 
 /* Para que la tabla sí se achique dentro de la card */
-#view-dashboard .historial-card .table-wrap{ overflow:auto; max-width:100%; }
+/*#view-dashboard .historial-card .table-wrap{ overflow:auto; max-width:100%; }
 #view-dashboard .historial-card table{ width:100%; table-layout:fixed; }
 #view-dashboard .historial-card th,
-#view-dashboard .historial-card td{ min-width:0; word-wrap:break-word; }
+#view-dashboard .historial-card td{ min-width:0; word-wrap:break-word; }*/
 
+
+#view-log .dashboard-split{
+  display:grid;
+  grid-template-columns: var(--log-list-width) var(--detail-log-width); /* antes: 2fr 1fr */
+  gap: var(--split-gap);
+  align-items:start;
+}
+
+#view-log .historial-card{
+  width: var(--log-list-width);                             
+  max-width: calc(100vw - var(--detail-log-width) - 64px);
+  justify-self: start;                     
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Tabla adentro del card */
+#view-log .historial-card .table-wrap{ overflow:auto; max-width:100%; }
+#view-log .historial-card table{ width:100%; table-layout:fixed; }
+#view-log .historial-card th,
+#view-log .historial-card td{
+  min-width:0; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;
+}
+
+/* Panel detalle derecho “normal” */
+#panelDetalleLog.dash-detail{ width: var(--detail-log-width); }
+
+@media  (max-width:1366px), (max-height:768px) {
+	
+	:root{
+    --log-list-width: 700px !important;   /* tabla */
+    --detail-log-width: 360px !important;     /* detalle */
+  }
+  
+  
+}
 

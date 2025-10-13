@@ -31,15 +31,13 @@
 
 /* Card de la tabla + scroll */
 #view-log .historial-card{
-	margin-top:20px;
+margin-top:20px;
   background:#fff;
   border:0px solid transparent;
   box-shadow:var(--shadow,0 1px 2px rgba(0,0,0,.04));
   border-radius:0px;
   overflow:hidden;
-  grid-column: 1 / 2 ;
-  width: 100% ;
-  max-width: 100% ;
+  /*grid-column: 1 / 2 ;*/
   min-width: 0 ;          
   justify-self: stretch ;
 }
@@ -52,7 +50,6 @@
 /* -------- Tabla principal -------- */
 #view-log .tabla.historial{
 	box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
-  width:100%;
   border-collapse:separate;
   border-spacing:0;
   table-layout:fixed;                  /* se adapta si agregás/sacás columnas */
@@ -90,23 +87,23 @@ border:none;}
 /* ---------- Anchos por columna (fallback si cambiás el <colgroup>) ---------- */
 /* 1) # */
 #view-log .tabla.historial th:nth-child(1),
-#view-log .tabla.historial td:nth-child(1){ width:64px; text-align:left; }
+#view-log .tabla.historial td:nth-child(1){  text-align:left; }
 /* 2) Fecha */
 #view-log .tabla.historial th:nth-child(2),
-#view-log .tabla.historial td:nth-child(2){ width:150px;text-align:left; }
+#view-log .tabla.historial td:nth-child(2){ text-align:left; }
 /* 3) Cliente */
 #view-log .tabla.historial th:nth-child(3),
-#view-log .tabla.historial td:nth-child(3){ width:22%; text-align:left;}
+#view-log .tabla.historial td:nth-child(3){ text-align:left;}
 /* 4) Producto (vive el botón) */
 #view-log .tabla.historial th:nth-child(4),
-#view-log .tabla.historial td:nth-child(4){ width:28%; text-align:left;}
+#view-log .tabla.historial td:nth-child(4){ text-align:left;}
 /* 5) Tipo de venta */
 #view-log .tabla.historial th:nth-child(5),
-#view-log .tabla.historial td:nth-child(5){ width:150px;text-align:left; }
+#view-log .tabla.historial td:nth-child(5){ text-align:left; }
 /* 6) Total */
 #view-log .tabla.historial th:nth-child(6),
 #view-log .tabla.historial td:nth-child(6){
-  width:150px; text-align:left; font-variant-numeric:tabular-nums;
+   text-align:left; font-variant-numeric:tabular-nums;
 }
 
 /* Zebra suave */
@@ -401,18 +398,18 @@ border:none;}
   #view-log .tabla.historial{ 
   border-collapse: collapse;
   border-spacing: 0;
-  width:800px;}
+  }
   
   #view-log .tabla.historial thead{ position:sticky; top:0; z-index:3;}
 	#view-log .tabla.historial thead th{font-size: 12px; padding: 8px 10px;}
   
   /* Orden: Cliente, Producto, Fecha, Estado, Total, Acciones */
-  #view-log .tabla.historial col:nth-child(1){ width:8% !important; }           /* Cliente */
-  #view-log .tabla.historial col:nth-child(2){ width:20% !important; }           /* Producto */
-  #view-log .tabla.historial col:nth-child(3){ width:22% !important; }           /* Fecha */
-  #view-log .tabla.historial col:nth-child(4){ width:12% !important; }           /* Estado */
-  #view-log .tabla.historial col:nth-child(5){ width:20% !important; }           /* Total */
-  #view-log .tabla.historial col:nth-child(6){ width:16% !important; }           /* Acciones */
+  #view-log .tabla.historial col:nth-child(1){ width:116px !important; }           /* Cliente */
+  #view-log .tabla.historial col:nth-child(2){ width:139px!important; }           /* Producto */
+  #view-log .tabla.historial col:nth-child(3){ width:123px !important; }           /* Fecha */
+  #view-log .tabla.historial col:nth-child(4){ width:123px !important; }           /* Estado */
+  #view-log .tabla.historial col:nth-child(5){ width:139px!important; }           /* Total */
+  #view-log .tabla.historial col:nth-child(6){ width:56px !important; }           /* Acciones */
   
   #view-log .historial-card .tabla-scroll{ max-height: 440px; overflow:auto; }
   

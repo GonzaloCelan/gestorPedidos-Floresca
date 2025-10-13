@@ -98,9 +98,15 @@
     return r.json();
   }
 
+  // ==== NUEVO: eliminar venta
+  async function apiDeleteVenta(id) {
+    const r = await fetch(`${APIB}/api/v1/ventas/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    return r;
+  }
+
   // ---------- Normalizador ----------
   const normVenta = v => ({
-    idPedido: String(v.id_pedido ?? v.idPedido ?? v.pedidoId ?? v.pedidoID ?? ''),
+    idPedido: String(v.id_pedido ?? v.idPedido ?? v.pedidoId ?? v.pedidoID ?? ''), // usado como {id} en DELETE
     cliente: v.cliente ?? v.nombreCliente ?? '—',
     fecha: v.fecha_entrega ?? v.fechaEntrega ?? v.fecha ?? null,
     total: Number(v.total) || 0,
@@ -118,20 +124,38 @@
     }
 
     tb.innerHTML = list
-      .map((v, i) => {
+      .map((v) => {
         const id = v.idPedido ?? '';
         return `
           <tr data-id="${id}">
-            <td style="text-align:center">${i + 1}</td>                 <!-- # -->
-            <td>${fmt(v.fecha)}</td>                                    <!-- Fecha -->
-            <td>${v.cliente ?? '—'}</td>                                <!-- Cliente -->
-            <td>                                                        <!-- Producto (botón) -->
+            
+            
+
+            <!-- Columna 12: Fecha -->
+            <td>${fmt(v.fecha)}</td>
+
+            <!-- Columna 2: Cliente -->
+            <td>${v.cliente ?? '—'}</td>
+
+            <!-- Columna 3: Detalle -->
+            <td>
               <button type="button" class="btn-detalle" data-kind="venta" data-id="${id}">
                 Ver detalle
               </button>
             </td>
-            <td>${v.tipo ?? '—'}</td>                                   <!-- Tipo de venta -->
-            <td>${money(v.total)}</td>                                  <!-- Total -->
+
+            <!-- Columna 4: Tipo -->
+            <td>${v.tipo ?? '—'}</td>
+
+            <!-- Columna 5: Total -->
+            <td>${money(v.total)}</td>
+			
+			<!-- Columna 6 (# → botón eliminar) -->
+			<td style="text-align:center">
+			              <button type="button" class="btn-icon btn-danger btn-del-venta" title="Eliminar" data-id="${id}">
+			                <span class="material-symbols-rounded">delete</span>
+			              </button>
+			 </td>
           </tr>
         `;
       })
@@ -418,11 +442,50 @@
   function bind() {
     if (window.Ventas?.__boundHistorialEvents) return; // evita doble bind
 
+    // Ver detalle
     document.addEventListener('click', e => {
       const btn = e.target.closest('.btn-detalle[data-kind="venta"]');
       if (!btn) return;
       e.preventDefault();
       openDetalleVenta(btn.dataset.id);
+    });
+
+    // ==== NUEVO: eliminar venta (delegación)
+    document.addEventListener('click', async e => {
+      const del = e.target.closest('.btn-del-venta');
+      if (!del) return;
+      e.preventDefault();
+      const id = del.dataset.id;
+      if (!id) return;
+
+      if (!confirm(`¿Eliminar la venta #${id}? Esta acción no se puede deshacer.`)) return;
+
+      del.disabled = true;
+      try {
+        const res = await apiDeleteVenta(id);
+        if (res.ok) {
+          // quitar de memoria
+          ventas = ventas.filter(v => v.idPedido !== String(id));
+          // quitar fila del DOM
+          del.closest('tr')?.remove();
+          // re-render KPIs (y, por consistencia, refrescar tabla del mes)
+          renderTabla(filtrarPorMes(ventas));
+          renderKPIs(ventas);
+          // opcional: si usás algún toast(), llamalo acá
+          // toast?.('Venta eliminada.');
+        } else if (res.status === 404) {
+          alert('La venta no existe (404).');
+        } else if (res.status === 409) {
+          alert('No se puede eliminar: la venta tiene registros asociados.');
+        } else {
+          const msg = (await res.text()).slice(0, 300);
+          alert('Error al eliminar: ' + (msg || res.status));
+        }
+      } catch (err) {
+        alert('Error de red al eliminar: ' + err.message);
+      } finally {
+        del.disabled = false;
+      }
     });
 
     // Cambio de mes: filtra tabla y recalcula KPIs
@@ -458,8 +521,8 @@
     const split = document.querySelector('#view-log .dashboard-split');
     if (split) {
       split.style.display = 'grid';
-      split.style.gridTemplateColumns = '1fr var(--detail-width, 420px)';
-      split.style.gap = '16px';
+      split.style.gridTemplateColumns = 'var(--log-list-width) var(--detail-log-width)';
+      split.style.gap = '20px';
       split.style.alignItems = 'start';
     }
 

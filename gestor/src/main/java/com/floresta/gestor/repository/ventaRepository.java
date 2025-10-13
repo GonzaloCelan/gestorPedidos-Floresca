@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import com.floresta.gestor.model.venta;
 
 @Repository
-public interface ventaRepository extends JpaRepository<venta , Long>{
+public interface ventaRepository extends JpaRepository<venta , Integer>{
 
 	Page<venta> findAllByOrderByFechaEntregaDesc(Pageable pageable);
 
