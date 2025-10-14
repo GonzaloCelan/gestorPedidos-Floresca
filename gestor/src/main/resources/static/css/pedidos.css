@@ -630,6 +630,13 @@ td .badge { transform: translateY(-1px); }
 #view-dashboard .ticket-total .label{ color:#4a5a50; }
 #view-dashboard .ticket-total .value{ font-variant-numeric: tabular-nums; }
 
+#panelDetalle .cell-product .name{font-weight:700;line-height:1.25}
+#panelDetalle .cell-product .unit,#panelDetalle .cell-product .qty{color:#6b7a73;font-size:13px;line-height:1.2}
+#panelDetalle .cell-sub{font-weight:800}
+
+#panelDetalle .mini-detalle col.col-producto { width:auto; }
+#panelDetalle .mini-detalle col.col-subtotal { width:168px; } /*
+
 
 @media screen and (max-width:1366px) and (max-height:768px) {
   /* contenedor general: más compacto y con gap reducido */
@@ -683,7 +690,7 @@ td .badge { transform: translateY(-1px); }
     }
     .kpi-value{ font-size: 24px; }
   }
-}
+
 
 
 @media screen and (max-width:1366px) and (max-height:768px) {
@@ -753,83 +760,282 @@ td .badge { transform: translateY(-1px); }
 }
 
 
-@media screen and (max-width:1366px) and (max-height:768px) {
-  /* Panel: reducir padding, max-height y mejorar scroll */
+@media screen and (max-width:1366px) and (max-height:768px){
+
+  /* ancho del panel de detalle */
+  :root{ --detail-width: 420px; }
+
+  /* Panel detalle compacto y con scroll interno */
   #view-dashboard #panelDetalle.detalle-card{
     margin-top:30px;
     padding:12px 14px 10px;
-    max-height: calc(100vh - 120px); /* deja espacio para header y contornos */
+    max-height: calc(100vh - 120px);
     font-size:13px;
     line-height:1.32;
+    min-width:0; max-width:100%;
+    overflow:auto; box-sizing:border-box;
   }
-
-  /* Título y meta más compactos */
   #view-dashboard #panelDetalle .card-title{
-    font-size:16px;
-    margin-bottom:6px;
+    font-size:16px; margin-bottom:6px;
   }
   #view-dashboard #panelDetalle .ticket-meta{
-    font-size:12px;
-    margin-bottom:10px;
+    font-size:12px; margin-bottom:10px;
   }
-
-  /* Tabla mini: paddings y fuentes reducidas para evitar overflow */
-  #view-dashboard .tabla.mini-detalle thead th{
-    padding:8px 10px;
-    font-size:12px;
-  }
-  #view-dashboard .tabla.mini-detalle tbody td{
-    padding:8px 10px;
-    font-size:13px;
-    white-space:nowrap;
-    text-overflow:ellipsis;
-    overflow:hidden;
-  }
-
-  /* Producto permite salto de línea pero con límite práctico */
-  #view-dashboard .tabla.mini-detalle th:first-child,
-  #view-dashboard .tabla.mini-detalle td:first-child{
-    white-space:normal;
-    word-break:break-word;
-    overflow-wrap:break-word;
-    max-width:100%;
-  }
-
-  /* Ajuste de reparto de ancho para evitar que columnas numéricas compriman texto */
-  #view-dashboard .tabla.mini-detalle th:first-child{ width:56%; }
-  #view-dashboard .tabla.mini-detalle th:nth-child(2){ width:11%; }
-  #view-dashboard .tabla.mini-detalle th:nth-child(3){ width:16%; }
-  #view-dashboard .tabla.mini-detalle th:nth-child(4){ width:17%; }
-
-  /* Números: tamaño y tabular-nums */
-  #view-dashboard .tabla.mini-detalle thead th:nth-child(2),
-  #view-dashboard .tabla.mini-detalle thead th:nth-child(3),
-  #view-dashboard .tabla.mini-detalle thead th:nth-child(4),
-  #view-dashboard .tabla.mini-detalle tbody td:nth-child(2),
-  #view-dashboard .tabla.mini-detalle tbody td:nth-child(3),
-  #view-dashboard .tabla.mini-detalle tbody td:nth-child(4){
-    font-size:13px;
-    font-variant-numeric: tabular-nums;
-  }
-
-  /* Separador y total: compacto y pegado */
   #view-dashboard .ticket-sep{ margin:10px 0; height:10px; }
-  #view-dashboard .ticket-total{
-    font-size:15px;
-    gap:8px;
-  }
+  #view-dashboard .ticket-total{ font-size:15px; gap:8px; }
   #view-dashboard .ticket-total .label{ font-size:14px; }
   #view-dashboard .ticket-total .value{ font-size:15px; }
 
-  /* Forzar que el panel no empuje la grid y permita scroll interno */
-  #view-dashboard #panelDetalle.detalle-card{ min-width:0; max-width:100%; overflow:auto; box-sizing:border-box; }
-
-  /* Asegurar que tablas y elementos internos no forcen ancho */
-  #view-dashboard #panelDetalle .tabla.mini-detalle,
-  #view-dashboard #panelDetalle .tabla.mini-detalle *{
-    box-sizing:border-box; min-width:0;
+  /* ===== Tabla del detalle ===== */
+  #view-dashboard .tabla.mini-detalle{
+    width:100%;
+    min-width:0;              /* evita apretar importes */
+    table-layout:fixed;           /* columnas estables */
+    border-collapse:collapse;
   }
 
-  /* Si el contenido sigue muy ancho, permitir scroll horizontal mínimo dentro del panel */
-  #view-dashboard #panelDetalle.detalle-card.force-x{ overflow-x:auto; }
+  /* Header: una sola línea, compacto */
+  #view-dashboard .tabla.mini-detalle thead th{
+    padding:6px 8px;
+    font-size:12px;
+    white-space:nowrap;
+    vertical-align:middle;
+  }
+
+  /* Celdas base */
+  #view-dashboard .tabla.mini-detalle tbody td{
+    padding:6px 8px;
+    font-size:11px;
+    vertical-align:middle;
+  }
+
+  /* Anchos por columna (sin colgroup) */
+  #view-dashboard .tabla.mini-detalle thead th:nth-child(1),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(1){ width:48%; }
+  #view-dashboard .tabla.mini-detalle thead th:nth-child(2),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(2){ width:10%; }
+  #view-dashboard .tabla.mini-detalle thead th:nth-child(3),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(3){ width:20%; }
+  #view-dashboard .tabla.mini-detalle thead th:nth-child(4),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(4){ width:22%; }
+
+  /* Columna 1 (Producto): hasta 2 líneas, sin cortar palabras raro */
+  #view-dashboard .tabla.mini-detalle tbody td:first-child{
+    white-space:normal;
+    word-break:normal;
+    overflow-wrap:anywhere;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+
+  /* Columnas numéricas: derecha, sin elipsis NI recorte */
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(2),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(3),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(4){
+    text-align:right;
+    white-space:nowrap;
+    font-variant-numeric:tabular-nums;
+    overflow:visible !important;
+    text-overflow:clip !important;
+  }
+  
+   /* Más espacio entre Cant. → Unit. → Subtot. */
+  #view-dashboard .tabla.mini-detalle thead th:nth-child(2),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(2){
+    padding-right: 6px;          /* cierra un poco Cant. */
+  }
+  #view-dashboard .tabla.mini-detalle thead th:nth-child(3),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(3){
+    padding-left: 16px;           /* abre espacio antes de Unit. */
+    padding-right: 6px;
+  }
+  #view-dashboard .tabla.mini-detalle thead th:nth-child(4),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(4){
+    padding-left: 18px;           /* abre espacio antes de Subtot. */
+  }
+
+  /* (opcional) separadores sutiles entre columnas numéricas */
+  #view-dashboard .tabla.mini-detalle thead th:nth-child(3),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(3),
+  #view-dashboard .tabla.mini-detalle thead th:nth-child(4),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(4){
+    border-left: 1px solid #eef2ef;   /* línea tenue (no suma ancho) */
+  }
+
+  /* mantenemos anchos que ya entran sin scroll lateral */
+  #view-dashboard .tabla.mini-detalle thead th:nth-child(1),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(1){ width:50%; }
+  #view-dashboard .tabla.mini-detalle thead th:nth-child(2),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(2){ width:12%; }
+  #view-dashboard .tabla.mini-detalle thead th:nth-child(3),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(3){ width:18%; }
+  #view-dashboard .tabla.mini-detalle thead th:nth-child(4),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(4){ width:20%; }
+}
+
+
+/* ====== 1366 x 768 (detalle sin superposición y con más separación) ====== */
+@media screen and (max-width:1366px) and (max-height:768px){
+
+  /* (si usás la var) un ancho cómodo para que entren los importes */
+  :root{ --detail-width: 420px; }
+
+  #view-dashboard .tabla.mini-detalle{
+    width:100%;
+    table-layout:fixed;      /* columnas fijas */
+    border-collapse:collapse;
+    min-width:0;             /* NO forzar scroll lateral */
+  }
+
+  /* Encabezado compacto y en una línea */
+  #view-dashboard .tabla.mini-detalle thead th{
+    padding:6px 8px;
+    font-size:12px;
+    white-space:nowrap;
+    vertical-align:middle;
+  }
+
+  /* Celdas base */
+  #view-dashboard .tabla.mini-detalle tbody td{
+    padding:6px 8px;
+    font-size:13px;
+    vertical-align:middle;
+  }
+
+  /* Reparto de ancho con más aire entre Cant./Unit./Subtot. */
+  #view-dashboard .tabla.mini-detalle thead th:nth-child(1),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(1){ width:44%; }
+
+  #view-dashboard .tabla.mini-detalle thead th:nth-child(2),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(2){
+    width:10%;
+    text-align:right;
+    white-space:nowrap;
+    padding-right:10px;      /* separación hacia Unit. */
+  }
+
+  #view-dashboard .tabla.mini-detalle thead th:nth-child(3),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(3){
+    width:22%;
+    text-align:right;
+    white-space:nowrap;
+    padding-left:16px;       /* separación desde Cant. */
+    padding-right:8px;
+    border-left:1px solid #eef2ef;
+  }
+
+  #view-dashboard .tabla.mini-detalle thead th:nth-child(4),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(4){
+    width:24%;
+    text-align:right;
+    white-space:nowrap;
+    padding-left:18px;       /* separación desde Unit. */
+    border-left:1px solid #eef2ef;
+  }
+
+  /* Evitar superposición: si no entra, recortar con elipsis (mejor que montarse) */
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(2),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(3),
+  #view-dashboard .tabla.mini-detalle tbody td:nth-child(4){
+    font-variant-numeric: tabular-nums;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+  }
+
+  /* Producto: hasta 2 líneas, sin cortar raro */
+  #view-dashboard .tabla.mini-detalle tbody td:first-child{
+    white-space:normal;
+    word-break:normal;
+    overflow-wrap:anywhere;
+    display:-webkit-box;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:2;
+    overflow:hidden;
+  }
+  
+  
+}
+
+
+/* ====== Fix 1366 × 768: Detalle del pedido (ticket look) ====== */
+@media screen and (max-width:1366px) and (max-height:768px){
+
+  /* Panel compacto */
+  #panelDetalle.detalle-card{
+    padding:12px;
+    font-size:13px;
+    line-height:1.32;
+    max-height:calc(100vh - 140px);
+    overflow:auto;
+  }
+  #panelDetalle .card-title{ font-size:16px; margin:0 0 6px }
+  #panelDetalle .ticket-meta{ font-size:12px; margin:0 0 8px; color:#6b7a73 }
+
+  /* Área scroll: que no tape la 2ª columna */
+  #panelDetalle .tabla-scroll{
+    max-height:min(420px, calc(100vh - 280px));
+    overflow-y:auto;
+    overflow-x:hidden;
+    padding-right:14px;              /* deja lugar al scroll */
+    scrollbar-gutter: stable both-edges;
+  }
+
+  /* Tabla y celdas: anchos + override de estilos globales */
+  #panelDetalle .mini-detalle{
+    table-layout:fixed;
+    width:100%;
+    border-collapse:collapse;
+  }
+  #panelDetalle .mini-detalle th,
+  #panelDetalle .mini-detalle td{
+    padding:10px 12px;
+    vertical-align:top;
+    line-height:1.25;
+    white-space:normal;              /* NO nowrap */
+    overflow:visible;                /* NO hidden */
+    text-overflow:clip;              /* NO ellipsis */
+  }
+  /* por si .tabla impone flex en celdas */
+  #panelDetalle .mini-detalle td{ display:table-cell !important; }
+
+  /* Columnas: 1) producto flexible  2) subtotal fijo y visible */
+  #panelDetalle .mini-detalle th:nth-child(1),
+  #panelDetalle .mini-detalle td:nth-child(1){
+    width:auto;
+    white-space:normal !important;
+    overflow:visible !important;
+    text-overflow:clip !important;
+    word-break:break-word;
+  }
+  #panelDetalle .mini-detalle th:nth-child(2),
+  #panelDetalle .mini-detalle td:nth-child(2){
+    min-width:180px;          /* subí a 180px si manejás importes largos */
+    width:180px;
+    text-align:right;
+    white-space:nowrap !important;
+    overflow:visible !important;
+    text-overflow:clip !important;
+    display:table-cell !important; /             /* moneda sin salto */
+  }
+
+  /* Bloque producto: 3 líneas apiladas, sin superposición */
+  #panelDetalle .cell-product{ padding-right:8px; }
+  #panelDetalle .cell-product .name{
+    display:block; font-weight:700; margin-bottom:2px; word-break:break-word;
+    /* Si querés limitar la altura, descomenta:
+       display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; */
+  }
+  #panelDetalle .cell-product .unit,
+  #panelDetalle .cell-product .qty{
+    display:block; font-size:12px; color:#6b7a73; line-height:1.15;
+  }
+
+  /* Subtotal destacado */
+  #panelDetalle .cell-sub{ font-weight:800; font-size:14px; }
+
+  /* Separador y total compactos */
+  #panelDetalle .ticket-sep{ margin:8px 0; border-top:1px dashed #e6ece7 }
+  #panelDetalle .ticket-total{ padding:10px 12px; font-size:14px }
 }

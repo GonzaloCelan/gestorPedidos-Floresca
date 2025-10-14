@@ -72,6 +72,31 @@ function loadOrderItems(){
   }catch{}
 }
 
+/* ======== NEW: Prioridad de estados + ordenador ======== */
+const PRIORIDAD_UI = { 'En proceso': 0, 'Pendiente': 1, 'Entregado': 2 };
+function fechaClave(p){
+  const d = parseISODateFlexible(p.updatedAt || p.fechaActualizacion || p.fechaEntrega || p.createdAt || p.creadoEn);
+  return d ? d.getTime() : 0;
+}
+function ordenarPedidos(list){
+  return [...list].sort((a,b)=>{
+    const pa = PRIORIDAD_UI[a.estado] ?? 9;
+    const pb = PRIORIDAD_UI[b.estado] ?? 9;
+    if (pa !== pb) return pa - pb;
+
+    // 1) Lo último tocado arriba (para que al pasar a EN PROCESO suba primero)
+    const ta = Number(a.__touch)||0;
+    const tb = Number(b.__touch)||0;
+    if (ta !== tb) return tb - ta;
+
+    // 2) Empate: orden por fecha de entrega (más próximo primero)
+    const fa = fechaClave(a);
+    const fb = fechaClave(b);
+    return fa - fb;
+  });
+}
+/* ======================================================= */
+
 /* -------- API -------- */
 async function apiGetPedidos(){
   const r = await fetch(`${API_BASE}${ENDPOINTS.LIST}`);
@@ -166,9 +191,16 @@ function renderTabla(list){
   const tbody = document.getElementById('tbodyPedidos');
   if(!tbody) return;
 
-  const mostrar = list.filter(p => p.estado==='Pendiente' || p.estado==='En proceso');
+  // Solo pendientes y en proceso, y ORDENADOS (En proceso primero)
+  /* === NEW: ordenar antes de pintar === */
+  const mostrar = ordenarPedidos(
+    list.filter(p => p.estado==='Pendiente' || p.estado==='En proceso')
+  );
+
   if(!mostrar.length){
     tbody.innerHTML = `<tr class="row-empty"><td colspan="6">Sin pedidos pendientes</td></tr>`;
+    // pequeño defer para gutter
+    setTimeout(refreshPedidosHeaderGutter, 0);
     return;
   }
 
@@ -184,7 +216,7 @@ function renderTabla(list){
     ` : `<span style="opacity:.6" title="Sin id">—</span>`;
 
     return `
-    <tr data-id="${id??''}">
+    <tr data-id="${id??''}" data-estado="${p.estado}"> <!-- NEW: data-estado útil para debug -->
       <td>${p.cliente ?? '—'}</td>
       <td>${prodCell}</td>
       <td>${fmtFecha(p.fechaEntrega)}</td>
@@ -193,32 +225,38 @@ function renderTabla(list){
       <td class="td-acciones">${accionesHTML}</td>
     </tr>`;
   }).join('');
+
+  // Ajuste del gutter tras repintar
+  setTimeout(refreshPedidosHeaderGutter, 0);
 }
 
-/* -------- PANEL DETALLE DERECHO -------- */
+/* -------- PANEL DETALLE DERECHO (ticket look) -------- */
 function ensureDetallePanelSkeleton(){
   const panel = document.getElementById('panelDetalle');
   if(!panel) return null;
 
-  // dejamos las clases existentes (incluye "detalle-card" del HTML)
-  panel.classList.add('detalle-card'); // asegura clase que tu CSS ya usa
+  // conserva diseño/base actual
+  panel.classList.add('detalle-card');
 
   panel.innerHTML = `
     <h4 class="card-title">Detalle del pedido</h4>
     <div id="detalleMeta" class="ticket-meta">Seleccioná un pedido para ver el detalle</div>
 
-    <div class="tabla-scroll"> <!-- opcional: si querés mismo wrapper -->
-      <table class="tabla mini-detalle" aria-label="Productos del pedido">
+    <div class="tabla-scroll">
+      <table class="tabla mini-detalle" aria-label="Productos del pedido" style="width:100%">
+	  
+	  	<colgroup>
+	          <col class="col-producto">
+	          <col class="col-subtotal">
+	    </colgroup>
         <thead>
           <tr>
-            <th style="width:55%">Producto</th>
-            <th style="width:10%">Cant.</th>
-            <th style="width:17%">Unitario</th>
-            <th style="width:18%">Subtotal</th>
+            <th>Producto</th>
+            <th class="sr-only">Subtotal</th> <!-- oculto: mantiene 2ª columna para alinear -->
           </tr>
         </thead>
         <tbody id="detalleBodyPanel">
-          <tr><td colspan="4">—</td></tr>
+          <tr><td colspan="2">—</td></tr>
         </tbody>
       </table>
     </div>
@@ -245,72 +283,65 @@ async function openDetallePanel(idEntrega){
   const tbodyEl = panel.querySelector('#detalleBodyPanel');
   const totalEl = panel.querySelector('#detalleTotalPanel');
 
-  tbodyEl.innerHTML = `<tr><td colspan="4">Cargando...</td></tr>`;
+  tbodyEl.innerHTML = `<tr><td colspan="2">Cargando...</td></tr>`;
   totalEl.textContent = moneyAR(0);
+
+  const paintRows = (rows) => {
+    if(!rows.length){
+      tbodyEl.innerHTML = `<tr><td colspan="2">Sin items</td></tr>`;
+      totalEl.textContent = moneyAR(0);
+      return;
+    }
+    let total = 0;
+    tbodyEl.innerHTML = rows.map(it=>{
+      const nombre = it.producto ?? it.nombre ?? it.descripcion ?? 'Producto';
+      const q  = Number(it.cantidad ?? it.qty ?? it.unidades) || 0;
+      const pu = Number(it.precioUnitario ?? it.unitario ?? it.precio ?? it.price) || 0;
+      const raw = (it.subTotal === undefined || it.subTotal === null) ? null : Number(it.subTotal);
+      const st  = (raw !== null && !isNaN(raw)) ? raw : (q * pu);
+      total += st;
+
+      return `
+        <tr class="ticket-row">
+          <td class="cell-product">
+            <div class="name">${nombre}</div>
+            <div class="unit">${moneyAR(pu)}</div>
+            <div class="qty">${q}</div>
+          </td>
+          <td class="cell-sub" style="text-align:right">${moneyAR(st)}</td>
+        </tr>
+      `;
+    }).join('');
+    totalEl.textContent = moneyAR(total);
+  };
 
   try{
     const serverItems = await apiGetPedidoProductos(idEntrega);
     const items = (serverItems || []).map(it => ({
-      producto:       it.producto ?? it.productoNombre ?? '—',
+      producto:       it.producto ?? it.productoNombre ?? it.nombre ?? it.descripcion ?? '—',
       cantidad:       Number(it.cantidad) || 0,
-      precioUnitario: Number(it.precioUnit ?? it.precioUnitario) || 0,
+      precioUnitario: Number(it.precioUnit ?? it.precioUnitario ?? it.precio ?? 0) || 0,
       subTotal:       (it.subtotal ?? it.subTotal)
     }));
 
-    orderItemsMap[idEntrega] = items; saveOrderItems();
+    // cache local
+    orderItemsMap[idEntrega] = items;
+    saveOrderItems();
 
-    if(!items.length){
-      tbodyEl.innerHTML = `<tr><td colspan="4">Sin items</td></tr>`;
-      totalEl.textContent = moneyAR(0);
-    }else{
-      let total = 0;
-      tbodyEl.innerHTML = items.map(it=>{
-        const q  = Number(it.cantidad) || 0;
-        const pu = Number(it.precioUnitario) || 0;
-        const raw = (it.subTotal === undefined || it.subTotal === null) ? null : Number(it.subTotal);
-        const st  = (raw !== null && !isNaN(raw)) ? raw : (q * pu);
-        total += st;
-        return `
-          <tr>
-            <td>${it.producto}</td>
-            <td style="text-align:right">${q}</td>
-            <td style="text-align:right">${moneyAR(pu)}</td>
-            <td style="text-align:right">${moneyAR(st)}</td>
-          </tr>
-        `;
-      }).join('');
-      totalEl.textContent = moneyAR(total);
-    }
+    paintRows(items);
   }catch(e){
     console.error(e);
     const cacheItems = Array.isArray(orderItemsMap[idEntrega]) ? orderItemsMap[idEntrega] : [];
     if(cacheItems.length){
-      let total = 0;
-      tbodyEl.innerHTML = cacheItems.map(it=>{
-        const q  = Number(it.cantidad)||0;
-        const pu = Number(it.precioUnitario)||0;
-        const raw = (it.subTotal === undefined || it.subTotal === null) ? null : Number(it.subTotal);
-        const st  = (raw !== null && !isNaN(raw)) ? raw : (q * pu);
-        total += st;
-        return `
-          <tr>
-            <td>${it.producto}</td>
-            <td style="text-align:right">${q}</td>
-            <td style="text-align:right">${moneyAR(pu)}</td>
-            <td style="text-align:right">${moneyAR(st)}</td>
-          </tr>
-        `;
-      }).join('');
-      totalEl.textContent = moneyAR(total);
+      paintRows(cacheItems);
     }else{
-      tbodyEl.innerHTML = `<tr><td colspan="4">No se pudo cargar el detalle</td></tr>`;
+      tbodyEl.innerHTML = `<tr><td colspan="2">No se pudo cargar el detalle</td></tr>`;
       totalEl.textContent = moneyAR(0);
     }
   }
 
   panel.classList.remove('oculto','hidden');
 }
-
 /* -------- INTERACCIONES (delegación) -------- */
 function bindInteractions(){
   if (document.__pedidosBound) return;
@@ -339,7 +370,7 @@ function bindInteractions(){
       const actual = txt.includes('Pendiente') ? 'Pendiente' : txt.includes('En proceso') ? 'En proceso' : 'Entregado';
       const siguiente = UI_NEXT[actual] || 'Pendiente';
 
-      // Optimista
+      // Optimista visual
       estadoBtn.innerHTML =
         siguiente==='Pendiente'  ? '<span class="badge badge--pendiente">Pendiente</span>' :
         siguiente==='En proceso' ? '<span class="badge badge--proceso">En proceso</span>' :
@@ -348,8 +379,14 @@ function bindInteractions(){
       try{
         await apiActualizarEstado(id, siguiente);
         const ix = pedidos.findIndex(p => String(resolveId(p)) === String(id));
-        if(ix >= 0) pedidos[ix].estado = siguiente;
-        if(siguiente === 'Entregado') renderTabla(pedidos);
+        if(ix >= 0){
+          pedidos[ix].estado = siguiente;
+          // === NEW: marcar toque al pasar a EN PROCESO para que suba arriba ===
+          if (siguiente === 'En proceso') pedidos[ix].__touch = Date.now();
+          if (siguiente === 'Entregado')  pedidos[ix].__touch = Date.now(); // por si querés usarlo luego
+        }
+        // === NEW: reordenar/repintar SIEMPRE tras cambio de estado ===
+        renderTabla(pedidos);
         renderKPIs(pedidos);
       }catch(err){
         // revertir
@@ -379,7 +416,8 @@ function bindInteractions(){
       try{
         await apiEliminarPedido(id);
         pedidos = pedidos.filter(p => String(resolveId(p)) !== String(id));
-        const tr = delBtn.closest('tr'); tr && tr.remove();
+        // Re-pintar completo para mantener orden/empty state correcto
+        renderTabla(pedidos);
         renderKPIs(pedidos);
       }catch(err){
         alert('No se pudo eliminar el pedido.');
@@ -495,7 +533,8 @@ function setupNuevoPedido(){
           fechaEntrega: data?.fechaEntrega ?? fechaEntrega,
           estado:       UI_FROM_WIRE[(data?.estado||'').toString().toUpperCase()] ?? 'Pendiente',
           total,
-          items: norm
+          items: norm,
+          __touch: Date.now() /* NEW: marca inicial para consistencia */
         });
 
         renderKPIs(pedidos);
@@ -681,6 +720,7 @@ function abrirModalEditarPedido(idEntrega){
         ped.fechaEntrega = fechaEntrega;
         ped.total = items.reduce((a,it)=> a + (Number(it.subTotal)||0), 0);
         ped.items = items;
+        ped.__touch = Date.now(); /* NEW: reflejar edición reciente */
       }
 
       renderTabla(pedidos);
@@ -748,13 +788,14 @@ function refreshPedidosHeaderGutter(){
         fechaEntrega: p.fechaEntrega,
         estado      : estadoUI,
         total,
-        items
+        items,
+        __touch     : parseISODateFlexible(p.updatedAt || p.fechaActualizacion)?.getTime() || 0 // NEW
       };
     });
 
     saveOrderItems();
     renderKPIs(pedidos);
-    renderTabla(pedidos);
+    renderTabla(pedidos); // orden dentro de render
   }catch(e){
     console.error(e);
     const tb = document.getElementById('tbodyPedidos');
@@ -764,4 +805,3 @@ function refreshPedidosHeaderGutter(){
   bindInteractions();
   setupNuevoPedido();
 })();
-
