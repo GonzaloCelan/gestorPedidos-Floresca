@@ -7,12 +7,21 @@
   --sb-w:12px; --sb-track:#e7efe9; --sb-thumb:#bcd1c6; --sb-thumb-hover:#9bb8aa;
   --ok:#2fa26a; --warn:#d9a441;
 }
-*{box-sizing:border-box} html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+*{box-sizing:border-box} 
 
+html, body{
+  height:100%;
+  width:100%;
+  margin:0;
+  padding:0;
+  background: var(--bg);
+  overflow-x: hidden;  
+  color:var(--ink);
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif     /* evita 1px de “sangrado” lateral */
+}
 .app{display:grid;grid-template-columns:280px minmax(0,1fr);min-height:100dvh}
-.main{padding:0;min-width:0}
-.panel{background:var(--panel);padding:28px 32px;border-left:1px solid #d8e3dc}
+.main{padding:0;width: 100%;min-height: 100%;}
+.panel{background:var(--panel);padding:28px 32px;border-left:0px solid #d8e3dc}
 .view-root{min-height:100vh}
 
 /* inputs/botones */
@@ -31,6 +40,24 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,
 .table::-webkit-scrollbar-track{background:var(--sb-track)}
 .table::-webkit-scrollbar-thumb{background:var(--sb-thumb)}
 .table::-webkit-scrollbar-thumb:hover{background:var(--sb-thumb-hover)}
+
+
+html{
+  /* reserva el canal del scrollbar aunque no esté visible */
+  scrollbar-gutter: stable both-edges;
+  background: var(--bg);
+}
+
+/* fallback para navegadores sin scrollbar-gutter */
+@supports not (scrollbar-gutter: stable) {
+  html{ overflow-y: scroll; }   /* fuerza scroll siempre */
+}
+
+body{ overflow-x: hidden; }     /* nada empuja a 100% */
+#root, #app, .app, .main, .view-root{ max-width:100%; }
+
+/* por si alguna tabla scrolleable genera “tijeretazo” en el borde derecho */
+.tabla-scroll{ scrollbar-gutter: stable both-edges; overflow-x:hidden; }
 
 /* ============ BOTÓN RECTO (sin border-radius) ============ */
 :root{
@@ -91,6 +118,62 @@ margin-top:70px;
 .button-30:active {
   box-shadow: #D6D6E7 0 3px 7px inset;
   transform: translateY(2px);
+}
+
+/* ---- SweetAlert2: tema minimal Floresca ---- */
+.swal2-container.swal2-backdrop-show{
+  background: rgba(31, 41, 55, .35) !important; /* overlay suave */
+  backdrop-filter: saturate(110%) blur(2px);
+}
+
+.swal2-popup.floresca{
+  width: min(420px, 92vw) !important;
+  padding: 16px 18px !important;
+  border-radius: 0px !important;
+  background: var(--panel);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+
+/* Icono pequeño y fino */
+.swal2-popup.floresca .swal2-icon{
+  width: 36px; height: 36px; margin: 6px auto 6px !important;
+  border-width: 2px;
+}
+.swal2-popup.floresca .swal2-icon .swal2-icon-content{ font-size: 18px; }
+
+/* Título y texto más sobrios */
+.swal2-popup.floresca .swal2-title{
+  font-size: 20px; font-weight: 800; letter-spacing: -.01em;
+  margin: 6px 0 2px !important;
+}
+.swal2-popup.floresca .swal2-html-container{
+  font-size: 14px; color: var(--ink-2);
+  margin: 0 0 12px !important;
+}
+
+/* Acciones compactas */
+.swal2-popup.floresca .swal2-actions{ gap: 8px; margin-top: 10px !important; }
+.swal2-popup.floresca .swal2-styled{
+  padding: 8px 14px !important; border-radius: 8px !important;
+  font-weight: 600; box-shadow: none; transition: transform .06s ease;
+}
+.swal2-popup.floresca .swal2-styled:active{ transform: translateY(1px); }
+
+.swal2-popup.floresca .swal2-confirm{
+  background: #9bb8aa !important; color: #fff !important; border: 0 !important; padding-left: 8px; padding-right: 8px;
+}
+.swal2-popup.floresca .swal2-cancel{
+  background: #f6f8f6 !important; color: var(--ink) !important;
+  border: 1px solid #e6ece7 !important;
+}
+
+/* Tamaño aún más contenido en 1366×768 */
+@media (max-width:1366px) and (max-height:768px){
+  .swal2-popup.floresca{ width: min(380px, 92vw) !important; padding: 14px 16px !important; }
+  .swal2-popup.floresca .swal2-title{ font-size: 18px; }
+  .swal2-popup.floresca .swal2-html-container{ font-size: 13px; }
+  .swal2-popup.floresca .swal2-styled{ padding: 7px 12px !important; }
 }
 
 /* =========================================================

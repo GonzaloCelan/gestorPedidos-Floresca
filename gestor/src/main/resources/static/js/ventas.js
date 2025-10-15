@@ -5,6 +5,13 @@
   const yaIniciado = !!window.Ventas?.__inited;
   const APIB = window.API_BASE || window.location.origin;
 
+  // === UTIL: fecha local (yyyy-mm-dd) sin UTC ===
+  function hoyLocalYMD(){
+    const d = new Date();
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().slice(0,10);
+  }
+
   // Usa utilidades existentes, sin redeclararlas
   const money =
     window.moneyAR ||
@@ -14,23 +21,28 @@
         currency: 'ARS',
       }).format(Number(n) || 0));
 
-  const fmt =
-    window.fmtFecha ||
-    (iso => {
-      if (!iso) return '—';
-      const d = new Date(iso);
-      if (isNaN(d)) return '—';
-      const dd = String(d.getDate()).padStart(2, '0');
-      const mm = String(d.getMonth() + 1).padStart(2, '0');
-      return `${dd}/${mm}/${d.getFullYear()}`;
-    });
-
+  // --- Parser robusto: trata 'yyyy-mm-dd' como fecha LOCAL ---
   const parse =
     window.parseISODateFlexible ||
     (v => {
       if (!v) return null;
+      if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v)) {
+        const [y,m,d] = v.split('-').map(Number);
+        return new Date(y, m - 1, d); // local midnight (no UTC)
+      }
       const d = new Date(v);
       return isNaN(d) ? null : d;
+    });
+
+  // Formateo dd/mm/yyyy usando el parser anterior
+  const fmt =
+    window.fmtFecha ||
+    (val => {
+      const d = parse(val);
+      if (!d) return '—';
+      const dd = String(d.getDate()).padStart(2, '0');
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      return `${dd}/${mm}/${d.getFullYear()}`;
     });
 
   let ventas = []; // [{idVenta, idPedido, cliente, fecha, total, tipo}]
@@ -103,11 +115,9 @@
     return fetch(`${APIB}/api/v1/ventas/${encodeURIComponent(idVenta)}`, { method: 'DELETE' });
   }
   async function apiBuscarIdVentaPorPedido(idPedido) {
-    // Usá este endpoint si lo tenés en tu backend; si no existe, devolverá 404 y seguimos.
     const r = await fetch(`${APIB}/api/v1/ventas/by-pedido/${encodeURIComponent(idPedido)}`);
     if (!r.ok) return null;
     const data = await r.json().catch(() => null);
-    // Se espera { id: <idVenta> } o { idVenta: ... }
     return data?.id ?? data?.idVenta ?? null;
   }
 
@@ -116,7 +126,7 @@
     idVenta : String(v.id ?? v.id_venta ?? v.ventaId ?? v.idVenta ?? ''),   // 👈 ID real de venta
     idPedido: String(v.id_pedido ?? v.idPedido ?? v.pedidoId ?? v.pedidoID ?? ''), // pedido asociado
     cliente: v.cliente ?? v.nombreCliente ?? '—',
-    fecha  : v.fecha_entrega ?? v.fechaEntrega ?? v.fecha ?? null,
+    fecha  : v.fecha_entrega ?? v.fechaEntrega ?? v.fecha ?? null, // aceptar 'yyyy-mm-dd'
     total  : Number(v.total) || 0,
     tipo   : v.tipo_venta ?? v.tipoVenta ?? v.tipo ?? '—',
   });
@@ -137,9 +147,6 @@
         const idPedido = v.idPedido || '';
         return `
           <tr data-id-venta="${idVenta}" data-id-pedido="${idPedido}">
-            <!-- # (botón eliminar) -->
-            
-
             <!-- Fecha -->
             <td>${fmt(v.fecha)}</td>
 
@@ -159,15 +166,15 @@
             <!-- Total -->
             <td>${money(v.total)}</td>
 			
-			<td style="text-align:center">
-			              <button type="button"
-			                      class="btn-icon btn-danger btn-del-venta"
-			                      title="Eliminar"
-			                      data-id-venta="${idVenta}"
-			                      data-id-pedido="${idPedido}">
-			                <span class="material-symbols-rounded">delete</span>
-			              </button>
-			</td>
+            <td style="text-align:center">
+              <button type="button"
+                      class="btn-icon btn-danger btn-del-venta"
+                      title="Eliminar"
+                      data-id-venta="${idVenta}"
+                      data-id-pedido="${idPedido}">
+                <span class="material-symbols-rounded">delete</span>
+              </button>
+            </td>
           </tr>
         `;
       })
@@ -276,10 +283,22 @@
       return;
     }
 
+    // Al abrir el modal, setear fecha LOCAL = hoy (y opcional max=hoy)
+    const prepararFecha = () => {
+      const fechaInp = document.getElementById('ventaFecha') || document.querySelector('input[name="fechaEntrega"]');
+      if (fechaInp) {
+        const hoy = hoyLocalYMD();
+        if (!fechaInp.value) fechaInp.value = hoy;
+        // Si no querés permitir futuras, dejá esto activo:
+        // fechaInp.max = hoy;
+      }
+    };
+
     const open = () => {
       modal.classList.remove('hidden');
       modal.removeAttribute('aria-hidden');
       document.body.style.overflow = 'hidden';
+      prepararFecha();
       const firstInput = modal.querySelector('input, select, button');
       setTimeout(() => firstInput?.focus(), 0);
     };
@@ -364,7 +383,7 @@
     form.onsubmit = async e => {
       e.preventDefault();
       const cliente      = document.getElementById('ventaCliente')?.value?.trim();
-      const fechaEntrega = document.getElementById('ventaFecha')?.value;
+      const fechaEntrega = (document.getElementById('ventaFecha') || document.querySelector('input[name="fechaEntrega"]'))?.value || hoyLocalYMD();
       const tipoVenta    = document.getElementById('ventaTipo')?.value || 'PEDIDO';
 
       const rows = [...list.querySelectorAll('[data-item]')];
@@ -381,6 +400,7 @@
       if (!cliente || !fechaEntrega) { alert('Completá cliente y fecha.'); return; }
       if (!items.length) { alert('Agregá al menos un producto.'); return; }
 
+      // fechaEntrega: string yyyy-mm-dd (sin UTC). El backend debe mapear a LocalDate.
       const payload = { cliente, fechaEntrega, estado: 'ENTREGADO', tipoVenta, items };
 
       try {
@@ -459,7 +479,22 @@
 
       if (!idVenta && !idPedido) { alert('No se encontró el identificador de la venta.'); return; }
       const label = idVenta ? `#${idVenta}` : `(por pedido #${idPedido})`;
-      if (!confirm(`¿Eliminar la venta ${label}? Esta acción no se puede deshacer.`)) return;
+	  const { isConfirmed } = await Swal.fire({
+	  	    title: '¿Eliminar esta venta?',
+	  		html: '<div style="font-size:18px;color:#d9a441;margin-bottom:6px">⚠️</div><div>Esta acción no se puede deshacer.</div>',
+	  	    text: 'Esta acción no se puede deshacer.',
+	  	    icon: undefined,
+	  	    showCancelButton: true,
+	  	    confirmButtonText: 'Eliminar',
+	  	    cancelButtonText: 'Cancelar',
+	  	    reverseButtons: true,
+	  	    focusCancel: true,
+	  	    buttonsStyling: false,
+	  		customClass: {
+	  		    popup: 'floresca'
+	  		  }// usamos nuestros estilos de CSS
+	  	  });
+	  	if (!isConfirmed) return;
 
       del.disabled = true;
       try {

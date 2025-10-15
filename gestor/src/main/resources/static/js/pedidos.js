@@ -412,7 +412,22 @@ function bindInteractions(){
     if(delBtn){
       e.preventDefault();
       const id = delBtn.dataset.id;
-      if(!confirm('¿Eliminar este pedido?')) return;
+	  const { isConfirmed } = await Swal.fire({
+	    title: '¿Eliminar este pedido?',
+		html: '<div style="font-size:18px;color:#d9a441;margin-bottom:6px">⚠️</div><div>Esta acción no se puede deshacer.</div>',
+	    text: 'Esta acción no se puede deshacer.',
+	    icon: undefined,
+	    showCancelButton: true,
+	    confirmButtonText: 'Eliminar',
+	    cancelButtonText: 'Cancelar',
+	    reverseButtons: true,
+	    focusCancel: true,
+	    buttonsStyling: false,
+		customClass: {
+		    popup: 'floresca'
+		  }// usamos nuestros estilos de CSS
+	  });
+	  if (!isConfirmed) return;
       try{
         await apiEliminarPedido(id);
         pedidos = pedidos.filter(p => String(resolveId(p)) !== String(id));
