@@ -57,7 +57,7 @@ body{ overflow-x: hidden; }     /* nada empuja a 100% */
 #root, #app, .app, .main, .view-root{ max-width:100%; }
 
 /* por si alguna tabla scrolleable genera “tijeretazo” en el borde derecho */
-.tabla-scroll{ scrollbar-gutter: stable both-edges; overflow-x:hidden; }
+/*.tabla-scroll{ scrollbar-gutter: stable both-edges; overflow-x:hidden; }
 
 /* ============ BOTÓN RECTO (sin border-radius) ============ */
 :root{

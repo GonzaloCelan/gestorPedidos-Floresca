@@ -220,7 +220,7 @@ td .badge { transform: translateY(-1px); }
   width: 32px; height: 32px;
   border-radius: 8px;
   background: #eef3ef;
-  border: 1px solid #dfe8e2;
+  border: 0px solid #dfe8e2;
   display: inline-grid; place-items: center;
   padding: 0;
 }

@@ -147,6 +147,28 @@
 #view-materiales .icon-btn.delete{ color:#b42318; border-color:#f0d4d2; }
 #view-materiales .icon-btn.delete:hover{ background:#fbeeee; border-color:#e9b7b4; }
 
+/* Materiales: icono eliminar rojo */
+.col-actions .btn-icon.danger .material-symbols-rounded{
+  color:#dc2626; /* rojo */
+  font-variation-settings: "FILL" 1, "wght" 600, "GRAD" 0, "opsz" 24; /* sólido */
+}
+.col-actions .btn-icon.danger:hover .material-symbols-rounded{
+  color:#b91c1c; /* rojo hover */
+  transform: scale(1.06);
+}
+
+/* (opcional) botón limpio y accesible */
+.col-actions .btn-icon.danger{
+  background:transparent;
+  border:0;
+  padding:4px 6px;
+  cursor:pointer;
+}
+.col-actions .btn-icon.danger:focus-visible{
+  outline:2px solid rgba(220,38,38,.4);
+  outline-offset:2px;
+}
+
 
 /* =========================================================
    MATERIALES — ADAPTACIÓN 1366 × 768

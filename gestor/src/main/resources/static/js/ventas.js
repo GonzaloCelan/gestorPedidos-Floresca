@@ -352,7 +352,7 @@
         <input class="input ta-right" data-field="cantidad" type="number" min="1" step="1" value="${pref.cantidad ?? 1}">
         <input class="input ta-right" data-field="valorUnitario" inputmode="decimal" placeholder="0" value="${pref.precioUnitario ?? 0}">
         <input class="input ta-right" data-field="totalLinea" value="${money((pref.cantidad ?? 1) * (pref.precioUnitario ?? 0))}" readonly>
-        <button type="button" class="btn-icon btn-danger" data-action="remove" title="Quitar">✕</button>
+        <button type="button" class="btn-icon danger" data-action="remove" title="Quitar"><span class="material-symbols-rounded">delete</span></button>
       `;
 
       const $qty = row.querySelector('[data-field="cantidad"]');

@@ -1,8 +1,10 @@
+
 (() => {
   const API_BASE = window.API_BASE ?? window.location.origin;
   const ENDPOINTS = {
-    LIST:  '/api/v1/materiales',
-    CREATE:'/api/v1/materiales'
+    LIST   : '/api/v1/materiales',
+    CREATE : '/api/v1/materiales',
+    DELETE : (id) => `/api/v1/materiales/${encodeURIComponent(id)}`
   };
 
   // Nodos
@@ -83,6 +85,15 @@
     try { return JSON.parse(text); } catch { return {}; }
   };
 
+  const apiDelete = async (id) => {
+    const res = await fetch(`${API_BASE}${ENDPOINTS.DELETE(id)}`, {
+      method:'DELETE',
+      headers:{ 'Accept':'application/json' }
+    });
+    if (!res.ok) throw new Error(`DELETE materiales: ${res.status}`);
+    return true;
+  };
+
   // Totales / render
   const calcTotals = (items) => items.reduce((acc, it) => acc + asNumber(it.precioTotal), 0);
 
@@ -97,15 +108,24 @@
       return (b.id??0) - (a.id??0);
     });
 
-    $tbody.innerHTML = sorted.map((it, idx) => `
+    // Columnas: Fecha | Material | Cantidad | Precio Unit. | Total | Proveedor | Acciones (eliminar)
+    $tbody.innerHTML = sorted.map((it) => `
       <tr data-id="${it.id ?? ''}">
-        <td>${it.id ?? (idx+1)}</td>
         <td>${fmtFecha(it.fecha)}</td>
         <td title="${it.material||''}">${it.material||'—'}</td>
         <td style="text-align:left">${asNumber(it.cantidad).toLocaleString('es-AR')}</td>
         <td style="text-align:left">${moneyAR(it.precioUnitario)}</td>
         <td style="text-align:left">${moneyAR(it.precioTotal)}</td>
         <td title="${it.proveedor||''}">${it.proveedor||'—'}</td>
+        <td class="col-actions" style="text-align:center">
+          ${
+            it.id
+              ? `<button class="btn-icon danger" data-action="del" title="Eliminar" aria-label="Eliminar material ${it.material}">
+                   <span class="material-symbols-rounded">delete</span>
+                 </button>`
+              : '—'
+          }
+        </td>
       </tr>
     `).join('');
   };
@@ -195,6 +215,46 @@
     }
   });
 
+  // Eliminar (delegado en tbody)
+  $tbody.addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-action="del"]');
+    if (!btn) return;
+
+    const $tr = btn.closest('tr');
+    const id = $tr?.dataset.id;
+    if (!id) {
+      alert('No se puede eliminar este registro (falta ID).');
+      return;
+    }
+    const nombre = $tr.querySelector('td:nth-child(2)')?.textContent?.trim() || 'este material';
+    const { isConfirmed } = await Swal.fire({
+		    title: '¿Eliminar este material?',
+			html: '<div style="font-size:18px;color:#d9a441;margin-bottom:6px">⚠️</div><div>Esta acción no se puede deshacer.</div>',
+		    text: 'Esta acción no se puede deshacer.',
+		    icon: undefined,
+		    showCancelButton: true,
+		    confirmButtonText: 'Eliminar',
+		    cancelButtonText: 'Cancelar',
+		    reverseButtons: true,
+		    focusCancel: true,
+		    buttonsStyling: false,
+			customClass: {
+			    popup: 'floresca'
+			  }// usamos nuestros estilos de CSS
+		  });
+		  if (!isConfirmed) return;
+
+    try {
+      await apiDelete(id);
+      // quitar del estado local y refrescar
+      MATERIALS_ALL = MATERIALS_ALL.filter(x => String(x.id) !== String(id));
+      applyFiltersAndRender();
+    } catch (err) {
+      console.error(err);
+      alert('No se pudo eliminar el material.');
+    }
+  });
+
   // Eventos de filtro
   $inMes.addEventListener('change', applyFiltersAndRender);
   if ($inSearch) {
@@ -219,3 +279,4 @@
 
   if (document.getElementById('view-materiales')) init();
 })();
+
