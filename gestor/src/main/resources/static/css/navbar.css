@@ -20,50 +20,61 @@
 /* -------- NAV -------- */
 :root{ --nav-pill-w:240px; }         /* ancho de la “píldora” activa/hover */
 
+/* === Fix de NAV (respetando tus clases) ===================== */
+/* 1) separación y alineado */
 .sidebar .nav{
-  display:flex; flex-direction:column; gap:4px; margin-top:8px;
-  align-items:flex-start;
+  display:flex; flex-direction:column; align-items:flex-start;
+  gap:14px;                    /* más aire entre Inicio / Materiales / Historial */
+  margin-top:10px;
 }
 
+/* 2) base del link: siempre píldora (evita el salto de borde redondo) */
 .sidebar .nav a{
   position:relative;
-  display:flex; 
+  display:flex; align-items:center;
   gap:10px;
   width:var(--nav-pill-w);
-  padding:12px 12px 12px 14px;
-  border-radius:0;
-  color:#fff; 
-  text-decoration:none; 
-  font-weight:600;
-  transition:background .18s ease, color .18s ease, box-shadow .18s ease;
-  white-space:nowrap;
-  padding-left:55px;
   margin-left:20px;
+  padding:12px 16px 12px 14px; /* leve ajuste de padding */
+  padding-left:55px;           /* respetamos tu indent original */
+  border-radius:9999px;        /* <- antes era 0: causaba “salto” */
+  color:#fff;
+  text-decoration:none;
+  font-weight:600;
+  transition: background .18s ease, color .18s ease, box-shadow .18s ease, transform .15s ease;
+  white-space:nowrap;
 }
 
+/* 3) icono */
 .sidebar .nav a .icon{
-  width:24px; height:24px; color:#fff;
-  display:inline-grid; place-items:center;
+  width:24px; height:24px; display:inline-grid; place-items:center;
+  color:currentColor;
 }
 
-/* Hover: mantiene el mismo ancho y posición */
-.sidebar .nav a:hover{
+/* 4) hover sutil en no-activos (sin mover nada) */
+.sidebar .nav a:hover:not(.active){
   background:#eef3ef;
-  border-radius:9999px 9999px 9999px 9999px;
+  color:#1f2937;
 }
 
-/* Activo: “píldora” blanca fija, sin mover el anchor */
+/* 5) activo: píldora blanca con sombra limpia */
 .sidebar .nav a.active{
-  background:#fff; color:#000;
-  border-radius:9999px 9999px 9999px 9999px;
-  box-shadow:0 6px 18px rgba(15,23,42,.08);
+  background:#fff;
+  color:#1f2937;
+  box-shadow:0 10px 22px rgba(48,90,70,.18);
 }
-.sidebar .nav a.active .icon{ color:#000; }
+.sidebar .nav a.active .icon{ color:#1f2937; }
+
+/* 6) barrita verde: sin “rayas” ni sombras extrañas */
 .sidebar .nav a.active::before{
   content:"";
-  position:absolute; left:-8px; top:50%; transform:translateY(-50%);
-   height:60%; background:#2f6a4f;
-  box-shadow:rgba(47,106,79,.35) 4px 0, rgba(47,106,79,.20) 8px 0, rgba(47,106,79,.10) 12px 0;
+  position:absolute;
+  left:-10px; top:50%; transform:translateY(-50%);
+  width:10px; height:26px;                  /* tamaño controlado */
+  background:#2f6a4f;
+  border-radius:9999px;
+  box-shadow:0 2px 0 rgba(0,0,0,.04);       /* sombra mínima (no en cadena) */
+  pointer-events:none;                      /* no interfiere con el click */
 }
 
 
@@ -86,73 +97,74 @@
 }
 
 
-@media (max-width: 1366px), (max-height: 768px) {
 
-  /* Si tu layout usa grid con aside+main, aseguramos la columna del aside
-     (si tu .app ya define columnas, este bloque no molesta) */
-  .app{
-    display: grid;
-    grid-template-columns: 236px 1fr; /* sidebar + contenido */
+/* ================== NAV — ajuste integral 1366×768 ================== */
+@media screen and (max-width:1366px) and (max-height:768px){
+
+  :root{
+    /* píldora más corta para esta resolución */
+    --nav-pill-w: 210px;
   }
 
-  /* Sidebar compacto (antes 280px) */
   .sidebar{
-    width: 236px;
-    min-width: 236px;
-    padding: 22px 0;                /* un poco menos alto que 28px */
-    border-right: 1px solid #e5e7eb;
-    box-shadow: 0 8px 24px rgba(18,40,33,.06);
+    width: 240px;                 /* más angosta para que todo respire */
+    padding: 20px 0;
   }
 
-  /* Logo proporcional */
-  .sidebar .logo{
-    gap: 8px;
-    padding: 4px 8px 12px;
-  }
-  .sidebar .logo img{
-    width: 72px;                    /* 86 → 72 */
-  }
-  .sidebar .logo .h1{
-    font-size: 22px;                /* 28 → 22 */
-    margin: 0;
-    font-weight: 800;
-  }
+  /* Logo + título */
+  .sidebar .logo{ gap: 10px; padding: 4px 8px 10px; }
+  .sidebar .logo img{ width: 64px; border-radius: 100px; }
+  .sidebar .logo .h1{ font-size: 26px; }
 
-  /* Navegación: paddings y tipografía compactos */
+  /* Lista y separación entre items */
   .sidebar .nav{
-    gap: 2px;                       /* 4 → 2 */
-    margin-top: 6px;
+    gap: 12px;                    /* espacio uniforme entre Inicio/Materiales/Historial */
+    margin-top: 8px;
+    align-items: flex-start;
   }
+
+  /* Enlaces: proporción compacta y sin saltos */
   .sidebar .nav a{
-  	margin-left:30px;
-  	padding-left:44px;
-  	padding-top:7px;
-  	padding-bottom:7px;
-    /*padding: 10px 10px 10px 12px;   /* 12/14 → 10/12 */
-    font-size: 14px;                /* ~0.9em del original */
+    width: var(--nav-pill-w);
+    margin-left: 16px;            /* antes 20px */
+    padding: 10px 14px;           /* altura más baja */
+    padding-left: 48px;           /* antes 55px: compensa icono */
+    border-radius: 9999px;        /* evita el “salto” de borde */
+    font-size: 15px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
+
+  /* Icono: más chico y alineado */
   .sidebar .nav a .icon{
-    width: 20px;                    /* 24 → 20 */
-    height: 20px;
+    width: 20px; height: 20px;
+    font-size: 18px;
+    color: currentColor;
+    display: inline-grid; place-items: center;
   }
-  
-  .sidebar .nav a:hover{
-   width:200px
-}
+
+  /* Hover sobrio en no activos */
+  .sidebar .nav a:hover:not(.active){
+    background: #eef3ef;
+    color: #1f2937;
+  }
+
+  /* Activo: píldora y sombra proporcionadas */
   .sidebar .nav a.active{
-  width:180px
-}
+    background: #fff;
+    color: #1f2937;
+    box-shadow: 0 8px 18px rgba(48,90,70,.16);
+  }
 
-
-  /* Barra activa: misma estética, menor “tira” a la izquierda */
+  /* Barrita verde: sin “rayas”, más fina y centrada */
   .sidebar .nav a.active::before{
-	
-    left: -6px;                     /* -8 → -6 */
-    width: 3px;                     /* 4 → 3 */
-    height: 56%;                    /* leve ajuste para verse igual */
-    box-shadow:
-      rgba(47,106,79,.35) 3px 0,s
-      rgba(47,106,79,.20) 6px 0,
-      rgba(47,106,79,.10) 9px 0;
+    left: -9px;                   /* alinea con el contorno del sidebar */
+    width: 9px;                   /* más fina */
+    height: 22px;                 /* proporcional a la nueva altura */
+    border-radius: 9999px;
+    background: #2f6a4f;
+    box-shadow: 0 2px 0 rgba(0,0,0,.04);
   }
 }
