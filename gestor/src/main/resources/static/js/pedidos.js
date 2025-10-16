@@ -104,6 +104,39 @@ async function apiGetPedidos(){
   return r.json();
 }
 
+function toastSuccessPill(msg = '¡Acción exitosa!'){
+  Swal.fire({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 1800,
+    backdrop: false,
+    iconHtml: `
+      <svg viewBox="0 0 24 24" class="toast-check" aria-hidden="true">
+        <circle cx="12" cy="12" r="12" fill="#2f6a4f"></circle>
+        <path d="M17 8.5l-6.1 6.2L7 10.8"
+              fill="none" stroke="#fff" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    `,
+    html: `<span class="toast-text">${msg}</span>`,
+    customClass: {
+      container: 'toast-container',
+      popup: 'toast-pill',
+      icon: 'toast-icon',
+      htmlContainer: 'toast-body'
+    },
+	didOpen: (popup) => {
+	      const cont = popup.parentElement; // .swal2-container
+	      cont.style.background = 'transparent';
+	      cont.style.backdropFilter = 'none';
+	      cont.style.pointerEvents = 'none';
+	      // por si hay una regla global rara:
+	      document.body.classList.remove('swal2-shown'); // asegúrate que sólo quede swal2-toast-shown
+	}
+  });
+}
+
 async function apiCrearPedido(payload){
   const r = await fetch(`${API_BASE}${ENDPOINTS.CREATE}`, {
     method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
@@ -554,6 +587,7 @@ function setupNuevoPedido(){
 
         renderKPIs(pedidos);
         renderTabla(pedidos);
+		toastSuccessPill('¡Agregaste un pedido!');
         document.getElementById('sonido-crear')?.play?.().catch(()=>{});
         try{ form.reset(); if(itemsCont) itemsCont.innerHTML=''; }catch{}
         closeModalPedido();

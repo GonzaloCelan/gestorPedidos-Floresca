@@ -1,37 +1,71 @@
 /* ===== Sidebar Floresca ===== */
 .sidebar{
   position: sticky; top:0; height:100dvh; overflow:auto;
-  width:280px; background:#fff; border-right:1px solid #e5e7eb;
+  width:280px; 
+  
   box-shadow:0 10px 30px rgba(18,40,33,.06);
   padding:28px 0;
+  background: #bcd1bb;
 }
 
-/* Logo */
+
+
 .sidebar .logo{
   display:flex; flex-direction:column; align-items:center; gap:10px;
   padding:6px 8px 14px;
 }
-.sidebar .logo img{ width:86px; height:auto; object-fit:contain; border-radius:0px;}
-.sidebar .logo .h1{ font-size:28px; font-weight:800; margin:2px 0 0; color:var(--ink); }
+.sidebar .logo img{ width:86px; height:auto; object-fit:contain; border-radius:100px }
+.sidebar .logo .h1{ font-size:28px; font-weight:800; margin:6px 0 0; color:#fff; }
 
-/* Nav */
-.sidebar .nav{ display:flex; flex-direction:column; gap:4px; margin-top:8px; }
+/* -------- NAV -------- */
+:root{ --nav-pill-w:240px; }         /* ancho de la “píldora” activa/hover */
+
+.sidebar .nav{
+  display:flex; flex-direction:column; gap:4px; margin-top:8px;
+  align-items:flex-start;
+}
+
 .sidebar .nav a{
-  position:relative; display:flex; align-items:center; gap:10px;
-  padding:12px 12px 12px 14px; border-radius:0px;
-  color:#475569; text-decoration:none; font-weight:600;
-  transition: background .18s ease, color .18s ease;
+  position:relative;
+  display:flex; 
+  gap:10px;
+  width:var(--nav-pill-w);
+  padding:12px 12px 12px 14px;
+  border-radius:0;
+  color:#fff; 
+  text-decoration:none; 
+  font-weight:600;
+  transition:background .18s ease, color .18s ease, box-shadow .18s ease;
+  white-space:nowrap;
+  padding-left:55px;
+  margin-left:20px;
 }
-.sidebar .nav a .icon{ width:24px; height:24px; color:#6b7a73; display:inline-grid; place-items:center; }
-.sidebar .nav a:hover{ background:#eef5f2; }
 
-.sidebar .nav a.active{ background:#eef5f2; color:#2f6a4f; }
-.sidebar .nav a.active .icon{ color:#2f6a4f; }
-.sidebar .nav a.active::before{
-  content:""; position:absolute; left:-8px; top:50%; transform:translateY(-50%);
-  width:4px; height:60%; background:#2f6a4f; border-radius:0 0px 0px 0;
-  box-shadow: rgba(47,106,79,.35) 4px 0, rgba(47,106,79,.20) 8px 0, rgba(47,106,79,.10) 12px 0;
+.sidebar .nav a .icon{
+  width:24px; height:24px; color:#fff;
+  display:inline-grid; place-items:center;
 }
+
+/* Hover: mantiene el mismo ancho y posición */
+.sidebar .nav a:hover{
+  background:#eef3ef;
+  border-radius:9999px 9999px 9999px 9999px;
+}
+
+/* Activo: “píldora” blanca fija, sin mover el anchor */
+.sidebar .nav a.active{
+  background:#fff; color:#000;
+  border-radius:9999px 9999px 9999px 9999px;
+  box-shadow:0 6px 18px rgba(15,23,42,.08);
+}
+.sidebar .nav a.active .icon{ color:#000; }
+.sidebar .nav a.active::before{
+  content:"";
+  position:absolute; left:-8px; top:50%; transform:translateY(-50%);
+   height:60%; background:#2f6a4f;
+  box-shadow:rgba(47,106,79,.35) 4px 0, rgba(47,106,79,.20) 8px 0, rgba(47,106,79,.10) 12px 0;
+}
+
 
 /* Responsive: colapsa a iconos */
 @media (max-width:900px){
@@ -90,21 +124,34 @@
     margin-top: 6px;
   }
   .sidebar .nav a{
-    padding: 10px 10px 10px 12px;   /* 12/14 → 10/12 */
+  	margin-left:30px;
+  	padding-left:44px;
+  	padding-top:7px;
+  	padding-bottom:7px;
+    /*padding: 10px 10px 10px 12px;   /* 12/14 → 10/12 */
     font-size: 14px;                /* ~0.9em del original */
   }
   .sidebar .nav a .icon{
     width: 20px;                    /* 24 → 20 */
     height: 20px;
   }
+  
+  .sidebar .nav a:hover{
+   width:200px
+}
+  .sidebar .nav a.active{
+  width:180px
+}
+
 
   /* Barra activa: misma estética, menor “tira” a la izquierda */
   .sidebar .nav a.active::before{
+	
     left: -6px;                     /* -8 → -6 */
     width: 3px;                     /* 4 → 3 */
     height: 56%;                    /* leve ajuste para verse igual */
     box-shadow:
-      rgba(47,106,79,.35) 3px 0,
+      rgba(47,106,79,.35) 3px 0,s
       rgba(47,106,79,.20) 6px 0,
       rgba(47,106,79,.10) 9px 0;
   }

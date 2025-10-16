@@ -7,27 +7,43 @@
   --sb-w:12px; --sb-track:#e7efe9; --sb-thumb:#bcd1c6; --sb-thumb-hover:#9bb8aa;
   --ok:#2fa26a; --warn:#d9a441;
 }
-*{box-sizing:border-box} 
 
-html, body{
+* { scrollbar-gutter: auto !important; box-sizing:border-box}
+
+body{
+	
   height:100%;
   width:100%;
   margin:0;
   padding:0;
-  background: var(--bg);
-  overflow-x: hidden;  
-  color:var(--ink);
+  background: #bcd1bb;
+  overflow: hidden;  
+  color:#1f2937;
   font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif     /* evita 1px de “sangrado” lateral */
 }
-.app{display:grid;grid-template-columns:280px minmax(0,1fr);min-height:100dvh}
+.app{display:grid;grid-template-columns:280px minmax(0,1fr);min-height:100dvh;
+	}
 .main{padding:0;width: 100%;min-height: 100%;}
-.panel{background:var(--panel);padding:28px 32px;border-left:0px solid #d8e3dc}
+
+.panel{
+background:var(--panel);
+padding:28px 32px;
+border-top-left-radius: 40px; 
+border-bottom-left-radius: 40px;
+border-top-right-radius: 40px; 
+border-bottom-right-radius: 40px;
+
+border-top:10px solid #bcd1bb;
+border-bottom: 10px solid #bcd1bb;
+border-right: 10px solid #bcd1bb;
+border-left: 10px solid #bcd1bb;
+}
 .view-root{min-height:100vh}
 
 /* inputs/botones */
-.input{width:100%;background:#fff;border:1px solid #e6ece7;border-radius:0;padding:12px 14px;outline:none}
+.input{width:100%;background:#fff;border:1px solid #e6ece7;border-radius: 9999px 9999px 9999px 9999px;padding:12px 14px;outline:none}
 .input:focus{box-shadow:var(--ring);border-color:transparent}
-.btn{background:var(--brand);color:#fff;border:0;border-radius:0;padding:12px 16px;font-weight:600;cursor:pointer}
+.btn{background:var(--brand);color:#fff;border:0;border-radius: 9999px 9999px 9999px 9999px;padding:12px 16px;font-weight:600;cursor:pointer}
 .btn-sec{background:#f6f8f6;border:1px solid #e6ece7;color:var(--ink)}
 .badge{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700}
 
@@ -42,22 +58,10 @@ html, body{
 .table::-webkit-scrollbar-thumb:hover{background:var(--sb-thumb-hover)}
 
 
-html{
-  /* reserva el canal del scrollbar aunque no esté visible */
-  scrollbar-gutter: stable both-edges;
-  background: var(--bg);
-}
 
-/* fallback para navegadores sin scrollbar-gutter */
-@supports not (scrollbar-gutter: stable) {
-  html{ overflow-y: scroll; }   /* fuerza scroll siempre */
-}
-
-body{ overflow-x: hidden; }     /* nada empuja a 100% */
 #root, #app, .app, .main, .view-root{ max-width:100%; }
 
-/* por si alguna tabla scrolleable genera “tijeretazo” en el borde derecho */
-/*.tabla-scroll{ scrollbar-gutter: stable both-edges; overflow-x:hidden; }
+
 
 /* ============ BOTÓN RECTO (sin border-radius) ============ */
 :root{
@@ -79,7 +83,7 @@ margin-top:70px;
   align-items: center;
   appearance: none;
   background-color: #FCFCFD;
-  border-radius: 0px;
+  border-radius: 9999px 9999px 9999px 9999px;
   border-width: 0;
   box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px,rgba(45, 35, 66, 0.3) 0 7px 13px -3px,#D6D6E7 0 -3px 0 inset;
   box-sizing: border-box;
@@ -129,7 +133,7 @@ margin-top:70px;
 .swal2-popup.floresca{
   width: min(420px, 92vw) !important;
   padding: 16px 18px !important;
-  border-radius: 0px !important;
+  border-radius: 10px !important;
   background: var(--panel);
   color: var(--ink);
   box-shadow: var(--shadow);
@@ -155,17 +159,92 @@ margin-top:70px;
 /* Acciones compactas */
 .swal2-popup.floresca .swal2-actions{ gap: 8px; margin-top: 10px !important; }
 .swal2-popup.floresca .swal2-styled{
-  padding: 8px 14px !important; border-radius: 8px !important;
+  padding: 8px 14px !important; border-radius: 10px !important;
   font-weight: 600; box-shadow: none; transition: transform .06s ease;
 }
 .swal2-popup.floresca .swal2-styled:active{ transform: translateY(1px); }
 
 .swal2-popup.floresca .swal2-confirm{
-  background: #9bb8aa !important; color: #fff !important; border: 0 !important; padding-left: 8px; padding-right: 8px;
+  background: #9bb8aa !important; color: #fff !important; border: 0 !important; padding-left: 8px; padding-right: 8px;padding-top: 8px; padding-bottom: 8px;
+  border-radius: 9999px 9999px 9999px 9999px;
 }
 .swal2-popup.floresca .swal2-cancel{
   background: #f6f8f6 !important; color: var(--ink) !important;
-  border: 1px solid #e6ece7 !important;
+  border: 1px solid #e6ece7 !important;padding-left: 8px; padding-right: 8px;padding-top: 8px; padding-bottom: 8px;
+  border-radius: 9999px 9999px 9999px 9999px;
+}
+
+/* Asegura que el container del toast NUNCA tenga fondo */
+.swal2-container.swal2-top-end{
+  background: transparent !important;
+  pointer-events: none; /* que no intercepte clics */
+}
+
+/* Margen para despegarlo del borde */
+.swal2-container.swal2-top-end > .swal2-popup{
+  margin-top: 10px;
+  margin-right: 10px;
+}
+
+/* sin overlay gris y sin capturar clicks */
+.toast-container { background: transparent !important; pointer-events: none; }
+
+/* margen top/right para despegarlo */
+.toast-container.swal2-top-end > .swal2-popup { margin-top: 10px; margin-right: 10px; }
+
+/* No overlay y sin capturar clics */
+.swal2-container.swal2-top-end.toast-container{
+  background: transparent !important;
+  backdrop-filter: none !important;
+  pointer-events: none !important; 
+}
+
+/* Píldora + posición */
+.swal2-container.swal2-top-end.toast-container > .swal2-popup.toast-pill{
+  margin-top: 10px;
+  margin-right: 10px;
+  border-radius: 9999px !important;
+  padding: 8px 14px !important;
+  min-width: 280px;
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #e8f2ec;
+  background: linear-gradient(180deg, #f7fdf9 0%, #f1fbf4 100%);
+  box-shadow: 0 8px 20px rgba(47,106,79,.12);
+}
+
+/* Icono redondo chico */
+.toast-icon,
+.toast-pill .swal2-icon{
+  border: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  margin: 0 8px 0 2px !important;
+  line-height: 0 !important;
+}
+.toast-check{ width: 20px; height: 20px; display: block; } /* ajusta 20–26px */
+
+/* Texto */
+.toast-body{
+  margin: 0 !important;
+  color: #5b6c61;
+  font-weight: 600;
+  font-size: 15px;
+}
+.toast-text{ vertical-align: middle; }
+
+@media (max-width: 1366px), (max-height: 768px){
+	.toast-floresca-title{
+	font-size: 10px;
+	}
+	.toast-floresca .swal2-icon{
+	 transform: scale(.60);
+	}
 }
 
 /* Tamaño aún más contenido en 1366×768 */
@@ -207,11 +286,11 @@ margin-top:70px;
   /* En conjunto con el CSS del sidebar “responsive” que ya te pasé,
      esto alinea perfecto el ancho del aside con el contenido. */
 
-  /* ——— Panel y main ——— */
+  
   .main{ min-width: 0; }
   .panel{
     padding: 20px 22px;          /* 28/32 → 20/22 */
-    border-left: 1px solid #d8e3dc;
+    /* border-left: 1px solid #d8e3dc;*/
   }
 
   /* ——— Títulos / encabezados ——— */

@@ -265,7 +265,40 @@
       body.innerHTML = '<tr><td colspan="4">No se pudo cargar el detalle</td></tr>';
     }
   }
-
+  
+  function toastSuccessPill(msg = '¡Acción exitosa!'){
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 1800,
+      backdrop: false,
+      // usamos iconHtml para reemplazar el icono por uno redondo con tilde
+      iconHtml: `
+        <svg viewBox="0 0 24 24" class="toast-check" aria-hidden="true">
+          <circle cx="12" cy="12" r="12" fill="#2f6a4f"></circle>
+          <path d="M17 8.5l-6.1 6.2L7 10.8"
+                fill="none" stroke="#fff" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      `,
+      html: `<span class="toast-text">${msg}</span>`,
+      customClass: {
+        container: 'toast-container',
+        popup: 'toast-pill',
+        icon: 'toast-icon',
+        htmlContainer: 'toast-body'
+      },
+	  didOpen: (popup) => {
+	  	      const cont = popup.parentElement; // .swal2-container
+	  	      cont.style.background = 'transparent';
+	  	      cont.style.backdropFilter = 'none';
+	  	      cont.style.pointerEvents = 'none';
+	  	      // por si hay una regla global rara:
+	  	      document.body.classList.remove('swal2-shown'); // asegúrate que sólo quede swal2-toast-shown
+	  	}
+    });
+  }
   // ---------- Modal Agregar Venta (con “Cantidad”) ----------
   function setupVentaModal() {
     if (window.Ventas?.__boundVentaModal) return; // evita doble bind del modal
@@ -420,6 +453,7 @@
         if (typeof window.switchViewAnimated === 'function') window.switchViewAnimated('log');
         renderTabla(filtrarPorMes(ventas));
         renderKPIs(ventas);
+		toastSuccessPill('¡Guardaste una venta!')
       } catch (err) {
         console.error(err);
         alert('No se pudo guardar la venta.');

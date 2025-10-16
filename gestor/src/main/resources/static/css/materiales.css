@@ -11,7 +11,7 @@
 
 /* Filtros (buscar / mes) */
 #view-materiales .header .input{
-  height:36px; padding:0 12px; border:1px solid #e6ece7; border-radius:0px;
+  height:36px; padding:0 12px; border:1px solid #e6ece7; border-radius: 9999px 9999px 9999px 9999px;
   background:#fff; outline:0; min-width:220px;
 }
 #view-materiales .header .input:focus{
@@ -20,7 +20,7 @@
 
 /* KPIs */
 #view-materiales .kpi{
-  background:#fff; border:1px solid #e6ece7; border-radius:0px;
+  background:#fff; border:1px solid #e6ece7; border-radius:10px;
   box-shadow:
   rgba(48, 90, 70, 0.40) 5px 5px,
   rgba(48, 90, 70, 0.30) 10px 10px,
@@ -37,7 +37,7 @@
   display:block; font-weight:600; color:#6b7a73; margin-bottom:6px;
 }
 #view-materiales #formMaterial .input{
-  width:100%; height:38px; padding:0 12px; border:1px solid #e6ece7; border-radius:0px;
+  width:100%; height:38px; padding:0 12px; border:1px solid #e6ece7; border-radius: 9999px 9999px 9999px 9999px;
   background:#fff; outline:0;
 }
 #view-materiales #formMaterial .input:focus{
@@ -45,7 +45,7 @@
 }
 #view-materiales #formMaterial .btn{
   display:inline-flex; align-items:center; gap:8px; height:38px;
-  padding:0 14px; border-radius:0px; border:1px solid #e6ece7;
+  padding:0 14px; border-radius: 9999px 9999px 9999px 9999px; border:1px solid #e6ece7;
   background:#fff; color:#2f6a4f; box-shadow:0 1px 0 rgba(16,24,20,.06);
   cursor:pointer; transition:.15s ease;
 }
@@ -54,11 +54,11 @@
 
 /* ===== Tabla en card ===== */
 #view-materiales .tabla-card{
-  background:#fff; border:0px solid #e6ece7; border-radius:0px;
+  background:#fff; border:0px solid #e6ece7; border-radius:10px;
   box-shadow:var(--shadow, 0 4px 16px rgba(0,0,0,.04));
 }
 #view-materiales .tabla-scroll{
-  overflow:auto; border-radius:0px; /* redondeo visual del scroll */
+  overflow:auto; border-radius:10px; /* redondeo visual del scroll */
   max-height: 460px;; /* ajustá si hace falta */
 }
 #view-materiales table.tabla{
@@ -139,7 +139,7 @@
 #view-materiales .icon-btn{
   --btn-size:32px; width:var(--btn-size); height:var(--btn-size);
   display:grid; place-items:center; padding:0;
-  background:#fff; border:1px solid #e6ece7; border-radius:0px;
+  background:#fff; border:1px solid #e6ece7; border-radius: 9999px 9999px 9999px 9999px;
   color:#2f6a4f; box-shadow:0 1px 0 rgba(16,24,20,.06);
   cursor:pointer; transition:.15s ease;
 }

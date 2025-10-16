@@ -16,7 +16,7 @@
 #modalPedido .modal{
   width: min(900px, 96vw);
   background: #fff;
-  border-radius: 0px;
+  border-radius: 10px;
   box-shadow: 0 10px 40px rgba(0,0,0,.25);
   overflow: hidden;
   transform: translateY(2px);
@@ -42,13 +42,13 @@
   display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;
 }
 #modalPedido .field label{ display:block; font-weight:600; margin-bottom:6px; color:#213a2c; }
-#modalPedido .input{ width:100%; height:38px; padding:8px 10px; border:1px solid #e4ebe6; border-radius:0px; background:#fff; }
+#modalPedido .input{ width:100%; height:38px; padding:8px 10px; border:1px solid #e4ebe6; border-radius: 9999px 9999px 9999px 9999px; background:#fff; }
 #modalPedido .input:focus{ outline:2px solid #cfe7da; border-color:#b7d3c3; }
 #modalPedido .ta-right{ text-align:right; }
 
 /* Items */
 #modalPedido .pedido-items{
-  border:1px solid #e6ece7; border-radius:0px; padding:14px; background:#fcfdfc;
+  border:1px solid #e6ece7; border-radius:10px; padding:14px; background:#fcfdfc;
 }
 #modalPedido .pedido-items__head{
   display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;
@@ -79,12 +79,12 @@
 }
 
 /* Botones (scopeados para no chocar) */
-#modalPedido .btn{ background:#2f6a4f; color:#fff; border:0; border-radius:0px; height:38px; padding:0 14px; font-weight:600; cursor:pointer; }
+#modalPedido .btn{ background:#2f6a4f; color:#fff; border:0; border-radius: 9999px 9999px 9999px 9999px; height:38px; padding:0 14px; font-weight:600; cursor:pointer; }
 #modalPedido .btn:hover{ filter:brightness(.95); }
 #modalPedido .btn:disabled{ opacity:.55; cursor:not-allowed; }
 #modalPedido .btn-sec{ background:#eef5f0; color:#214233; }
-#modalPedido .btn-sm{ height:32px; padding:0 10px; font-size:13px; border-radius:8px; }
-#modalPedido .btn-icon{ display:inline-flex; align-items:center; justify-content:center; height:38px; width:38px; border-radius:10px; border:1px solid #e5ebe7; background:#fff; cursor:pointer; }
+#modalPedido .btn-sm{ height:32px; padding:0 10px; font-size:13px; border-radius: 9999px 9999px 9999px 9999px; }
+#modalPedido .btn-icon{ display:inline-flex; align-items:center; justify-content:center; height:38px; width:38px; border-radius: 9999px 9999px 9999px 9999px; border:1px solid #e5ebe7; background:#fff; cursor:pointer; }
 #modalPedido .btn-icon:hover{ background:#f5faf7; }
 #modalPedido .btn-danger{ color:#9a2a2a; border-color:#f1d5d5; }
 #modalPedido .btn-danger:hover{ background:#fdeeee; }
@@ -115,7 +115,7 @@
 #modalEditar .modal-dialog{
   width: min(760px, 96vw);
   background:#fff;
-  border-radius:0px;
+  border-radius:10px;
   box-shadow:0 10px 40px rgba(0,0,0,.25);
   overflow:hidden;
   transform: translateY(2px);
@@ -125,6 +125,7 @@
 #modalEditar .modal-header{
   display:flex; align-items:center; justify-content:space-between;
   padding:14px 18px; border-bottom:1px solid #eef2ef;
+  border-radius: 10px
 }
 #modalEditar .modal-header h3{ margin:0; font-size:18px; font-weight:700; }
 #modalEditar .modal-close{
@@ -140,7 +141,7 @@
 #modalEditar .form-row{ display:flex; flex-direction:column; gap:6px; margin-bottom:12px; }
 #modalEditar .form-row label{ font-weight:600; color:#213a2c; }
 #modalEditar .form-row input{
-  width:100%; height:38px; padding:8px 10px; border:1px solid #e4ebe6; border-radius:0px; background:#fff;
+  width:100%; height:38px; padding:8px 10px; border:1px solid #e4ebe6; border-radius: 9999px 9999px 9999px 9999px; background:#fff;
 }
 #modalEditar .form-row input:focus{ outline:2px solid #cfe7da; border-color:#b7d3c3; }
 
@@ -166,11 +167,13 @@
 /* Botones (scopeados) */
 #modalEditar .btn-sec{
   background:#eef5f0; color:#214233; border:0; height:38px; padding:0 14px; font-weight:600; cursor:pointer;
+   border-radius: 9999px 9999px 9999px 9999px; font-size:13px
 }
 #modalEditar .btn-sec:hover{ filter:brightness(.97); }
 
 #modalEditar .btn-prim{
   background:#2f6a4f; color:#fff; border:0; height:38px; padding:0 14px; font-weight:600; cursor:pointer;
+   border-radius: 9999px 9999px 9999px 9999px;
 }
 #modalEditar .btn-prim:hover{ filter:brightness(.95); }
 
@@ -194,7 +197,8 @@ body.modal-open{ overflow:hidden; }
   align-items: center;
   justify-content: center;
   background: rgba(0,0,0,.45);
-  z-index: 1100; /* un poco más alto por seguridad */
+  z-index: 1100;
+  border-radius:10px; /* un poco más alto por seguridad */
 }
 #modalPedido.hidden,
 #modalVenta.hidden{ display: none !important; }
@@ -204,7 +208,7 @@ body.modal-open{ overflow:hidden; }
 #modalVenta .modal{
   width: min(900px, 96vw);
   background: #fff;
-  border-radius: 0px;
+  border-radius: 10px;
   box-shadow: 0 10px 40px rgba(0,0,0,.25);
   overflow: hidden;
   transform: translateY(2px);
@@ -238,7 +242,7 @@ body.modal-open{ overflow:hidden; }
 #modalPedido .field label,
 #modalVenta  .field label{ display:block; font-weight:600; margin-bottom:6px; color:#213a2c; }
 #modalPedido .input,
-#modalVenta  .input{ width:100%; height:38px; padding:8px 10px; border:1px solid #e4ebe6; border-radius:0px; background:#fff; }
+#modalVenta  .input{ width:100%; height:38px; padding:8px 10px; border:1px solid #e4ebe6;  border-radius: 9999px 9999px 9999px 9999px; background:#fff; }
 #modalPedido .input:focus,
 #modalVenta  .input:focus{ outline:2px solid #cfe7da; border-color:#b7d3c3; }
 #modalPedido .ta-right,
@@ -247,7 +251,7 @@ body.modal-open{ overflow:hidden; }
 /* Items */
 #modalPedido .pedido-items,
 #modalVenta  .pedido-items{
-  border:1px solid #e6ece7; border-radius:0px; padding:14px; background:#fcfdfc;
+  border:1px solid #e6ece7; border-radius:10px; padding:14px; background:#fcfdfc;
 }
 #modalPedido .pedido-items__head,
 #modalVenta  .pedido-items__head{
@@ -287,7 +291,7 @@ body.modal-open{ overflow:hidden; }
 #modalVenta  .modal-actions{ display:flex; justify-content:flex-end; gap:10px; padding:12px 0 6px; }
 
 /* Botones (scopeados) */
-#modalPedido .btn, #modalVenta .btn{ background:#2f6a4f; color:#fff; border:0; border-radius:0px; height:38px; padding:0 14px; font-weight:600; cursor:pointer; }
+#modalPedido .btn, #modalVenta .btn{ background:#2f6a4f; color:#fff; border:0; border-radius: 9999px 9999px 9999px 9999px; height:38px; padding:0 14px; font-weight:600; cursor:pointer; }
 #modalPedido .btn:hover, #modalVenta .btn:hover{ filter:brightness(.95); }
 #modalPedido .btn:disabled, #modalVenta .btn:disabled{ opacity:.55; cursor:not-allowed; }
 #modalPedido .btn-sec, #modalVenta .btn-sec{ background:#eef5f0; color:#214233; }
@@ -321,7 +325,7 @@ body.modal-open{ overflow:hidden; }
   overflow: auto !important;
   margin: 0 !important;                /* evita offset a la izquierda */
   box-shadow: 0 10px 40px rgba(0,0,0,.25) !important;
-  border-radius: 0 !important;
+  border-radius: 10px !important;
 }
 
 /* Ajuste de columnas para “Venta” (sin Cantidad) */
@@ -455,6 +459,13 @@ body.modal-open{ overflow:hidden !important; }
     padding: 12px 14px 6px !important;    /* 16/18/6 → 12/14/6 */
   }
 
+#modalEditar .btn-sec{
+  font-size:11px
+}
+
+#modalEditar .btn-prim{
+  font-size:11px
+}
   /* Inputs/labels más bajos */
   #modalPedido .input,
   #modalVenta  .input,
@@ -538,7 +549,7 @@ body.modal-open{ overflow:hidden !important; }
   #modalVenta  .btn{
     height: 36px !important;              /* 38 → 36 */
     padding: 0 12px !important;           /* 14 → 12 */
-    font-size: 14px !important;
+    font-size: 13px !important;
   }
   #modalPedido .btn-sm,
   #modalVenta  .btn-sm{
@@ -550,7 +561,7 @@ body.modal-open{ overflow:hidden !important; }
   #modalVenta  .btn-icon{
     height: 34px !important;
     width: 34px  !important;
-    border-radius: 8px !important;
+    border-radius: 9999px 9999px 9999px 9999px;
   }
 
   /* Modal EDITAR: columnas de ítems algo más angostas */
@@ -561,7 +572,7 @@ body.modal-open{ overflow:hidden !important; }
   #modalEditar .btn-mini{
     height: 30px !important;
     width: 30px  !important;
-    border-radius: 8px !important;
+    border-radius: 9999px 9999px 9999px 9999px;
   }
 }
 

@@ -16,6 +16,7 @@
   gap: var(--gap, 20px);                /* usá el mismo gap que la kpi-grid */
   align-items: start;
   width: 100%;
+  border-radius:20px;
 }
 
 #view-dashboard .dashboard-split > *{
