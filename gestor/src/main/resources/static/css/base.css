@@ -1,6 +1,6 @@
 :root{
   --bg:#f3f5f3; --panel:#fff; --panel-2:#eef3ef;
-  --ink:#1f2937; --ink-2:#475569; --brand:#2f6a4f; --muted:#6b7280;
+  --ink:#1f2937; --ink-2:#475569; --brand:#bcd1bb; --muted:#6b7280;
   --accent:#bcd1bb; --aside-olive:#bcd1bb;
   --radius:12px; --shadow:0 6px 18px rgba(15,23,42,.10);
   --ring:0 0 0 3px rgba(47,106,79,.15);
@@ -16,7 +16,7 @@ body{
   width:100%;
   margin:0;
   padding:0;
-  background: #bcd1bb;
+  background-image: linear-gradient(to top, #bcd1bb, #c2d5c0, #c9d9c4, #cfddc9, #d5e1ce, #d3e0cc, #d2dfca, #d0dec8, #c6d9bf, #bbd3b7, #afceaf, #a3c9a8);
   overflow: hidden;  
   color:#1f2937;
   font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif     /* evita 1px de “sangrado” lateral */
@@ -25,19 +25,48 @@ body{
 	}
 .main{padding:0;width: 100%;min-height: 100%;}
 
-.panel{
-background:var(--panel);
-padding:28px 32px;
-border-top-left-radius: 40px; 
-border-bottom-left-radius: 40px;
-border-top-right-radius: 40px; 
-border-bottom-right-radius: 40px;
-
-border-top:10px solid #bcd1bb;
-border-bottom: 10px solid #bcd1bb;
-border-right: 10px solid #bcd1bb;
-border-left: 10px solid #bcd1bb;
+.panel {
+  position: relative;
+  background: var(--panel); /* tu fondo interno */
+  padding: 28px 32px;
+  border-radius: 40px;
+  z-index: 1;
 }
+
+/* Borde degradado transparente */
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 40px;
+  padding: 10px; /* grosor del borde */
+  background: linear-gradient(
+    to right,
+    #bcd1bb,
+    #c2d5c0,
+    #c9d9c4,
+    #cfddc9,
+    #d5e1ce,
+    #d3e0cc,
+    #d2dfca,
+    #d0dec8,
+    #c6d9bf,
+    #bbd3b7,
+    #afceaf,
+    #a3c9a8
+  );
+
+  /* Truco para que solo se vea el borde y el centro quede transparente */
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+
+  z-index: -1;
+}
+
+
 .view-root{min-height:100vh}
 
 /* inputs/botones */

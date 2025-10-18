@@ -20,11 +20,11 @@
   border-radius: 10px;
   padding: 16px 18px;
   box-shadow:
-  rgba(48, 90, 70, 0.40) 5px 5px,
-  rgba(48, 90, 70, 0.30) 10px 10px,
-  rgba(48, 90, 70, 0.20) 15px 15px,
-  rgba(48, 90, 70, 0.10) 20px 20px,
-  rgba(48, 90, 70, 0.05) 25px 25px;
+  rgba(188, 209, 187, 1) 5px 5px,
+  rgba(188, 209, 187, 0.30) 10px 10px,
+  rgba(188, 209, 187, 0.20) 15px 15px,
+  rgba(188, 209, 187, 0.10) 20px 20px,
+  rgba(188, 209, 187, 0.05) 25px 25px;
 
 }
 .kpi-label {
@@ -128,11 +128,11 @@ td .badge { transform: translateY(-1px); }
 }
 #view-dashboard .tabla.pedidos thead::before{
   content: ""; position: absolute; inset: 0;
-  background: var(--aside-olive);
+  /*background-image: radial-gradient(circle, #bcd1bb, #c2d5c0, #c9d9c4, #cfddc9, #d5e1ce, #d8e3d0, #dae4d3, #dde6d5, #dde6d5, #dde6d5, #dde6d5, #dde6d5);*/
   z-index: -1;
 }
 #view-dashboard .tabla.pedidos thead th{
-  background:rgba(48, 90, 70, 0.10); /* deja ver el oliva del ::before */
+  background-image: linear-gradient(to bottom, #bcd1bb, #c2d5c0, #c9d9c4, #cfddc9, #d5e1ce, #d8e3d0, #dae4d3, #dde6d5, #dde6d5, #dde6d5, #dde6d5, #dde6d5);
   color: #000000;
   font-weight: 600;
   padding: 10px 12px;
@@ -659,12 +659,11 @@ td .badge { transform: translateY(-1px); }
   /* tarjetas KPI más compactas */
   .kpi-card{
     padding: 12px 14px;
-    box-shadow:
-  rgba(48, 90, 70, 0.40) 5px 5px,
-  rgba(48, 90, 70, 0.30) 10px 10px,
-  rgba(48, 90, 70, 0.20) 15px 15px,
-  rgba(48, 90, 70, 0.10) 20px 20px,
-  rgba(48, 90, 70, 0.05) 25px 25px;
+ 	box-shadow:
+  rgba(188, 209, 187, 1) 5px 5px,
+  rgba(188, 209, 187, 0.30) 10px 10px,
+  rgba(188, 209, 187, 0.20) 15px 15px,
+  rgba(188, 209, 187, 0.10) 20px 20px;
   }
 
   /* etiquetas y valores adaptados para legibilidad */

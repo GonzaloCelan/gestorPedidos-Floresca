@@ -5,7 +5,13 @@
   
   box-shadow:0 10px 30px rgba(18,40,33,.06);
   padding:28px 0;
-  background: #bcd1bb;
+  /* Fondo con gradiente + transparencia */
+  background-image: radial-gradient(circle, #bcd1bb, #c2d5c0, #c9d9c4, #cfddc9, #d5e1ce, #d3e0cc, #d2dfca, #d0dec8, #c6d9bf, #bbd3b7, #afceaf, #a3c9a8);
+
+  /* Efecto vidrio */
+  /*backdrop-filter: blur(12px);*/
+  /*-webkit-backdrop-filter: blur(12px);*/
+ 
 }
 
 

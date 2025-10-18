@@ -21,12 +21,11 @@
 /* KPIs */
 #view-materiales .kpi{
   background:#fff; border:1px solid #e6ece7; border-radius:10px;
-  box-shadow:
-  rgba(48, 90, 70, 0.40) 5px 5px,
-  rgba(48, 90, 70, 0.30) 10px 10px,
-  rgba(48, 90, 70, 0.20) 15px 15px,
-  rgba(48, 90, 70, 0.10) 20px 20px,
-  rgba(48, 90, 70, 0.05) 25px 25px;
+   box-shadow:
+  rgba(188, 209, 187, 1) 5px 5px,
+  rgba(188, 209, 187, 0.30) 10px 10px,
+  rgba(188, 209, 187, 0.20) 15px 15px,
+  rgba(188, 209, 187, 0.10) 20px 20px;
 }
 #view-materiales .kpi .label{ color:#6b7a73; font-weight:600; }
 #view-materiales .kpi .value{ font-weight:800; font-variant-numeric:tabular-nums; }
@@ -69,7 +68,7 @@
 /* Thead oliva sticky */
 #view-materiales thead{ position:sticky; top:0; z-index:2;box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px; }
 #view-materiales thead::before{
-  content:""; position:absolute; inset:0; background:var(--aside-olive,#b8cdb6); z-index:-1;
+  content:""; position:absolute; inset:0; background-image: linear-gradient(to bottom, #bcd1bb, #c2d5c0, #c9d9c4, #cfddc9, #d5e1ce, #d8e3d0, #dae4d3, #dde6d5, #dde6d5, #dde6d5, #dde6d5, #dde6d5);; z-index:-1;
 }
 #view-materiales thead th{
   background:transparent; color:#000000; font-weight:700;
