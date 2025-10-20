@@ -132,7 +132,7 @@ td .badge { transform: translateY(-1px); }
   z-index: -1;
 }
 #view-dashboard .tabla.pedidos thead th{
-  background-image: linear-gradient(to bottom, #bcd1bb, #c2d5c0, #c9d9c4, #cfddc9, #d5e1ce, #d8e3d0, #dae4d3, #dde6d5, #dde6d5, #dde6d5, #dde6d5, #dde6d5);
+  background: rgba(188, 209, 187, 0.10);
   color: #000000;
   font-weight: 600;
   padding: 10px 12px;

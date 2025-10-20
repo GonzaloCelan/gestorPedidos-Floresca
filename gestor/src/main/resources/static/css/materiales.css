@@ -68,7 +68,9 @@
 /* Thead oliva sticky */
 #view-materiales thead{ position:sticky; top:0; z-index:2;box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px; }
 #view-materiales thead::before{
-  content:""; position:absolute; inset:0; background-image: linear-gradient(to bottom, #bcd1bb, #c2d5c0, #c9d9c4, #cfddc9, #d5e1ce, #d8e3d0, #dae4d3, #dde6d5, #dde6d5, #dde6d5, #dde6d5, #dde6d5);; z-index:-1;
+  content:""; position:absolute; inset:0; 
+  z-index:-1;
+  background: rgba(188, 209, 187, 0.10);
 }
 #view-materiales thead th{
   background:transparent; color:#000000; font-weight:700;
