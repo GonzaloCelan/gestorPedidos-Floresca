@@ -61,5 +61,15 @@ public class ventasController {
         }
     }
     
+    @GetMapping("/ventas/balance/{mes}")
+    public ResponseEntity<Double> balanceMensual(@PathVariable String mes)
+    {
+    	
+    	double response = service.balanceMensual(mes);
+    	return ResponseEntity.ok(response);
+    }
+    		
+    
+    
     
 }

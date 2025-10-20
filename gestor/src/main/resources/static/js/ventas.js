@@ -181,6 +181,151 @@
       .join('');
   }
 
+  /* ============================================================
+     KPI Balance mensual (DOM helpers + pintado + fetch)
+     ============================================================ */
+
+  // Inyecta CSS para sombra animada (verde/rojo) una sola vez
+  function ensureBalanceStyles() {
+    if (document.getElementById('balanceKpiAnimCSS')) return;
+    const css = `
+	#kpi-balance.glow-ok   { animation: balancePulseG 2.6s cubic-bezier(0.66, 0, 0.34, 1) infinite; }
+	#kpi-balance.glow-bad  { animation: balancePulseR 2.6s cubic-bezier(0.66, 0, 0.34, 1) infinite; }
+	@keyframes balancePulseG {
+	  0%   { transform: scale(1);   box-shadow: 0 0 0 0 rgba(47,106,79,.35); }
+	  30%  { transform: scale(1.05); box-shadow: 0 0 25px 12px rgba(47,106,79,.20); }
+	  50%  { transform: scale(1.08); box-shadow: 0 0 35px 18px rgba(47,106,79,.15); }
+	  70%  { transform: scale(1.05); box-shadow: 0 0 25px 12px rgba(47,106,79,.20); }
+	  100% { transform: scale(1);   box-shadow: 0 0 0 0 rgba(47,106,79,.35); }
+	}
+
+	@keyframes balancePulseR {
+	  0%   { transform: scale(1);   box-shadow: 0 0 0 0 rgba(217,77,77,.35); }
+	  30%  { transform: scale(1.05); box-shadow: 0 0 25px 12px rgba(217,77,77,.20); }
+	  50%  { transform: scale(1.08); box-shadow: 0 0 35px 18px rgba(217,77,77,.15); }
+	  70%  { transform: scale(1.05); box-shadow: 0 0 25px 12px rgba(217,77,77,.20); }
+	  100% { transform: scale(1);   box-shadow: 0 0 0 0 rgba(217,77,77,.35); }
+	}`;
+    const st = document.createElement('style');
+    st.id = 'balanceKpiAnimCSS';
+    st.textContent = css;
+    document.head.appendChild(st);
+  }
+
+  // Busca el card cuyo .label contenga la palabra "Balance".
+  function ensureBalanceDom() {
+    let card = document.getElementById('kpi-balance');
+
+    if (!card) {
+      const labels = Array.from(document.querySelectorAll('.kpi .label'));
+      const lbl = labels.find(el => /balance/i.test(el.textContent || ''));
+      if (lbl) {
+        card = lbl.closest('.kpi');
+        if (card) card.id = 'kpi-balance';
+      }
+    }
+
+    if (!card) return { card: null, valueEl: null, chipEl: null };
+
+    let valueEl = card.querySelector('#balanceValue');
+    if (!valueEl) {
+      valueEl = card.querySelector('.value') || document.createElement('div');
+      valueEl.id = 'balanceValue';
+      if (!valueEl.classList.contains('value')) {
+        valueEl.className = 'value';
+        valueEl.style.fontSize = '24px';
+        valueEl.textContent = '$ 0';
+        card.appendChild(valueEl);
+      }
+    }
+
+    const label = card.querySelector('.label') || card;
+    let chipEl = card.querySelector('#balancePct');
+    if (!chipEl) {
+      chipEl = document.createElement('span');
+      chipEl.id = 'balancePct';
+      chipEl.textContent = '—';
+      chipEl.style.cssText =
+        'margin-left:10px;padding:6px 8px;border-radius:999px;font-size:12px;font-weight:700;border:1px solid transparent;';
+      label.appendChild(chipEl);
+    }
+
+    return { card, valueEl, chipEl };
+  }
+
+  function styleChip(chipEl, isGain) {
+    if (!chipEl) return;
+    if (isGain) {
+      chipEl.style.background = 'rgba(47,106,79,.12)';
+      chipEl.style.color = '#2f6a4f';
+      chipEl.style.borderColor = 'rgba(47,106,79,.22)';
+    } else {
+      chipEl.style.background = 'rgba(217,77,77,.10)';
+      chipEl.style.color = '#d94d4d';
+      chipEl.style.borderColor = 'rgba(217,77,77,.25)';
+    }
+  }
+
+  function styleCard(card, valueEl, isGain) {
+    if (!card || !valueEl) return;
+    ensureBalanceStyles(); // asegura keyframes
+
+    card.classList.remove('glow-ok','glow-bad');
+    if (isGain) {
+      card.classList.add('ok','glow-ok'); card.classList.remove('bad');
+      card.style.background = 'linear-gradient(180deg,#cfe3cf,#c7dcc7)';
+      card.style.outline = '0';
+      valueEl.style.color = '#124b34';
+    } else {
+      card.classList.add('bad','glow-bad'); card.classList.remove('ok');
+      card.style.background = 'linear-gradient(180deg,#f2d7d7,#f0d0d0)';
+      card.style.outline = '0';
+      valueEl.style.color = '#7d1f1f';
+    }
+  }
+
+  // Pinta monto + % y aplica estilos (sin gráfico)
+  function renderBalanceKPI(balanceValue, ventasMesBase) {
+    const { card, valueEl, chipEl } = ensureBalanceDom();
+    if (!card || !valueEl || !chipEl) return;
+
+    const bal = Number(balanceValue || 0);
+    valueEl.textContent = money(bal);
+
+    const isGain = bal >= 0;
+    styleCard(card, valueEl, isGain);
+
+    if (Number(ventasMesBase) > 0) {
+      const pct = (bal / Number(ventasMesBase)) * 100;
+      chipEl.textContent = `${isGain ? '+' : ''}${pct.toFixed(1)}%`;
+      styleChip(chipEl, isGain);
+    } else {
+      chipEl.textContent = '—';
+      styleChip(chipEl, true); // neutro verdoso suave
+    }
+  }
+
+  // Trae el balance del backend y pinta (ventasMesBase se la pasamos desde renderKPIs)
+  async function updateBalanceKPI(ymString, ventasMesBase) {
+    const url = `${APIB}/api/v1/ventas/balance/${encodeURIComponent(ymString)}`;
+    let balance = 0;
+    try {
+      const res = await fetch(url);
+      const txt = await res.text();
+      try {
+        const json = JSON.parse(txt);
+        balance = (typeof json === 'number')
+          ? json
+          : (json.balance ?? json.value ?? json.monto ?? 0);
+      } catch {
+        balance = Number(txt);
+      }
+    } catch {
+      balance = 0;
+    }
+    renderBalanceKPI(balance, ventasMesBase);
+  }
+
   // ---------- KPIs ----------
   function renderKPIs(list) {
     const elG = document.getElementById('logTotalGeneral');
@@ -201,6 +346,10 @@
 
     if (elG) elG.textContent = money(totG);
     if (elM) elM.textContent = money(totM);
+
+    // ===> Actualizamos el KPI Balance mensual con backend + % sobre totM
+    const ymStr = `${String(yy)}-${String(mm).padStart(2,'0')}`;
+    updateBalanceKPI(ymStr, totM);
   }
 
   // ---------- Detalle ----------
@@ -299,6 +448,7 @@
 	  	}
     });
   }
+
   // ---------- Modal Agregar Venta (con “Cantidad”) ----------
   function setupVentaModal() {
     if (window.Ventas?.__boundVentaModal) return; // evita doble bind del modal
@@ -322,8 +472,6 @@
       if (fechaInp) {
         const hoy = hoyLocalYMD();
         if (!fechaInp.value) fechaInp.value = hoy;
-        // Si no querés permitir futuras, dejá esto activo:
-        // fechaInp.max = hoy;
       }
     };
 
@@ -453,7 +601,7 @@
         if (typeof window.switchViewAnimated === 'function') window.switchViewAnimated('log');
         renderTabla(filtrarPorMes(ventas));
         renderKPIs(ventas);
-		toastSuccessPill('¡Guardaste una venta!')
+        toastSuccessPill('¡Guardaste una venta!')
       } catch (err) {
         console.error(err);
         alert('No se pudo guardar la venta.');
@@ -487,6 +635,11 @@
       if (g) g.textContent = money(0);
       const m = document.getElementById('logTotalFiltrado');
       if (m) m.textContent = money(0);
+
+      // Balance en neutro si falló la carga inicial
+      const sel = getMesSeleccionado();
+      const ymStr = sel ? `${sel.yy}-${String(sel.mm).padStart(2,'0')}` : '';
+      if (ymStr) updateBalanceKPI(ymStr, 0);
     }
   }
 
@@ -513,22 +666,20 @@
 
       if (!idVenta && !idPedido) { alert('No se encontró el identificador de la venta.'); return; }
       const label = idVenta ? `#${idVenta}` : `(por pedido #${idPedido})`;
-	  const { isConfirmed } = await Swal.fire({
-	  	    title: '¿Eliminar esta venta?',
-	  		html: '<div style="font-size:18px;color:#d9a441;margin-bottom:6px">⚠️</div><div>Esta acción no se puede deshacer.</div>',
-	  	    text: 'Esta acción no se puede deshacer.',
-	  	    icon: undefined,
-	  	    showCancelButton: true,
-	  	    confirmButtonText: 'Eliminar',
-	  	    cancelButtonText: 'Cancelar',
-	  	    reverseButtons: true,
-	  	    focusCancel: true,
-	  	    buttonsStyling: false,
-	  		customClass: {
-	  		    popup: 'floresca'
-	  		  }// usamos nuestros estilos de CSS
-	  	  });
-	  	if (!isConfirmed) return;
+      const { isConfirmed } = await Swal.fire({
+        title: '¿Eliminar esta venta?',
+        html: '<div style="font-size:18px;color:#d9a441;margin-bottom:6px">⚠️</div><div>Esta acción no se puede deshacer.</div>',
+        text: 'Esta acción no se puede deshacer.',
+        icon: undefined,
+        showCancelButton: true,
+        confirmButtonText: 'Eliminar',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true,
+        focusCancel: true,
+        buttonsStyling: false,
+        customClass: { popup: 'floresca' }
+      });
+      if (!isConfirmed) return;
 
       del.disabled = true;
       try {
@@ -615,4 +766,3 @@
   // Integra con index.js (cuando cambias a “Historial”)
   window.aplicarFiltrosLogs = () => window.Ventas.aplicarFiltros();
 })();
-
