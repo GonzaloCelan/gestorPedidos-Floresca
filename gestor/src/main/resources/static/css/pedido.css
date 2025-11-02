@@ -1,0 +1,69 @@
+#view-pedido-nuevo h2{
+    color: #194d13;
+    font-size: 20px;
+    font-family: 'Poppins', sans-serif; 
+}
+
+#view-pedido-nuevo input{
+    border: none;
+
+    border-radius: 999px;
+    box-shadow: rgb(235, 235, 235) 3px 3px 6px 0px inset, rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
+}
+
+#view-pedido-nuevo label{
+    font-weight: 700;
+    font-size: 14px;
+}
+.div-cliente{
+    border-radius: none;
+    border: none;
+    background-color: transparent;
+}
+
+.div-fecha{
+    border: none;
+    background-color: transparent;
+}
+
+.div-item{
+    border: none;
+    background-color: transparent;
+}
+
+
+#view-pedido-nuevo .tabla-pedido{
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 3px 0px;
+    border: none;
+}
+
+#view-pedido-nuevo button{
+    font-size: 14px;
+    height: 35px;
+    background-color: #bcd1bb;
+}
+
+#view-pedido-nuevo #npCancelar,#npVolver{
+    border: none;
+    background-color: #ffffff00;
+}
+#view-pedido-nuevo #npVolver{
+    border: none;
+    background-color: #ffffff00;
+}
+
+#view-pedido-nuevo #btnEliminarP{
+	border: none;
+    background-color: #ffffff00;
+}
+
+#view-pedido-nuevo .total-sub{
+    border: none;
+    background-color: transparent;
+}
+
+
+
+@media screen and (width: 1366px) and (height: 768px) {
+
+}

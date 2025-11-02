@@ -8,12 +8,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 
-import com.floresta.gestor.model.venta;
+import com.floresta.gestor.model.Venta;
 
 @Repository
-public interface ventaRepository extends JpaRepository<venta , Integer>{
+public interface ventaRepository extends JpaRepository<Venta , Integer>{
 
-	Page<venta> findAllByOrderByFechaEntregaDesc(Pageable pageable);
+	Page<Venta> findAllByOrderByFechaEntregaDesc(Pageable pageable);
 	
 
     @Query(value = "SELECT SUM(total) " +

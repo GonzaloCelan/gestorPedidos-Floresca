@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.floresta.gestor.dto.materialDTO;
-import com.floresta.gestor.model.material;
+import com.floresta.gestor.model.Insumo;
 import com.floresta.gestor.repository.materialRepository;
 
 import jakarta.validation.Valid;
@@ -25,9 +25,9 @@ public class materialService {
     
 
     @Transactional
-    public material guardarMaterial(@Valid materialDTO request) {
+    public Insumo guardarMaterial(@Valid materialDTO request) {
     	
-    	material nuevoMaterial = material.builder()
+    	Insumo nuevoMaterial = Insumo.builder()
     			.fecha(request.getFecha())
     			.material(request.getMaterial())
     			.cantidad(request.getCantidad())
@@ -41,12 +41,12 @@ public class materialService {
 
  
     @Transactional(readOnly = true) 
-    public List<material> obtenerTodos() {
+    public List<Insumo> obtenerTodos() {
         return repository.findAll();
     }
 
     @Transactional(readOnly = true) 
-    public Optional<material> obtenerPorId(Long id) {
+    public Optional<Insumo> obtenerPorId(Long id) {
         return repository.findById(id);
     }
 

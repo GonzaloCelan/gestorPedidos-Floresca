@@ -15,9 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.floresta.gestor.dto.ProductoDTO;
-import com.floresta.gestor.dto.pedidoDTO;
-import com.floresta.gestor.dto.pedidoUpdateDTO;
-import com.floresta.gestor.model.pedido;
+import com.floresta.gestor.dto.PedidoDTO;
+import com.floresta.gestor.dto.PedidoDatosDTO;
+import com.floresta.gestor.dto.PedidoUpdateDTO;
+import com.floresta.gestor.model.Pedido;
 import com.floresta.gestor.service.pedidoService;
 
 import jakarta.validation.Valid;
@@ -37,22 +38,22 @@ public class pedidosController {
     }
     
     //GUARDA UN PEDIDO NUEVO
-    @PostMapping ("/pedidos")
-    public ResponseEntity<pedido> guardarEntrega(@Valid @RequestBody pedidoDTO dto) {
+    @PostMapping ("/pedido")
+    public ResponseEntity<Pedido> guardarEntrega(@Valid @RequestBody PedidoDTO dto) {
     	
-    	pedido response = service.generarPedido(dto);
+    	Pedido response = service.generarPedido(dto);
     	
         return ResponseEntity.ok(response);
     }
     
     //ACTUALIZA ESTADO DEL PEDIDO
     
-    @PutMapping("/pedidos/{id}/{estado}")
-    public ResponseEntity<pedido> actualizarEntrega(
+    @PutMapping("/pedido/{id}/{estado}")
+    public ResponseEntity<Pedido> actualizarEntrega(
     		@PathVariable Integer id,
     		@PathVariable String estado) {
     	
-    	pedido response = service.actualizarEstado(id, estado);
+    	Pedido response = service.actualizarEstado(id, estado);
     	
     	return ResponseEntity.ok(response);
     	
@@ -60,12 +61,12 @@ public class pedidosController {
     
   //ACTUALIZA PEDIDO ENTERO
     
-    @PutMapping("/pedidos/{id}")
-    public ResponseEntity<pedido> actualizarEntregaCompleto(
+    @PutMapping("/pedido/{id}")
+    public ResponseEntity<Pedido> actualizarEntregaCompleto(
     		@PathVariable Integer id,
-    		@RequestBody pedidoUpdateDTO dto) {
+    		@RequestBody PedidoUpdateDTO dto) {
     	
-    	pedido response = service.actualizarPedido(id,dto);
+    	Pedido response = service.actualizarPedido(id,dto);
     	
 
     	return ResponseEntity.ok(response);
@@ -73,7 +74,7 @@ public class pedidosController {
     }
     
     //ELIMINA UN PEDIDO POR ID
-    @DeleteMapping("/pedidos/{id}")
+    @DeleteMapping("/pedido/{id}")
     public ResponseEntity<Void> eliminarEntrega(@PathVariable Integer id) {
         boolean eliminado = service.eliminarEntrega(id);
 
@@ -84,17 +85,17 @@ public class pedidosController {
         }
     }
     
-    //OBTENGO TODOS LOS PEDIDOS ACTIVOS
-    @GetMapping("/pedidos")
-    public ResponseEntity<List<pedido>> getPedidosActivos(){
+  //OBTENGO UN PEDIDO POR ID
+    @GetMapping("/pedido/datos/{id}")
+    public ResponseEntity<PedidoDatosDTO> getPedidoById(@PathVariable Integer id){
     	
-    	List<pedido> response = service.obtenerPedidosActivos();
+    	PedidoDatosDTO response = service.obtenerPedidoById(id);
     	return ResponseEntity.ok(response);
     	
     }
     
-  //OBTENGO PRODUCTOS DE CADA PEDIDO
-    @GetMapping("/pedidos/producto/{id}")
+    //OBTENGO PRODUCTOS DE CADA PEDIDO
+    @GetMapping("/pedido/producto/{id}")
     public ResponseEntity<List<ProductoDTO>> getProductosByIdPedido(@PathVariable Integer id){
     	
     	List<ProductoDTO> response = service.obtenerProductosById(id);
@@ -102,5 +103,16 @@ public class pedidosController {
     	return ResponseEntity.ok(response);
     	
     }
+    
+    //OBTENGO TODOS LOS PEDIDOS ACTIVOS
+    @GetMapping("/pedidos")
+    public ResponseEntity<List<Pedido>> getPedidosActivos(){
+    	
+    	List<Pedido> response = service.obtenerPedidosActivos();
+    	return ResponseEntity.ok(response);
+    	
+    }
+    
+ 
 }
 

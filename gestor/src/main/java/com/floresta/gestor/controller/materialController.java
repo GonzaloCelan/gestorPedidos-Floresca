@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.floresta.gestor.dto.materialDTO;
-import com.floresta.gestor.model.material;
+import com.floresta.gestor.model.Insumo;
 import com.floresta.gestor.service.materialService;
 
 import jakarta.validation.Valid;
@@ -30,28 +30,28 @@ public class materialController {
 	
 	
 	 //GUARDA UN MATERIAL NUEVO
-    @PostMapping("/materiales")
-    public ResponseEntity<material> crearMaterial(@Valid @RequestBody materialDTO request) {
-    	material nuevo = service.guardarMaterial(request);
+    @PostMapping("/insumo")
+    public ResponseEntity<Insumo> crearMaterial(@Valid @RequestBody materialDTO request) {
+    	Insumo nuevo = service.guardarMaterial(request);
         return ResponseEntity.ok(nuevo);
     }
 
     //OBTIENE TODOS LOS MATERIALES
-    @GetMapping("/materiales")
-    public ResponseEntity<List<material>> listarMateriales() {
+    @GetMapping("/insumos")
+    public ResponseEntity<List<Insumo>> listarMateriales() {
         return ResponseEntity.ok(service.obtenerTodos());
     }
 
   //OBTIENE UN MATERIAL POR ID
-    @GetMapping("/materiales/{id}")
-    public ResponseEntity<material> obtenerMaterial(@PathVariable Long id) {
+    @GetMapping("/insumo/{id}")
+    public ResponseEntity<Insumo> obtenerMaterial(@PathVariable Long id) {
         return service.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
   //ELIMINA UN MATERIAL POR ID
-    @DeleteMapping("/materiales/{id}")
+    @DeleteMapping("/insumo/{id}")
     public ResponseEntity<Void> eliminarMaterial(@PathVariable Long id) {
     	service.eliminarPorId(id);
         return ResponseEntity.noContent().build();

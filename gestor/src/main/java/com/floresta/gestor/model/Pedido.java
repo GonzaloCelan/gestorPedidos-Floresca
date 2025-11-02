@@ -17,31 +17,28 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @Builder
-@Table(name = "ventas") 
+@Table(name = "pedidos") 
 @NoArgsConstructor
 @AllArgsConstructor
-public class venta {
-	
-	
-	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idVenta")
-    private Integer idVenta;
-	
-	 @Column(name = "id_pedido", nullable = false)
-	  private Integer idPedido;
+public class Pedido {
 
-    @Column(name = "cliente", nullable = false, length = 120)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idPedido")
+    private Integer idPedido;
+
+    @Column(name = "cliente", nullable = false, length = 100)
     private String cliente;
 
     @Column(name = "fecha_entrega", nullable = false)
     private LocalDate fechaEntrega;
+
+    @Column(name = "estado", nullable = false, length = 20)
+    private String estado;
     
     @Column(name = "total", nullable = false)
     private BigDecimal total;
     
     @Column(name = "tipo_venta")
     private String tipoVenta;
-    
-
 }

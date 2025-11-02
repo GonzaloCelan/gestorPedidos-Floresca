@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 
-import com.floresta.gestor.model.venta;
+import com.floresta.gestor.model.Venta;
 
 import com.floresta.gestor.repository.ventaRepository;
 import com.floresta.gestor.service.VentasService;
@@ -38,13 +38,13 @@ public class ventasController {
     }
 
     @GetMapping("/ventas")
-    public List<venta> obtenerLogs() {
+    public List<Venta> obtenerLogs() {
         return ventaRepository.findAll(Sort.by(Sort.Direction.DESC, "fechaEntrega")); // ordenado por fecha
     }
     
     
     @GetMapping("/ventas/page")
-    public Page<venta> obtenerLogsPaginado(
+    public Page<Venta> obtenerLogsPaginado(
         @PageableDefault(sort = "fechaEntrega", direction = Sort.Direction.DESC, size = 10)
         Pageable pageable) {
       return ventaRepository.findAllByOrderByFechaEntregaDesc(pageable);

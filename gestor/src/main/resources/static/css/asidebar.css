@@ -1,0 +1,63 @@
+body{
+    font-family: 'Poppins', sans-serif;  
+
+}
+
+.asidebar{
+    position: sticky;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    background-image: linear-gradient(to left bottom, #ffffff, #f1f6fb, #dfeff2, #d1e7e1, #cfddc9);
+    max-height: 100%;
+    
+
+}
+
+
+
+.asidebar h1{
+    color: #3c5f3f;
+    letter-spacing: 2px;
+}
+
+.asidebar .logo{
+    margin-top: 40px;
+
+}
+
+
+
+.asidebar .logo .img-logo{
+    border-radius: 999px;
+
+}
+.asidebar nav{
+
+    width: 200px;
+    text-align: center;
+    margin-left: 25px;
+    margin-right: 25px;
+    gap: 15px;
+    border-radius: 999px;
+}
+.asidebar nav a i{
+    color: #3c5f3f;
+}
+.asidebar nav a .nav-text{
+    color: #3c5f3f;
+font-size: 15px;
+letter-spacing: 1px;
+}
+
+.asidebar nav a .nav-icon{
+    color: #3c5f3f;
+    background: transparent;
+    border: none;
+    border-radius: 999px;
+}
+
+.asidebar nav a .nav-icon svg{
+    color: #3c5f3f;
+}
+
+
+

@@ -12,7 +12,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class pedidoDTO {
+public class PedidoDTO {
 
 	
 	@NotBlank

@@ -1,0 +1,52 @@
+#view-venta-nueva h2{
+	color: #194d13;
+    font-size: 20px;
+    font-family: 'Poppins', sans-serif; 
+}
+
+#view-venta-nueva #nvVolver{
+	border:none;
+	font-size: 15px;
+}
+
+#view-venta-nueva input,select{
+	 border: none;
+
+    border-radius: 999px;
+    box-shadow: rgb(235, 235, 235) 3px 3px 6px 0px inset, rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
+}
+
+#view-venta-nueva label{
+    font-weight: 700;
+    font-size: 14px;
+}
+
+
+#view-venta-nueva button{
+    font-size: 14px;
+    height: 35px;
+    background-color: #bcd1bb;
+}
+
+#view-venta-nueva #nvCancelar,#nvVolver,#btnEliminar{
+    border: none;
+    background-color: #ffffff00;
+}
+#view-venta-nueva #nvVolver{
+    border: none;
+    background-color: #ffffff00;
+}
+#view-venta-nueva #btnEliminar{
+    border: none;
+    background-color: #ffffff00;
+}
+
+#view-venta-nueva .total-sub{
+    border: none;
+    background-color: transparent;
+}
+
+#view-venta-nueva .tabla-venta{
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 3px 0px;
+    border: none;
+}

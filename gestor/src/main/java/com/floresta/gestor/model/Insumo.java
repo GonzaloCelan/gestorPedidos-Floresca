@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class material {
+public class Insumo {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +32,7 @@ public class material {
 	@Column(name = "fecha",nullable = false)
     private LocalDate fecha;  
 
-    @Column(name = "material",nullable = false)
+    @Column(name = "Insumo",nullable = false)
     private String material;
 
     @Column(name = "cantidad",nullable = false)

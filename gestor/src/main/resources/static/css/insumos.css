@@ -1,0 +1,113 @@
+
+
+#view-materiales h1{
+  font-size: 24px;
+font-family: 'Poppins', sans-serif;  
+color: #194d13;
+}
+
+
+
+#view-materiales .kpi-card-materiales {
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
+    border: none;
+}
+
+#view-materiales input{
+    border-radius: 999px;
+    box-shadow: rgb(235, 235, 235) 3px 3px 6px 0px inset, rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
+    border: none;
+}
+
+#view-materiales .btn-guardar-material{
+    align-items: center;
+  appearance: none;
+  background-color: #c9d9c4;
+  border-radius: 24px;
+  border-style: none;
+  box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
+  box-sizing: border-box;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  fill: currentcolor;
+  font-family: 'Poppins', sans-serif;  
+  font-size: 15px;
+  font-weight: 500;
+  height: 35px;
+  justify-content: center;
+  letter-spacing: .25px;
+  line-height: normal;
+  max-width: 100%;
+  overflow: visible;
+  padding: 0px 20px;
+  position: relative;
+  text-align: center;
+  text-transform: none;
+  transition: box-shadow 280ms cubic-bezier(.4, 0, .2, 1),opacity 15ms linear 30ms,transform 270ms cubic-bezier(0, 0, .2, 1) 0ms;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  width: auto;
+  will-change: transform,opacity;
+  z-index: 0;
+}
+
+#view-materiales .btn-guardar-material:hover {
+  background: #F6F9FE;
+  color: #000000;
+}
+
+#view-materiales .btn-guardar-material:active {
+  box-shadow: 0 4px 4px 0 rgb(60 64 67 / 30%), 0 8px 12px 6px rgb(60 64 67 / 15%);
+  outline: none;
+}
+
+#view-materiales .btn-guardar-material:focus {
+  outline: none;
+  border: 2px solid #4285f4;
+}
+
+#view-materiales .btn-guardar-material:not(:disabled) {
+  box-shadow: rgba(60, 64, 67, .3) 0 1px 3px 0, rgba(60, 64, 67, .15) 0 4px 8px 3px;
+}
+
+#view-materiales .btn-guardar-material:not(:disabled):hover {
+  box-shadow: rgba(60, 64, 67, .3) 0 2px 3px 0, rgba(60, 64, 67, .15) 0 6px 10px 4px;
+}
+
+#view-materiales .btn-guardar-material:not(:disabled):focus {
+  box-shadow: rgba(60, 64, 67, .3) 0 1px 3px 0, rgba(60, 64, 67, .15) 0 4px 8px 3px;
+}
+
+#view-materiales .btn-guardar-material:not(:disabled):active {
+  box-shadow: rgba(60, 64, 67, .3) 0 4px 4px 0, rgba(60, 64, 67, .15) 0 8px 12px 6px;
+}
+
+#view-materiales .btn-guardar-material:disabled {
+  box-shadow: rgba(60, 64, 67, .3) 0 1px 3px 0, rgba(60, 64, 67, .15) 0 4px 8px 3px;
+}
+
+
+
+#view-materiales .tabla-materiales{
+   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+   border: none;
+   border-radius: 12px;
+}
+
+
+
+#view-materiales #mat-tbody tr:hover {
+   background-color: #dbf9d8;
+  transition: background-color 0.2s ease;
+}
+
+
+@media screen and (width: 1366px) and (height: 768px) {
+
+#view-materiales .div-tabla-insumos{
+	max-height:300px
+}
+}
+

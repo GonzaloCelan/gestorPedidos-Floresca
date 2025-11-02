@@ -34,7 +34,7 @@ public class VentasService {
 
 	    return ventaRepository.findById(id).map(v -> {
 	      Integer pedidoId = v.getIdPedido();// o getIdPedido()
-	      pedidoRepository.deleteById(pedidoId);    // ← borra PADRE → cascada borra venta+items
+	      pedidoRepository.deleteById(pedidoId);    // ← borra PADRE → cascada borra Venta+items
 	      return true;
 	    }).orElse(false);
 	  }

@@ -14,11 +14,12 @@ import org.springframework.web.server.ResponseStatusException;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 import com.floresta.gestor.dto.ProductoDTO;
-import com.floresta.gestor.dto.pedidoDTO;
-import com.floresta.gestor.dto.pedidoUpdateDTO;
+import com.floresta.gestor.dto.PedidoDTO;
+import com.floresta.gestor.dto.PedidoDatosDTO;
+import com.floresta.gestor.dto.PedidoUpdateDTO;
 import com.floresta.gestor.model.ProductoItem;
-import com.floresta.gestor.model.pedido;
-import com.floresta.gestor.model.venta;
+import com.floresta.gestor.model.Pedido;
+import com.floresta.gestor.model.Venta;
 
 import com.floresta.gestor.repository.pedidoRepository;
 import com.floresta.gestor.repository.productoRepository;
@@ -44,11 +45,11 @@ public class pedidoService {
 	
 	
 	@Transactional
-	public pedido generarPedido(@Valid pedidoDTO request) {
+	public Pedido generarPedido(@Valid PedidoDTO request) {
 		
 		if (request.getEstado() == null) request.setEstado("PENDIENTE");
 		
-		var nuevoPedido = pedido.builder()
+		var nuevoPedido = Pedido.builder()
 				.cliente(request.getCliente())
 				.fechaEntrega(request.getFechaEntrega())
 				.estado(request.getEstado())
@@ -83,12 +84,12 @@ public class pedidoService {
 		  pedidoRepository.save(nuevoPedido);
 		  
 		  if ("ENTREGADO".equalsIgnoreCase(nuevoPedido.getEstado())) {
-		        venta v = venta.builder()
+		        Venta v = Venta.builder()
 		                .cliente(nuevoPedido.getCliente())
 		                .fechaEntrega(nuevoPedido.getFechaEntrega())
 		                .total(nuevoPedido.getTotal())
 		                .tipoVenta(nuevoPedido.getTipoVenta()) // "Pedido" | "Directo" | "Otro"
-		                .idPedido(nuevoPedido.getIdPedido())   // FK al pedido
+		                .idPedido(nuevoPedido.getIdPedido())   // FK al Pedido
 		                .build();
 		        ventaRepository.save(v);
 		    }
@@ -100,9 +101,9 @@ public class pedidoService {
 	
 	
 	@Transactional
-	public pedido actualizarEstado(Integer id, String nuevoEstado) {
+	public Pedido actualizarEstado(Integer id, String nuevoEstado) {
         
-		pedido pedido = pedidoRepository.findById(id).orElseThrow(() -> new ResponseStatusException( NOT_FOUND,"Entrega " + id + " no existe"));
+		Pedido pedido = pedidoRepository.findById(id).orElseThrow(() -> new ResponseStatusException( NOT_FOUND,"Entrega " + id + " no existe"));
     
 		var estadoAnterior = pedido.getEstado();
 		pedido.setEstado(nuevoEstado);
@@ -110,7 +111,7 @@ public class pedidoService {
 		
 		if("ENTREGADO".equalsIgnoreCase(nuevoEstado) && !"ENTREGADO".equalsIgnoreCase(estadoAnterior)) { 
 			
-			venta guardarVenta = venta.builder()
+			Venta guardarVenta = Venta.builder()
 					.cliente(pedido.getCliente())
 					.fechaEntrega(pedido.getFechaEntrega())
 					.total(pedido.getTotal())
@@ -126,9 +127,9 @@ public class pedidoService {
 	}
 	
 	@Transactional
-	public pedido actualizarPedido(Integer id, @Valid pedidoUpdateDTO request) {
+	public Pedido actualizarPedido(Integer id, @Valid PedidoUpdateDTO request) {
         
-		pedido ped = pedidoRepository.findById(id)
+		Pedido ped = pedidoRepository.findById(id)
 		        .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Entrega " + id + " no existe"));
 
 		    // ====== actualizar cabecera (solo si viene valor) ======
@@ -138,7 +139,7 @@ public class pedidoService {
 		    if (request.getEstado() != null) ped.setEstado(request.getEstado());
 
 		    HttpStatusCode BAD_REQUEST;
-			// reglas por tipo de venta
+			// reglas por tipo de Venta
 		    if ("Pedido".equalsIgnoreCase(ped.getTipoVenta())) {
 		        if (ped.getEstado() == null) ped.setEstado("PENDIENTE");
 		        if (ped.getFechaEntrega() == null)
@@ -218,12 +219,29 @@ public class pedidoService {
 	    return items;
 	}
 	
+	@Transactional(readOnly = true) 
+	
+	public PedidoDatosDTO obtenerPedidoById(Integer id){
+		
+		Pedido pedido = pedidoRepository.findById(id).orElseThrow(() -> new ResponseStatusException( NOT_FOUND,"Entrega " + id + " no existe"));
+	    
+		 var p = PedidoDatosDTO.builder()
+				.cliente(pedido.getCliente())
+				.fechaEntrega(pedido.getFechaEntrega())
+				.estado(pedido.getEstado())
+				.tipoVenta(pedido.getTipoVenta())
+				.build();
+				
+				
+		 return p;
+	}
+	
 	
 	@Transactional(readOnly = true) 
-    public List<pedido> obtenerPedidosActivos() {
+    public List<Pedido> obtenerPedidosActivos() {
     	
     	  return pedidoRepository.findByEstadoInAndTipoVenta(
-    		        List.of("PENDIENTE", "EN_PROCESO"),
+    		        List.of("PENDIENTE", "EN_PROCESO","ENTREGADO"),
     		        "Pedido"
     		    );
     }

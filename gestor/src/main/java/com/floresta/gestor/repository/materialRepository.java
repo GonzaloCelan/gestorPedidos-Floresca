@@ -5,10 +5,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.floresta.gestor.model.material;
+import com.floresta.gestor.model.Insumo;
 
 @Repository
-public interface materialRepository extends JpaRepository<material, Long> {
+public interface materialRepository extends JpaRepository<Insumo, Long> {
 
 	
 	@Query(value = "SELECT SUM(precio_total) " +

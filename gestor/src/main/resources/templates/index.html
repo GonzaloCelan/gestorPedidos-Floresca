@@ -1,543 +1,1035 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="theme-color" content="#2f6a4f">
-  <title>Floresca — Gestor</title>
-
-  <link rel="manifest" href="/web.webmanifest">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-  <link rel="stylesheet" href="/css/base.css">
-  <link rel="stylesheet" href="/css/navbar.css">
-  <link rel="stylesheet" href="/css/dashboard.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/css/asidebar.css">
   <link rel="stylesheet" href="/css/pedidos.css">
-  <link rel="stylesheet" href="/css/materiales.css">
-  <link rel="stylesheet" href="/css/historial.css">
-  <link rel="stylesheet" href="/css/modal.css">
+  <link rel="stylesheet" href="/css/detalle-pedido.css">
+  <link rel="stylesheet" href="/css/insumos.css">
+  <link rel="stylesheet" href="/css/historial-venta.css">
+   <link rel="stylesheet" href="./public/tailwind.css">
+   <link rel="stylesheet" href="/css/pedido.css">
+   <link rel="stylesheet" href="/css/nueva_venta.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <title>Floresca · Tailwind</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: "#2f6a4f",
+            olive: "#bcd1bb",
+            ink: "#111827",
+            muted: "#6b7280",
+            panel: "#ffffff",
+            panel2: "#eef3ef",
+          },
+          boxShadow: {
+            panel: "0 8px 24px rgba(15,23,42,.10)",
+            soft: "0 10px 30px rgba(18,40,33,.08)",
+            kpi: "rgba(188,209,187,1) 6px 6px, rgba(188,209,187,.30) 12px 12px, rgba(188,209,187,.15) 18px 18px",
+          },
+          borderRadius: { xl: "12px" },
+          screens: { hd: { raw: "(max-width:1366px) and (max-height:768px)" } },
+          fontFamily: { inter: ["Inter","system-ui","Segoe UI","Helvetica","Arial"] },
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style type="text/tailwindcss">
+    @layer base{
+      html,body{ @apply h-full; }
+      body{
+        background:
+          radial-gradient(900px 500px at 8% 0%, #f0f7f2 0%, transparent 60%),
+          radial-gradient(1100px 650px at 100% 10%, #f4faf6 0%, transparent 70%),
+          linear-gradient(#ffffff,#ffffff);
+        @apply font-inter text-ink;
+      }
+    }
+    @layer components{
+      .card      { @apply bg-white border border-[#e6ece7] rounded-xl shadow-panel; }
+      .kpi-card  { @apply card p-4 md:p-5 shadow-kpi; }
+      .btn-main  { @apply inline-flex items-center gap-2 h-10 px-4 rounded-full bg-brand text-white font-semibold shadow-[0_8px_20px_rgba(47,106,79,.25)] hover:brightness-110 active:translate-y-[1px] transition; }
+      .btn-icon  { @apply inline-grid place-items-center w-8 h-8 rounded-md border border-[#e6ece7] bg-white text-brand hover:bg-[#f6faf7] transition; }
+
+      /* ===== Filtro de estado ===== */
+      .state-filter{ @apply flex items-center gap-2; }
+      .state-chip{ @apply relative rounded-full px-3.5 py-1.5 text-[13px] font-semibold bg-transparent text-ink/70 hover:text-ink transition; }
+      .state-chip[data-active="true"]{ @apply text-ink; }
+      .state-chip[data-active="true"]::after{ content:""; @apply absolute left-3 right-3 -bottom-1 h-[3px] rounded-full bg-brand/75; }
+      .state-count{ @apply ml-2 inline-flex items-center justify-center min-w-[22px] h-[22px] text-[11px] font-bold rounded-full bg-[#eaf3ee] text-brand; }
+
+      /* ===== Badges ===== */
+      .pill      { @apply inline-flex items-center rounded-full border border-transparent px-2.5 py-1 text-[12px] font-bold; }
+      .pill-pend { @apply text-[#92400e] bg-[#fef3c7] border-[#f59e0b33]; }
+      .pill-proc { @apply text-[#1e3a8a] bg-[#dbeafe] border-[#3b82f633]; }
+      .pill-done { @apply text-[#065f46] bg-[#d1fae5] border-[#10b98133]; }
+
+      .link-det  { @apply inline-flex items-center rounded-lg border border-[#dbe2dd] bg-white text-[12px] px-2 py-1 hover:bg-[#f6f8f6]; }
+      .th        { @apply sticky top-0 z-10 bg-[rgba(188,209,187,.12)] text-black font-bold text-left py-3 px-3; }
+
+       /* Fondo del aside similar a tu captura */
+  .asidebar{
+    @apply sticky top-0 h-screen w-[270px] px-2 py-6;
+    
+  }
+
+  /* Botón del menú (estado base) */
+  .nav-link{
+    @apply relative flex items-center gap-3 h-12 px-5 rounded-full
+           text-white/85 hover:text-white hover:bg-white/10
+           ring-1 ring-transparent transition-all duration-200;
+  }
+  .nav-link i{ @apply h-[18px] w-[18px] text-white/85; }
+  .nav-text{ @apply font-semibold; }
+
+  /* Activo como píldora blanca con sombra */
+  .nav-active{
+    @apply bg-white text-black shadow-[0_10px_30px_rgba(18,40,33,.12)]
+           ring-1 ring-[#e6ece7];
+  }
+  .nav-active i{ @apply text-black; }
+  .nav-active .nav-text{ @apply text-black font-extrabold; }
+
+  /* Elimina cualquier barrita lateral heredada */
+  .nav-active::before{ content: none !important; }
+}
+    
+  </style>
 </head>
+<body class="min-h-full">
+  <div class="min-h-full flex">
+<!-- SIDEBAR -->
+<aside class="asidebar">
+  <div class="flex flex-col items-center gap-3 pb-5 logo">
+    <div class="w-16 h-16 rounded-2xl bg-white shadow-soft grid place-items-center overflow-hidden ring-1 ring-[#e6ece7] img-logo">
+      <img src="/logo2.jpg" alt="Logo Floresca" class="w-14 h-14 object-contain">
+    </div>
+    <div class="text-center">
+      <h1 class="text-xl font-extrabold tracking-tight text-brand">Floresca</h1>
+      <p class="text-[11px] text-ink/50 font-semibold uppercase tracking-wider">Gestor</p>
+    </div>
+  </div>
 
-<body>
-<div class="spot one"></div>
-<div class="spot two"></div>
-<div class="spot three"></div>
-  <div class="app">
-    <aside class="sidebar">
-      <div class="logo">
-        <img src="/logo2.jpg" alt="Logo de Floresca">
-        <h1 class="h1">Floresca</h1>
+  <nav id="sidebar" class="mt-2 grid gap-1 px-2">
+    <a href="#" class="nav-link" data-nav="dashboard">
+      <i class="fas fa-box"></i>
+      <span class="nav-text">Pedidos</span>
+    </a>
+
+    <a href="#" class="nav-link" data-nav="materiales">
+      <i class="fas fa-cubes"></i>
+      <span class="nav-text">Insumos</span>
+    </a>
+
+    <a href="#" class="nav-link" data-nav="productos">
+      <i class="fas fa-tags"></i>
+      <span class="nav-text">Productos</span>
+    </a>
+
+    <a href="#" class="nav-link" data-nav="historial">
+      <i class="fas fa-chart-line"></i>
+      <span class="nav-text">Reportes</span>
+    </a>
+  </nav>
+</aside>
+
+    <!-- MAIN -->
+    <main class="flex-1 min-w-0">
+ <!-- ===================== PEDIDOS ===================== -->
+<section id="view-dashboard" data-view="dashboard" class="max-w-[1500px] mx-auto px-6 py-6">
+  <!-- Título -->
+  <h2 class="text-3xl font-extrabold leading-tight mb-4">Mis pedidos</h2>
+
+
+   <div class="mt-6 card filtro-pedidos">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 p-4 ">
+      <!-- Periodo: Mes -->
+      <div >
+        <label for="filMes" class="block text-xs font-medium text-slate-500 mb-1 ">Por mes</label>
+        <input id="filMes-pedido" type="month"
+               class="w-full rounded-full border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500" />
       </div>
-
-      <nav class="nav">
-        <a href="#" class="active" data-view="dashboard">
-          <span class="icon" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M3 10.5 12 3l9 7.5"></path>
-              <path d="M5 10v10h14V10"></path>
-            </svg>
-          </span> Inicio
-        </a>
-        <a href="#" data-view="materiales">
-          <span class="icon" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 16V8a2 2 0 0 0-1-1.73L13 2.27a2 2 0 0 0-2 0L4 6.27A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.73z"></path>
-              <path d="M3.3 7.7 12 12l8.7-4.3"></path>
-            </svg>
-          </span> Materiales
-        </a>
-
-        <a href="#" data-view="log">
-          <span class="icon" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="9"></circle>
-              <path d="M12 7v5l3 3"></path>
-            </svg>
-          </span> Historial
-        </a>
-      </nav>
-    </aside>
-
-    <main class="main">
-
-      <section id="view-dashboard" class="panel view-root">
-        <div class="header">
-          <div class="h1">Resumen de pedidos</div>
+      <!-- Periodo: Año -->
+      <div>
+        <label for="filAnio" class="block text-xs font-medium text-slate-500 mb-1">Por estado</label>
+        <select id="filEstado-pedido"
+                class="w-full rounded-full border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500">
+          <option value="PENDIENTE">Pendientes</option>
+          <option value="EN PROCESO">En proceso</option>
+          <option value="ENTREGADO">Completados</option>
+          <!-- se completa por JS con años presentes en la tabla -->
+        </select>
+      </div>
+      <!-- Tipo de venta -->
+      <div>
+         <button id="btnAgregarPedido"
+              class="agregar-pedido inline-flex items-center justify-center rounded-full bg-slate-300 text-slate-800 font-semibold px-6 py-2.5 hover:bg-slate-400 transition">
+        Añadir pedido
+      </button>
+      </div>
+      <!-- Total de pedidos -->
+      <div class="flex items-end justify-between lg:justify-end">
+        <div class="text-right">
+          <div class="text-xs text-slate-500 pt-1 pr-10">Total de pedidos</div>
+          <div class="text-4xl font-extrabold tabular-nums pr-10" id="lblTotalPedidos">0</div>
         </div>
+      </div>
+    </div>
+  </div>
+  
 
-        <div class="kpi-grid">
-  <div class="kpi-card">
-    <div class="kpi-label">Pendientes</div>
-    <div class="kpi-value" id="kpiPendientes">0</div>
+ <!-- Tabla estilo boceto -->
+<div class="border-none  mt-[50px]">
+  <!-- Header fijo -->
+  <div>
+    <div class="grid grid-cols-[1.1fr_1.3fr_1.2fr_1fr_.9fr_110px] items-center gap-4 bg-slate-300 text-slate-700 rounded-full px-4 py-2 text-[12px] font-extrabold uppercase tracking-wider mb-[40px] header-pedidos">
+      <div class="text-left">Fecha</div>
+      <div class="text-left">Cliente</div>
+      <div class="text-left">Producto</div>
+      <div class="text-left">Estado</div>
+      <div class="text-right">Total</div>
+      <div class="text-center">Acciones</div>
+    </div>
   </div>
-  <div class="kpi-card">
-    <div class="kpi-label">En proceso</div>
-    <div class="kpi-value" id="kpiProceso">0</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">Entregados</div>
-    <div class="kpi-value" id="kpiListos">0</div>
+
+  <!-- Scroll solo en el cuerpo -->
+  <div class="overflow-y-auto max-h-[550px] mt-5 pr-1">
+    <div id="tbodyPedidos" class="space-y-3 pt-5">
+      <!-- Aquí se insertan las filas dinámicas -->
+    </div>
   </div>
 </div>
-
-        <div class="dashboard-actions">
-          <!--<button id="btnAgregarPedido" class="btn-rect">c</button>-->
-          <button id="btnAgregarPedido" class="button-30" role="button">Agregar pedido</button>
-        </div>
-
-        <!-- Split: tabla izquierda + panel detalle derecha -->
-        <div class="dashboard-split">
-          <!-- LISTA DE PEDIDOS -->
-          <div class="tabla-card pedidos-card">
-            <div class="tabla-scroll">
-              <table class="tabla pedidos" aria-label="Listado de pedidos">
-                <colgroup>
-                  <col style="width:166px"><!-- Cliente -->
-                  <col style="width:199px"><!-- Producto -->
-                  <col style="width:176px"><!-- Fecha de entrega -->
-                  <col style="width:176px"><!-- Estado -->
-                  <col style="width:189px"><!-- Total -->
-                  <col style="width:100px"><!-- Acciones -->
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th>Cliente</th>
-                    <th>Producto</th>
-                    <th>Fecha de entrega</th>
-                    <th>Estado</th>
-                    <th>Total</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody id="tbodyPedidos">
-                  <tr class="row-empty">
-                    <td colspan="6">Sin pedidos pendientes</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- PANEL DETALLE (ticket look) -->
-          <aside id="panelDetalle" class="dash-detail detalle-card">
-            <h4 class="card-title">Detalle del pedido</h4>
-
-            <div id="detalleMeta" class="ticket-meta"> Seleccione un pedido para ver el detalle</div>
-
-            <!-- área scroll de items -->
-            <div class="ticket-body tabla-scroll">
-              <table class="tabla mini-detalle" aria-label="Productos del pedido" style="width:100%">
-                <thead>
-                  <tr>
-                    <th>Producto</th>
-                    <th style="text-align:left">Subtotal</th>
-                  </tr>
-                </thead>
-                <tbody id="detalleBodyPanel"><!-- filas dinámicas --></tbody>
-              </table>
-            </div>
-
-            <!-- línea punteada antes del total -->
-            <div class="ticket-sep"></div>
-
-            <!-- total alineado a la derecha -->
-            <div class="ticket-total">
-              <span class="label">Total:</span>
-              <span class="value" id="detalleTotalPanel">$ 0,00</span>
-            </div>
-          </aside>
-
-        </div>
-      </section>
-
-      <section id="view-log" class="panel view-root hidden">
-  <!-- Header -->
-  <div class="header">
-    <div>
-      <div class="h1" style="font-size:24px">Historial de ventas</div>
-      <div class="subtitle" style="color:var(--ink-2)">Pedidos guardados y cambios</div>
-    </div>
-    <div style="display:flex; gap:10px; align-items:center;">
-      <input id="logSearch" class="input" type="search" placeholder="Buscar cliente, producto o ID" style="width:320px">
-      <input id="logMes" class="input" type="month" title="Filtrar por mes" style="width:170px">
-      <button id="logRefresh" class="btn" type="button">Actualizar</button>
-    </div>
-  </div>
-
-  <!-- KPIs con el mismo look -->
-  <div class="kpi-row" style="display:flex;gap:24px;align-items:center;margin:10px 0">
-    <div class="kpi" style="padding:12px 16px">
-      <div class="label">Ganancia mensual</div>
-      <div class="value" id="logTotalFiltrado" style="font-size:24px">$ 0</div>
-    </div>
-    <div class="kpi" style="padding:12px 16px">
-      <div class="label">Ganancia total</div>
-      <div class="value" id="logTotalGeneral" style="font-size:24px">$ 0</div>
-    </div>
-    <div class="kpi" id="kpi-balance" style="padding:12px 16px">
-      <div class="label">Balance mensual
-      <span id="balancePct" class="kpi-chip">—</span>
-      </div>
-      <div class="value" id="balanceValue" style="font-size:24px">$ 0</div>
-    </div>
-  </div>
-  
-
-  <!-- Acciones -->
-  <div class="historial-actions" role="toolbar" aria-label="Acciones del historial" style="margin:6px 0 12px 0; display:flex; gap:10px;">
-    <button id="btnAgregarVenta" class="button-30" type="button">Agregar venta</button>
-  </div>
-
-  <!-- === LISTA + DETALLE (mismo layout que Pedidos) === -->
-  <div class="dashboard-split" id="log-split">
-    <!-- LISTA HISTORIAL -->
-    <div class="tabla-card historial-card">
-      <div class="tabla-scroll">
-        <table class="tabla historial" aria-label="Historial de ventas">
-          <colgroup>
-            <col style="width:166px"><!-- # -->
-            <col style="width:199px"><!-- Fecha -->
-            <col style="width:176px"><!-- Cliente -->
-            <col style="width:176px"><!-- Producto -->
-            <col style="width:199px"><!-- Tipo de venta -->
-            <col style="width:80px"><!-- Total -->
-          </colgroup>
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>Cliente</th>
-              <th>Producto</th>
-              <th>Tipo de venta</th>
-              <th>Total</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="tbodyHistorial">
-            <!-- El JS de ventas renderea en “Producto”:
-                 <button type="button" class="btn-detalle" data-kind="venta" data-id="ID_PEDIDO">Ver detalle</button>
-            -->
-            <tr class="row-empty"><td colspan="6">Sin registros en el historial</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- PANEL DETALLE (IDs únicos para Historial) -->
-    <aside id="panelDetalleLog" class="dash-detail detalle-card">
-      <h4 class="card-title">Detalle de la venta</h4>
-
-      <div id="detalleMetaLog" class="ticket-meta">Seleccioná una venta para ver el detalle</div>
-
-      <div class="ticket-body tabla-scroll">
-        <table class="tabla mini-detalle" aria-label="Productos de la venta" style="width:100%">
-          <thead>
-            <tr>
-              <th>Producto</th>
-              <th style="text-align:right">Cant.</th>
-              <th style="text-align:right">Unitario</th>
-              <th style="text-align:right">Subtotal</th>
-            </tr>
-          </thead>
-          <tbody id="detalleBodyLog"><tr><td colspan="4">—</td></tr></tbody>
-        </table>
-      </div>
-
-      <div class="ticket-sep"></div>
-
-      <div class="ticket-total">
-        <span class="label">Total:</span>
-        <span class="value" id="detalleTotalLog">$ 0,00</span>
-      </div>
-    </aside>
-  </div>
+ 
 </section>
 
 
-      
 
-      <section id="view-materiales" class="panel view-root hidden">
-        <div class="header">
-          <div>
-            <div class="h1" style="font-size:24px">Materiales</div>
-            <div class="subtitle" style="color:var(--ink-2)">Cargá tus compras para medir costos</div>
-          </div>
-          <div style="display:flex;gap:10px;align-items:center">
-            <input id="matSearch" class="input" type="search" placeholder="Buscar material o proveedor">
-            <input id="matMes" class="input" type="month" title="Filtrar por mes">
+     <!-- ===================== MATERIALES (refactor 2025-10-27) ===================== -->
+<section id="view-materiales" data-view="materiales" class="overflow-hidden max-w-[1380px] mx-auto px-6 py-6">
+  <!-- Header fijo (solo título + subtítulo) -->
+
+      <h1 class="text-2xl font-extrabold tracking-tight text-slate-800">Insumos</h1>
+      <p class="text-sm text-slate-500 p-materiales">Cargá tus compras para medir costos</p>
+ 
+
+  <!-- KPIs -->
+  <div class="mt-5">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-6">
+      <!-- KPI: Gasto del mes -->
+      <div class="rounded-lg border border-slate-200 bg-white shadow-sm p-4 kpi-card-materiales">
+        <p class="text-sm text-slate-500 font-semibold">Gasto del mes</p>
+        <div class="mt-1 flex items-end gap-2">
+          <span id="kpi-invertido-mensual" data-kpi="mensual" class="text-2xl font-extrabold text-slate-900">$ 0,00</span>
+          <span class="text-xs text-slate-400" data-kpi-meta="mes-actual"></span>
+        </div>
+      </div>
+
+      <!-- KPI: Última compra -->
+      <div class="rounded-lg border border-slate-200 bg-white shadow-sm p-4 kpi-card-materiales">
+        <p class="text-sm text-slate-500 font-semibold">Última compra</p>
+        <div class="mt-1">
+          <span id="kpi-ultima-monto" data-kpi="ultima" class="text-2xl font-extrabold text-slate-900">—</span>
+          <span class="block text-xs text-slate-400" data-kpi-meta="ultima"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ 
+
+  <!-- Formulario (sin el botón; el botón quedó en la barra de acciones) -->
+  <form id="form-material" class="mt-6">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div class="flex flex-col">
+        <label for="mat-fecha" class="text-sm font-medium text-slate-700">Fecha</label>
+        <input id="mat-fecha" name="fecha" data-field="fecha" type="date"
+               class="mt-1 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 h-8" />
+      </div>
+      <div class="flex flex-col xl:col-span-2">
+        <label for="mat-nombre" class="text-sm font-medium text-slate-700">Producto</label>
+        <input id="mat-nombre" name="material" data-field="material" type="text" placeholder="Ej: Cinta coral"
+               class=" h-8 mt-1 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500" />
+      </div>
+      <div class="flex flex-col">
+        <label for="mat-cantidad" class="text-sm font-medium text-slate-700">Cantidad</label>
+        <input id="mat-cantidad" name="cantidad" data-field="cantidad" type="number" min="1" step="1" inputmode="numeric"
+               class="h-8 mt-1 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500" />
+      </div>
+      <div class="flex flex-col">
+        <label for="mat-precio" class="text-sm font-medium text-slate-700">Precio unit. (ARS)</label>
+        <input id="mat-precio" name="precioUnit" data-field="precioUnit" type="number" step="0.01" placeholder="Ej: 2500"
+               class="h-8 mt-1 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500" />
+      </div>
+      <div class="flex flex-col">
+        <label for="mat-total" class="text-sm font-medium text-slate-700">Total</label>
+        <input id="mat-total" name="total" data-field="total" type="text" readonly
+               class="h-8 mt-1 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none" value="$ 0,00" />
+      </div>
+      <div class="flex flex-col xl:col-span-2">
+        <label for="mat-proveedor" class="text-sm font-medium text-slate-700">Proveedor (opcional)</label>
+        <input id="mat-proveedor" name="proveedor" data-field="proveedor" type="text" placeholder="Ej: Mayorista Central"
+               class="h-8 mt-1 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500" />
+      </div>
+    </div>
+    <div class="mt-3">
+      <p data-msg="ok" class="hidden text-sm text-emerald-700"></p>
+      <p data-msg="error" class="hidden text-sm text-red-600"></p>
+    </div>
+  </form>
+
+   <!-- Barra de acciones: botón + filtros (reubicados aquí) -->
+  <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <!-- Botón principal -->
+    <div class="flex items-center gap-3">
+      <button type="button" data-action="save-material"
+              class="rounded-md bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 active:scale-[.99] btn-guardar-material">
+        Registrar insumo
+      </button>
+    </div>
+
+    <!-- Filtros (ahora al lado del botón) -->
+    <div class="flex items-center gap-3">
+      <!-- Buscar por material o proveedor -->
+      <label class="sr-only" for="mat-search">Buscar</label>
+      <div class="relative">
+        <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z"/>
+        </svg>
+        <input id="mat-search" data-filter="q" type="search" placeholder="Buscar material o proveedor"
+               class="w-72 rounded-md border border-slate-200 bg-white pl-10 pr-3 py-2 text-sm placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500" />
+      </div>
+
+      <!-- Filtro por mes -->
+      <label class="sr-only" for="mat-month">Mes</label>
+      <div class="relative">
+        <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3M3 11h18M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"/>
+        </svg>
+        <input id="mat-month" data-filter="month" type="month"
+               class="w-56 rounded-md border border-slate-200 bg-white pl-10 pr-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla Materiales -->
+  <div class="mt-8 rounded-lg border border-slate-200 bg-white tabla-materiales">
+    <div class="max-h-[400px] overflow-auto div-tabla-insumos">
+      <table class="min-w-full text-sm">
+        <thead class="sticky top-0 bg-white shadow-[0_1px_0_0_#e5e7eb] z-10">
+          <tr class="text-left text-slate-600">
+            <th class="px-5 py-3 w-[120px]">Fecha</th>
+            <th class="px-5 py-3 min-w-[280px]">Material</th>
+            <th class="px-5 py-3 w-[80px] text-right">Cant.</th>
+            <th class="px-5 py-3 w-[140px] text-right">Precio unit.</th>
+            <th class="px-5 py-3 w-[140px] text-right">Total</th>
+            <th class="px-5 py-3 min-w-[160px]">Proveedor</th>
+            <th class="px-5 py-3 w-[80px] text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="mat-tbody" data-table="materiales" class="divide-y divide-slate-100 text-slate-800">
+          <!-- demo -->
+          <tr class="hover:bg-red-500">
+            <td class="px-5 py-3">13/10/2025</td>
+            <td class="px-5 py-3">plasticola y papel</td>
+            <td class="px-5 py-3 text-right">1</td>
+            <td class="px-5 py-3 text-right">$ 17.000,00</td>
+            <td class="px-5 py-3 text-right">$ 17.000,00</td>
+            <td class="px-5 py-3">librería</td>
+            <td class="px-5 py-3">
+              <div class="flex items-center justify-center gap-2">
+                <button type="button" data-action="delete-material" data-id="demo-1"
+                        class="group inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 hover:bg-red-50">
+                  <svg class="h-4 w-4 text-slate-500 group-hover:text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m1 0v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7m3 4v6m4-6v6m4-6v6"/>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <!-- template -->
+          <tr id="row-material-template" data-template="material" class="hidden">
+            <td class="px-5 py-3" data-cell="fecha"></td>
+            <td class="px-5 py-3" data-cell="material"></td>
+            <td class="px-5 py-3 text-right" data-cell="cantidad"></td>
+            <td class="px-5 py-3 text-right" data-cell="precioUnit"></td>
+            <td class="px-5 py-3 text-right" data-cell="total"></td>
+            <td class="px-5 py-3" data-cell="proveedor"></td>
+            <td class="px-5 py-3">
+              <div class="flex items-center justify-center gap-2">
+                <button type="button" data-action="delete-material" data-id=""
+                        class="group inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 hover:bg-red-50">
+                  <svg class="h-4 w-4 text-slate-500 group-hover:text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m1 0v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7m3 4v6m4-6v6m4-6v6"/>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr id="mat-empty" class="hidden">
+            <td colspan="7" class="px-5 py-10 text-center text-slate-500">No hay materiales cargados para el período seleccionado.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal confirm (markup) -->
+  <div id="modal-confirm-delete" data-modal="confirm-delete" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/40 p-4">
+    <div class="w-full max-w-md rounded-lg bg-white shadow-xl">
+      <div class="px-5 py-4 border-b border-slate-200"><h3 class="text-base font-semibold text-slate-800">Eliminar material</h3></div>
+      <div class="px-5 py-4 text-sm text-slate-600">¿Seguro que querés eliminar este material? Esta acción no se puede deshacer.</div>
+      <div class="px-5 py-4 border-t border-slate-200 flex justify-end gap-2">
+        <button type="button" data-action="cancel-delete" class="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-medium hover:bg-slate-50">Cancelar</button>
+        <button type="button" data-action="confirm-delete" class="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-700">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+      <!-- ===================== PRODUCTOS ===================== -->
+      <section id="view-productos" data-view="productos" class="hidden max-w-[1380px] mx-auto px-6 py-6">
+        <!-- (idéntico al tuyo, sin cambios funcionales) -->
+        <!-- … contenido de Productos tal cual enviaste … -->
+        <!-- Por brevedad lo mantengo igual que tu HTML original -->
+        <!-- -------------- INICIO TABLA PRODUCTOS -------------- -->
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-4">
+          <h2 class="text-3xl font-extrabold tracking-tight">Productos</h2>
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="relative">
+              <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z"/></svg>
+              <input type="search" placeholder="Buscar producto…" class="w-72 rounded-full border border-slate-200 bg-white pl-10 pr-3 py-2 text-sm placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500" />
+            </div>
+            <div class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm">
+              <span class="text-slate-500">Mostrando</span>
+              <select class="rounded-md border border-slate-200 bg-white px-2 py-1 outline-none text-slate-700">
+                <option>10</option><option>20</option><option>50</option>
+              </select>
+            </div>
+            <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold hover:bg-slate-50">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M6 12h12M9 18h6" stroke-linecap="round"/></svg> Filtros
+            </button>
+            <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold hover:bg-slate-50">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v10m0 0l-3-3m3 3 3-3M4 19h16" stroke-linecap="round" stroke-linejoin="round"/></svg> Exportar
+            </button>
+            <button type="button" class="inline-flex items-center gap-2 rounded-xl bg-brand text-white px-4 py-2 text-sm font-semibold shadow-[0_8px_20px_rgba(47,106,79,.25)] hover:brightness-110">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg> Agregar producto
+            </button>
           </div>
         </div>
-
-        <div style="display:flex;gap:24px;align-items:center;margin:10px 0">
-          <div class="kpi" style="padding:12px 16px">
-            <div class="label">Invertido (mensual)</div>
-            <div class="value" id="matTotalFiltrado" style="font-size:24px">$ 0</div>
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-panel overflow-hidden">
+          <div class="flex items-center justify-between px-4 md:px-6 py-3 border-b border-slate-100 bg-slate-50/50">
+            <span class="text-sm font-semibold text-slate-600">Listado</span>
+            <div class="flex items-center gap-2 text-xs text-slate-400"><span>Orden: Nombre</span><span>•</span><span>Ascendente</span></div>
           </div>
-          <div class="kpi" style="padding:12px 16px">
-            <div class="label">Invertido total</div>
-            <div class="value" id="matTotalGeneral" style="font-size:24px">$ 0</div>
-          </div>
-        </div>
-
-        <form id="formMaterial">
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
-            <div><label>Fecha</label><input id="matFecha" class="input" type="date" required></div>
-            <div><label>Material</label>
-              <input id="matNombre" class="input" type="text" list="dl-materiales" required placeholder="Ej: Cinta coral">
-              <datalist id="dl-materiales"></datalist>
-            </div>
-            <div><label>Cantidad</label><input id="matCantidad" class="input" type="number" min="0" step="0.01" required value="1"></div>
-            <div><label>Precio unit. (ARS)</label><input id="matPrecioUnit" class="input" type="number" min="0" step="0.01" required placeholder="Ej: 2500"></div>
-            <div><label>Total</label><input id="matTotal" class="input" type="text" readonly value="$ 0,00"></div>
-            <div><label>Proveedor (opcional)</label>
-              <input id="matProveedor" class="input" type="text" list="dl-proveedores" placeholder="Ej: Mayorista Central">
-              <datalist id="dl-proveedores"></datalist>
-            </div>
-          </div>
-          <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
-            <button type="submit" class="btn">Guardar material</button>
-          </div>
-        </form>
-
-        <div class="tabla-card materiales-card">
-          <div class="tabla-scroll">
-            <table class="tabla materiales" aria-label="Listado de materiales">
-              <colgroup>
-                <col style="width:160px">
-                <col style="width:160px">
-                <col style="width:150px">
-                <col style="width:150px">
-                <col style="width:150px">
-                <col style="width:150px">
-                <col style="width:60px">
-              </colgroup>
-
-              <thead>
-                <tr>
-                  
-                  <th>Fecha</th>
-                  <th>Material</th>
-                  <th>Cant.</th>
-                  <th>Precio unit.</th>
-                  <th>Total</th>
-                  <th>Proveedor</th>
-                  <th></th>
-                  
+          <div class="overflow-auto">
+            <table class="min-w-full text-sm">
+              <thead class="bg-white sticky top-0 z-10 shadow-[0_1px_0_0_#e5e7eb]">
+                <tr class="text-left text-slate-500">
+                  <th class="px-6 py-4 font-semibold">Producto</th>
+                  <th class="px-4 py-4 font-semibold">ID producto</th>
+                  <th class="px-4 py-4 font-semibold">Precio</th>
+                  <th class="px-4 py-4 font-semibold">Stock</th>
+                  <th class="px-4 py-4 font-semibold">Tipo</th>
+                  <th class="px-4 py-4 font-semibold">Estado</th>
+                  <th class="px-4 py-4 font-semibold text-center">Acción</th>
                 </tr>
               </thead>
-
-              <tbody id="tbodyMateriales">
-                <tr class="row-empty"><td colspan="7">Sin materiales cargados</td></tr>
+              <tbody class="divide-y divide-slate-100">
+                <!-- Fila demo 1 -->
+                <tr class="hover:bg-slate-50/50">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="h-8 w-8 rounded-full bg-gradient-to-br from-amber-300 to-pink-400 grid place-items-center text-white text-xs font-black">🍒</div>
+                      <div><div class="font-semibold">Cherry Delight</div><div class="text-xs text-slate-400">Postre</div></div>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4 text-slate-600">#KP287400</td>
+                  <td class="px-4 py-4 tabular-nums">$ 90,50</td>
+                  <td class="px-4 py-4">350 pcs</td>
+                  <td class="px-4 py-4">Dessert</td>
+                  <td class="px-4 py-4"><span class="inline-flex items-center rounded-full bg-amber-100 text-amber-700 text-xs font-semibold px-2.5 py-1">Pendiente</span></td>
+                  <td class="px-4 py-4">
+                    <div class="flex justify-center gap-2">
+                      <button class="inline-grid h-8 w-8 place-items-center rounded-md border border-slate-200 hover:bg-slate-50" title="Editar"><svg class="h-4 w-4 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+                      <button class="inline-grid h-8 w-8 place-items-center rounded-md border border-slate-200 hover:bg-red-50" title="Eliminar"><svg class="h-4 w-4 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                    </div>
+                  </td>
+                </tr>
+                <!-- Fila demo 2 -->
+                <tr class="hover:bg-slate-50/50">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="h-8 w-8 rounded-full bg-lime-300 grid place-items-center text-lime-900 text-xs font-black">🥝</div>
+                      <div><div class="font-semibold">Kiwi</div><div class="text-xs text-slate-400">Fruta</div></div>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4 text-slate-600">#TF618513</td>
+                  <td class="px-4 py-4 tabular-nums">$ 12,00</td>
+                  <td class="px-4 py-4">650 kg</td>
+                  <td class="px-4 py-4">Fruits</td>
+                  <td class="px-4 py-4"><span class="inline-flex items-center rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold px-2.5 py-1">Activo</span></td>
+                  <td class="px-4 py-4">
+                    <div class="flex justify-center gap-2">
+                      <button class="inline-grid h-8 w-8 place-items-center rounded-md border border-slate-200 hover:bg-slate-50" title="Editar"><svg class="h-4 w-4 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+                      <button class="inline-grid h-8 w-8 place-items-center rounded-md border border-slate-200 hover:bg-red-50" title="Eliminar"><svg class="h-4 w-4 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                    </div>
+                  </td>
+                </tr>
+                <!-- (resto de filas demo como tu HTML) -->
               </tbody>
             </table>
           </div>
+          <div class="flex items-center justify-between px-4 md:px-6 py-3 border-t border-slate-100 bg-slate-50/50">
+            <button class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Anterior</button>
+            <div class="flex items-center gap-1">
+              <button class="h-8 w-8 rounded-md text-xs font-semibold text-slate-500 hover:bg-white border border-transparent">01</button>
+              <button class="h-8 w-8 rounded-md text-xs font-semibold text-slate-500 hover:bg-white border border-transparent">02</button>
+              <button class="h-8 w-8 rounded-md text-xs font-bold text-white bg-slate-900">03</button>
+              <button class="h-8 w-8 rounded-md text-xs font-semibold text-slate-500 hover:bg-white border border-transparent">04</button>
+              <button class="h-8 w-8 rounded-md text-xs font-semibold text-slate-500 hover:bg-white border border-transparent">…</button>
+              <button class="h-8 w-8 rounded-md text-xs font-semibold text-slate-500 hover:bg-white border border-transparent">10</button>
+            </div>
+            <button class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Siguiente</button>
+          </div>
         </div>
       </section>
+
+      <!-- ===================== HISTORIAL DE VENTAS (tal cual) ===================== -->
+      <section id="view-historial" data-view="historial" class="overflow-hidden max-w-[1500px] mx-auto px-6 py-6">
+  <!-- ========== HEADER (= título + CTA) ========== -->
+
+  <h2 class="text-3xl font-extrabold tracking-tight">Registro de ventas</h2>
+   
+  
+
+<!-- ========== KPIs (90px alto, centrados) ========== -->
+<div class="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+  <!-- KPI 1 -->
+  <article class="kpi-card h-[90px] flex flex-col justify-center items-center p-4 rounded-xl bg-white shadow">
+    <p class="text-[13px] text-muted">Ganancia mensual</p>
+    <h2 class="text-2xl font-extrabold tabular-nums">$ 722.780,00</h2>
+    <small class="text-[11px] text-slate-400">vs mes anterior: +12,4%</small>
+  </article>
+
+  <!-- KPI 2 -->
+  <article class="kpi-card h-[90px] flex flex-col justify-center items-center p-4 rounded-xl bg-white shadow">
+    <p class="text-[13px] text-muted">Ganancia total</p>
+    <h2 class="text-2xl font-extrabold tabular-nums">$ 2.915.420,00</h2>
+    <small class="text-[11px] text-slate-400">desde 01/2025</small>
+  </article>
+
+  <!-- KPI 3 -->
+  <article  id="kpi-balance" class="kpi-card-balance h-[90px] flex flex-col justify-center items-center p-4 rounded-xl bg-white shadow">
+    <header class="flex items-center justify-center w-full">
+      <p class="text-[13px] text-muted">Balance mensual</p>
+    </header>
+    <h2 id="kpi-balance-monto" data-sign="pos"
+        class="mt-1 text-red-600">
+      $ 576.180,00
+    </h2>
+  </article>
+
+</div>
+
+  <!-- ========== FILTROS ========== -->
+  <div class="mt-6 card filtro-ventas">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 p-4 ">
+      <!-- Periodo: Mes -->
+      <div >
+        <label for="filMes" class="block text-xs font-medium text-slate-500 mb-1 ">Por mes</label>
+        <input id="filMes-ventas" type="month"
+               class=" w-full rounded-full border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 h-8" />
+      </div>
+      <!-- Periodo: Año -->
+      <div>
+        <label for="filAnio" class="block text-xs font-medium text-slate-500 mb-1">Por año</label>
+        <select id="filAnio-ventas"
+                class="w-full rounded-full border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 h-8">
+          <option value="">Todos</option>
+          <!-- se completa por JS con años presentes en la tabla -->
+        </select>
+      </div>
+      <!-- Tipo de venta -->
+      <div>
+        <label for="filTipo" class="block text-xs font-medium text-slate-500 mb-1">Tipo de venta</label>
+        <select id="filTipo-ventas"
+                class="w-full rounded-full border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 h-8">
+          <option value="">Todos</option>
+          <option value="Pedido">Pedido</option>
+          <option value="Directo">Directo</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+      <!-- Total de pedidos -->
+      <div class="flex items-end justify-between lg:justify-end">
+        <div class="text-right">
+          <div class="text-xs text-slate-500">Total de pedidos</div>
+          <div class="text-2xl font-extrabold tabular-nums" id="TotalPedidos-ventas">0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+   <button type="button" id="btnAgregarVenta" class="btnAgregarVenta">
+      Agregar venta
+    </button>
+  <!-- ========== TABLA FULL WIDTH ========== -->
+  <div class="mt-6 card overflow-auto mt-50 tabla-ventas">
+
+    <div class="max-h-[500px]  overflow-auto div-tabla-ventas">
+      <table class="min-w-full table-fixed text-sm">
+        <colgroup>
+          <col style="width:120px" />
+          <col style="width:160px" />
+          <col style="width:120px" />
+          <col />
+          <col style="width:140px" />
+          <col style="width:88px" />
+        </colgroup>
+        <thead class="sticky top-0 z-10 bg-white shadow-[0_1px_0_0_#e5e7eb]">
+          <tr class="text-left text-slate-600">
+            <th class="px-5 py-3">Fecha</th>
+            <th class="px-5 py-3">Cliente</th>
+            <th class="px-5 py-3">Tipo</th>
+            <th class="px-5 py-3">Producto</th>
+            <th class="px-5 py-3 text-right">Total</th>
+            <th class="px-5 py-3 text-center"> </th>
+          </tr>
+        </thead>
+        <tbody id="ventasTbody" class="divide-y divide-slate-100">
+          <!-- Ejemplo -->
+          <tr class="transition-colors duration-200 ease-in-out hover:bg-[#dbf9a8]" data-id="5">
+            <td class="px-5 py-3 whitespace-nowrap">24/10/2025</td>
+            <td class="px-5 py-3 whitespace-nowrap">Gisela</td>
+            <td class="px-5 py-3">
+              <span class="inline-flex rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold px-2 py-0.5">Pedido</span>
+            </td>
+            <td class="px-5 py-3">
+              <a href="#" class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-700 js-ver-venta" data-id="5">
+                Ver detalle
+              </a>
+            </td>
+            <td class="px-5 py-3 text-right tabular-nums">$ 360.400,00</td>
+            <td class="px-5 py-3">
+              <div class="flex justify-center">
+                <button class="inline-grid h-8 w-8 place-items-center rounded-md border border-slate-200 hover:bg-red-50" title="Eliminar">
+                  <svg class="h-4 w-4 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="hidden" id="ventas-empty">
+            <td colspan="6" class="px-5 py-10 text-center text-slate-500">No hay ventas para el período seleccionado.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== DETALLE DE PEDIDO (ÚNICA) ===================== -->
+<section id="view-venta-detalle" data-view="venta-detalle" class="hidden max-w-[1380px] mx-auto px-6 py-6">
+  <div class="flex items-center justify-between gap-4 mb-5">
+    <div class="flex items-center gap-3">
+      <h2 class="text-3xl font-extrabold leading-tight">Detalle de pedido</h2>
+      <button id="btnVolverPedidos" class="inline-flex items-center gap-2 h-10 px-4 rounded-full border border-[#e6ece7] bg-white hover:bg-[#f6faf7]">
+        ← Volver
+      </button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+    <div class="bg-white border border-[#e6ece7] rounded-xl p-4 kpi-detalle">
+      <div class="text-[12px] text-muted">Cliente</div>
+      <div class="font-semibold text-ink" data-meta="cliente">—</div>
+    </div>
+    <div class="bg-white border border-[#e6ece7] rounded-xl p-4 kpi-detalle">
+      <div class="text-[12px] text-muted">Fecha</div>
+      <div class="font-semibold text-ink" data-meta="fecha">—</div>
+    </div>
+    <div class="bg-white border border-[#e6ece7] rounded-xl p-4 kpi-detalle">
+      <div class="text-[12px] text-muted">Tipo de venta</div>
+      <div class="font-semibold text-ink">Pedido</div>
+    </div>
+  </div>
+
+  <div class="bg-white border border-[#e6ece7] rounded-xl overflow-hidden tabla-detalle">
+    <table class="w-full text-sm border-separate border-spacing-0">
+      <thead class="bg-[#f8fbf9] text-muted">
+        <tr>
+          <th class="text-left font-bold px-5 py-3">Producto</th>
+          <th class="text-center font-bold px-3 py-3">Cantidad</th>
+          <th class="text-right font-bold px-3 py-3">Precio</th>
+          <th class="text-right font-bold px-5 py-3">Total</th>
+        </tr>
+      </thead>
+      <tbody id="ventaItemsBody"></tbody>
+    </table>
+  </div>
+
+  <aside class="bg-white border border-[#e6ece7] rounded-xl p-4 h-fit mt-4 max-w-md ml-auto aside-detalle-total">
+    <div class="space-y-2 text-sm">
+      <div class="flex justify-between"><span>Subtotal</span><span id="ventaSubtotalText" class="tabular-nums">$ 0,00</span></div>
+      <div class="border-t border-[#e6ece7] pt-2 mt-2 flex justify-between font-extrabold text-lg">
+        <span>Total</span><span id="ventaTotalText" class="tabular-nums">$ 0,00</span>
+      </div>
+    </div>
+  </aside>
+</section>
+
+<!-- ===================== NUEVO PEDIDO (Armado) ===================== -->
+<section id="view-pedido-nuevo" data-view="pedido-nuevo" class="hidden max-w-[1380px] mx-auto px-6 py-6">
+  <div class="flex items-center justify-between gap-4 mb-5">
+    <div class="flex items-center gap-3">
+      <h2 class="text-3xl font-extrabold leading-tight">Nuevo pedido</h2>
+      <button id="npVolver" class="inline-flex items-center gap-2 h-10 px-4 rounded-full border border-[#e6ece7] bg-white hover:bg-[#f6faf7]">
+        ← Volver
+      </button>
+    </div>
+  </div>
+
+  <!-- Meta del pedido -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+    <div class="bg-white border border-[#e6ece7] rounded-xl p-4 div-cliente">
+      <label class="text-[12px] text-muted block mb-1" for="npCliente">Cliente</label>
+      <input id="npCliente" type="text" placeholder="Ej: Sofía Ramírez"
+             class="w-full rounded-md border border-slate-0 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 h-8">
+    </div>
+    <div class="bg-white border border-[#e6ece7] rounded-xl p-4 div-fecha">
+      <label class="text-[12px] text-muted block mb-1" for="npFecha">Fecha de entrega</label>
+      <input id="npFecha" type="date"
+             class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 h-8">
+    </div>
+    <div class="bg-white border border-[#e6ece7] rounded-xl p-4 flex items-end div-item">
+      <button id="npAddItem" type="button"
+              class="btn-main h-10 px-4 rounded-full">
+        + Agregar producto
+      </button>
+    </div>
+  </div>
+
+  <!-- Items -->
+  <div class="bg-white border border-[#e6ece7] rounded-xl overflow-hidden tabla-pedido">
+    <div class="max-h-[calc(100vh-360px)] overflow-auto">
+      <table class="w-full text-sm border-separate border-spacing-0">
+        <thead class="bg-[#f8fbf9] text-muted sticky top-0 z-10">
+          <tr>
+            <th class="text-left font-bold px-5 py-3">Producto</th>
+            <th class="text-center font-bold px-3 py-3 w-[120px]">Cantidad</th>
+            <th class="text-right font-bold px-3 py-3 w-[160px]">Precio</th>
+            <th class="text-right font-bold px-5 py-3 w-[160px]">Subtotal</th>
+            <th class="text-center font-bold px-3 py-3 w-[68px]"> </th>
+          </tr>
+        </thead>
+        <tbody id="npItemsBody" class="align-middle"></tbody>
+
+        <!-- Fila plantilla (hidden) -->
+        <tbody class="hidden">
+          <tr id="npRowTpl">
+            <td class="px-5 py-2">
+              <input type="text" data-role="name" placeholder="Ej: Maceta 3D flor de loto"
+                     class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 h-8">
+            </td>
+            <td class="px-3 py-2 text-center">
+              <input type="number" min="1" step="1" value="1" data-role="qty"
+                     class="w-20 text-center rounded-md border border-slate-200 bg-white px-2 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 h-8">
+            </td>
+            <td class="px-3 py-2 text-right">
+              <input type="number" min="0" step="0.01" value="0" data-role="price"
+                     class="w-32 text-right rounded-md border border-slate-200 bg-white px-2 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 h-8">
+            </td>
+            <td class="px-5 py-2 text-right tabular-nums" data-role="subtotal">$ 0,00</td>
+            <td class="px-3 py-2">
+              <div class="flex justify-center">
+                <button type="button" data-action="del-row" id="btnEliminarP"
+                        class="inline-grid h-8 w-8 place-items-center rounded-md border border-slate-200 hover:bg-red-50" title="Eliminar">
+                  <svg class="h-4 w-4 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Totales + acciones -->
+  <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 mt-4 items-start ">
+    <aside class="bg-white border border-[#e6ece7] rounded-xl p-4 h-fit max-w-md md:ml-auto #view-pedido-nuevo ">
+      <div class="space-y-2 text-sm total-sub">
+        <div class="flex justify-between">
+          <span>Subtotal</span><span id="npSubtotalText" class="tabular-nums">$ 0,00</span>
+        </div>
+        <div class="border-t border-[#e6ece7] pt-2 mt-2 flex justify-between font-extrabold text-lg">
+          <span>Total</span><span id="npTotalText" class="tabular-nums">$ 0,00</span>
+        </div>
+      </div>
+    </aside>
+
+    <div class="flex flex-wrap gap-3 md:justify-end">
+      <button id="npCancelar" type="button"
+              class="inline-flex items-center gap-2 h-10 px-4 rounded-full border border-[#e6ece7] bg-white hover:bg-[#f6faf7] btn-cancelar">
+        Cancelar
+      </button>
+      <button id="npGuardar" type="button" class="btn-main">
+        Agregar pedido
+      </button>
+    </div>
+  </div>
+
+  <p id="npMsg" class="mt-3 text-sm hidden"></p>
+</section>
+
+<!-- ===================== NUEVA VENTA (Armado) ===================== -->
+<section id="view-venta-nueva" data-view="venta-nueva" class="hidden max-w-[1380px] mx-auto px-6 py-6">
+  <div class="flex items-center justify-between gap-4 mb-5">
+    <div class="flex items-center gap-3">
+      <h2 class="text-3xl font-extrabold leading-tight">Nueva venta</h2>
+      <button id="nvVolver" class="inline-flex items-center gap-2 h-10 px-4 rounded-full  bg-white ">
+        ← Volver
+      </button>
+    </div>
+  </div>
+
+  <!-- Meta de la venta -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+    <div class="bg-white border border-[#e6ece7] rounded-xl p-4 div-cliente">
+      <label class="text-[12px] text-muted block mb-1" for="nvCliente">Cliente</label>
+      <input id="nvCliente" type="text" placeholder="Ej: Sofía Ramírez"
+             class="w-full rounded-md border border-slate-0 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 h-8">
+    </div>
+    <div class="bg-white border border-[#e6ece7] rounded-xl p-4 div-fecha">
+      <label class="text-[12px] text-muted block mb-1" for="nvFecha">Fecha de entrega</label>
+      <input id="nvFecha" type="date"
+             class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 h-8">
+    </div>
+    <div class="bg-white border-none rounded-xl p-4 div-tipo">
+      <label class="text-[12px] text-muted block mb-1" for="nvTipo">Tipo de pedido</label>
+      <select id="nvTipo"
+              class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 h-8">
+        <option value="pedido">Pedido</option>
+        <option value="directo">Directo</option>
+        <option value="otro">Otro</option>
+      </select>
+    </div>
+    <div class="bg-white border border-[#e6ece7] rounded-xl p-4 flex items-end div-item">
+      <button id="nvAddItem" type="button"
+              class="btn-main h-10 px-4 rounded-full">
+        + Agregar producto
+      </button>
+    </div>
+  </div>
+
+  <!-- Items -->
+  <div class="bg-white border border-[#e6ece7] rounded-xl overflow-hidden tabla-venta">
+    <div class="max-h-[calc(100vh-360px)] overflow-auto">
+      <table class="w-full text-sm border-separate border-spacing-0">
+        <thead class="bg-[#f8fbf9] text-muted sticky top-0 z-10">
+          <tr>
+            <th class="text-left font-bold px-5 py-3">Producto</th>
+            <th class="text-center font-bold px-3 py-3 w-[120px]">Cantidad</th>
+            <th class="text-right font-bold px-3 py-3 w-[160px]">Precio</th>
+            <th class="text-right font-bold px-5 py-3 w-[160px]">Subtotal</th>
+            <th class="text-center font-bold px-3 py-3 w-[68px]"> </th>
+          </tr>
+        </thead>
+        <tbody id="nvItemsBody" class="align-middle"></tbody>
+
+        <!-- Fila plantilla (hidden) -->
+        <tbody class="hidden">
+          <tr id="nvRowTpl">
+            <td class="px-5 py-2">
+              <input type="text" data-role="name" placeholder="Ej: Maceta 3D flor de loto"
+                     class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 h-8">
+            </td>
+            <td class="px-3 py-2 text-center">
+              <input type="number" min="1" step="1" value="1" data-role="qty"
+                     class="w-20 text-center rounded-md border border-slate-200 bg-white px-2 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 h-8">
+            </td>
+            <td class="px-3 py-2 text-right">
+              <input type="number" min="0" step="0.01" value="0" data-role="price"
+                     class="w-32 text-right rounded-md border border-slate-200 bg-white px-2 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 h-8">
+            </td>
+            <td class="px-5 py-2 text-right tabular-nums" data-role="subtotal">$ 0,00</td>
+            <td class="px-3 py-2">
+              <div class="flex justify-center">
+                <button   id="btnEliminar" type="button" data-action="del-row"
+                        class="inline-grid h-8 w-8 place-items-center rounded-md border-none  hover:bg-red-50" title="Eliminar">
+                  <svg class="h-4 w-4 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Totales + acciones -->
+  <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 mt-4 items-start ">
+    <aside class="bg-white border-none rounded-xl p-4 h-fit max-w-md md:ml-auto">
+      <div class="space-y-2 text-sm total-sub">
+        <div class="flex justify-between">
+          <span>Subtotal</span><span id="nvSubtotalText" class="tabular-nums">$ 0,00</span>
+        </div>
+        <div class="border-t border-[#e6ece7] pt-2 mt-2 flex justify-between font-extrabold text-lg">
+          <span>Total</span><span id="nvTotalText" class="tabular-nums">$ 0,00</span>
+        </div>
+      </div>
+    </aside>
+
+    <div class="flex flex-wrap gap-3 md:justify-end">
+      <button id="nvCancelar" type="button"
+              class="inline-flex items-center gap-2 h-10 px-4 rounded-full border border-[#e6ece7] bg-white hover:bg-[#f6faf7] btn-cancelar">
+        Cancelar
+      </button>
+      <button id="nvGuardar" type="button" class="btn-main">
+        Guardar venta
+      </button>
+    </div>
+  </div>
+
+  <p id="nvMsg" class="mt-3 text-sm hidden"></p>
+</section>
+<!-- ===================== EDITAR PEDIDO ===================== -->
+<section id="view-pedido-editar" data-view="pedido-editar" class="hidden max-w-[1380px] mx-auto px-6 py-6">
+  <div class="flex items-center justify-between gap-4 mb-5">
+    <div class="flex items-center gap-3">
+      <h2 class="text-3xl font-extrabold leading-tight">Editar pedido</h2>
+      <button id="epVolver" class="inline-flex items-center gap-2 h-10 px-4 rounded-full border border-[#e6ece7] bg-white hover:bg-[#f6faf7]">
+        ← Volver
+      </button>
+    </div>
+  </div>
+
+  <!-- Meta del pedido -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+    <div class="bg-white border border-[#e6ece7] rounded-xl p-4 div-cliente">
+      <label class="text-[12px] text-muted block mb-1">Cliente</label>
+      <!-- Cliente solo lectura -->
+      <input id="epCliente" type="text" readonly
+             class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm h-8 cursor-not-allowed">
+    </div>
+    <div class="bg-white border border-[#e6ece7] rounded-xl p-4 div-fecha">
+      <label class="text-[12px] text-muted block mb-1" for="epFecha">Fecha de entrega</label>
+      <input id="epFecha" type="date"
+             class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 h-8">
+    </div>
+    <div class="bg-white border border-[#e6ece7] rounded-xl p-4 flex items-end div-item">
+      <button id="epAddItem" type="button"
+              class="btn-main h-10 px-4 rounded-full">
+        + Agregar producto
+      </button>
+    </div>
+  </div>
+
+  <!-- Items -->
+  <div class="bg-white border border-[#e6ece7] rounded-xl overflow-hidden tabla-pedido">
+    <div class="max-h-[calc(100vh-360px)] overflow-auto">
+      <table class="w-full text-sm border-separate border-spacing-0">
+        <thead class="bg-[#f8fbf9] text-muted sticky top-0 z-10">
+          <tr>
+            <th class="text-left font-bold px-5 py-3">Producto</th>
+            <th class="text-center font-bold px-3 py-3 w-[120px]">Cantidad</th>
+            <th class="text-right font-bold px-3 py-3 w-[160px]">Precio</th>
+            <th class="text-right font-bold px-5 py-3 w-[160px]">Subtotal</th>
+            <th class="text-center font-bold px-3 py-3 w-[68px]"> </th>
+          </tr>
+        </thead>
+        <tbody id="epItemsBody" class="align-middle"></tbody>
+
+        <!-- Fila plantilla (hidden) -->
+        <tbody class="hidden">
+          <tr id="epRowTpl">
+            <td class="px-5 py-2">
+              <input type="text" data-role="name" placeholder="Ej: Maceta 3D flor de loto"
+                     class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 h-8">
+            </td>
+            <td class="px-3 py-2 text-center">
+              <input type="number" min="1" step="1" value="1" data-role="qty"
+                     class="w-20 text-center rounded-md border border-slate-200 bg-white px-2 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 h-8">
+            </td>
+            <td class="px-3 py-2 text-right">
+              <input type="number" min="0" step="0.01" value="0" data-role="price"
+                     class="w-32 text-right rounded-md border border-slate-200 bg-white px-2 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 h-8">
+            </td>
+            <td class="px-5 py-2 text-right tabular-nums" data-role="subtotal">$ 0,00</td>
+            <td class="px-3 py-2">
+              <div class="flex justify-center">
+                <button type="button" data-action="del-row"
+                        class="inline-grid h-8 w-8 place-items-center rounded-md border border-slate-200 hover:bg-red-50" title="Eliminar">
+                  <svg class="h-4 w-4 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Totales + acciones -->
+  <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 mt-4 items-start ">
+    <aside class="bg-white border border-[#e6ece7] rounded-xl p-4 h-fit max-w-md md:ml-auto">
+      <div class="space-y-2 text-sm total-sub">
+        <div class="flex justify-between">
+          <span>Subtotal</span><span id="epSubtotalText" class="tabular-nums">$ 0,00</span>
+        </div>
+        <div class="border-t border-[#e6ece7] pt-2 mt-2 flex justify-between font-extrabold text-lg">
+          <span>Total</span><span id="epTotalText" class="tabular-nums">$ 0,00</span>
+        </div>
+      </div>
+    </aside>
+
+    <div class="flex flex-wrap gap-3 md:justify-end">
+      <button id="epCancelar" type="button"
+              class="inline-flex items-center gap-2 h-10 px-4 rounded-full border border-[#e6ece7] bg-white hover:bg-[#f6faf7] btn-cancelar">
+        Cancelar
+      </button>
+      <button id="epGuardar" type="button" class="btn-main">
+        Guardar cambios
+      </button>
+    </div>
+  </div>
+
+  <p id="epMsg" class="mt-3 text-sm hidden"></p>
+</section>
+
 
     </main>
   </div>
 
-  <!-- Modal crear pedido (reemplazo) -->
-<div id="modalPedido" class="modal-backdrop hidden">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="crearTitle">
-    <header class="modal-header">
-      <h3 id="crearTitle" class="modal-title">Nuevo pedido</h3>
-      <button class="modal-close" aria-label="Cerrar">×</button>
-    </header>
 
-    <div class="modal-body">
-      <form id="formPedido">
-        <!-- Datos principales en dos columnas -->
-        <div class="form-two-cols">
-          <div class="field">
-            <label for="cliente">Cliente</label>
-            <input id="cliente" class="input" required placeholder="Ej: María Pérez" />
-          </div>
-          <div class="field">
-            <label for="fechaEntrega">Fecha de entrega</label>
-            <input id="fechaEntrega" type="date" class="input" required />
-          </div>
-        </div>
+<script src="/js/navegacion.js" defer></script>
+<script src="/js/pedidos.js" defer></script>
+<script src="/js/nuevo_pedido.js" defer></script>
+<script src="/js/detalle_pedido.js" defer></script>
+<script src="/js/insumos.js" defer></script>
+<script src="/js/ventas.js" defer></script>
+<script src="/js/detalle_venta.js" defer></script>
+<script src="/js/nueva_venta.js" defer></script>
 
-        <!-- Items -->
-        <section class="pedido-items">
-          <header class="pedido-items__head">
-            <h4>Productos</h4>
-            <button type="button" id="addItemBtn" class="btn btn-sec btn-sm">+ Producto</button>
-          </header>
 
-          <div class="pedido-items__labels">
-            <span>Producto</span>
-            <span>Cant.</span>
-            <span>Unitario</span>
-            <span>Subtotal</span>
-            <span></span>
-          </div>
 
-          <div id="itemsContainer" class="pedido-items__list"></div>
-
-          <!-- Template de fila -->
-          <template id="itemTemplate">
-            <div data-item class="pedido-items__row">
-              <input class="input" data-field="producto" placeholder="Ej: Ramo artesanal" />
-              <input class="input ta-right" data-field="cantidad" type="number" min="1" value="1" />
-              <input class="input ta-right" data-field="valorUnitario" inputmode="decimal" placeholder="0" />
-              <input class="input ta-right" data-field="totalLinea" value="$ 0,00" readonly />
-              <button type="button" class="btn-icon btn-danger" title="Quitar" data-action="remove">✕</button>
-            </div>
-          </template>
-
-          <div class="pedido-items__footer">
-            <span>Total del pedido:</span>
-            <strong id="totalPedido">$ 0,00</strong>
-          </div>
-        </section>
-
-        <footer class="modal-actions">
-          <button type="button" id="btnCancelar" class="btn btn-sec">Cancelar</button>
-          <button type="submit" id="guardarPedidoBtn" class="btn">Guardar</button>
-        </footer>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Editar Pedido -->
-<div id="modalEditar" class="modal hidden">
-  <div class="modal-dialog">
-    <div class="modal-header">
-      <h3>Editar pedido</h3>
-      <button type="button" class="modal-close" aria-label="Cerrar">×</button>
-    </div>
-
-    <form id="formEditar">
-      <div class="modal-body">
-        <div class="form-row">
-          <label>Cliente</label>
-          <input name="cliente" type="text" required />
-        </div>
-
-        <div class="form-row">
-          <label>Fecha de entrega</label>
-          <input name="fechaEntrega" type="date" required />
-        </div>
-
-        <!-- líneas -->
-        <div class="form-row">
-          <div class="flex-between">
-            <label>Productos</label>
-            <button type="button" id="editAddItemBtn" class="btn-sec">+ Agregar ítem</button>
-          </div>
-          <div id="editItemsContainer"></div>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn-sec modal-close">Cancelar</button>
-        <button type="submit" class="btn-prim">Guardar cambios</button>
-      </div>
-    </form>
-
-    <!-- Template de fila -->
-    <template id="editItemTemplate">
-      <div class="item-row" data-item>
-        <input data-field="producto" type="text" placeholder="Producto" required />
-        <input data-field="cantidad" type="number" min="1" step="1" placeholder="Cant." required />
-        <input data-field="valorUnitario" type="number" min="0" step="0.01" placeholder="Unitario" required />
-        <input data-field="totalLinea" type="text" readonly />
-        <button type="button" data-action="remove" class="btn-mini">×</button>
-      </div>
-    </template>
-  </div>
-</div>
-
-<!-- Modal Agregar venta -->
-<div id="modalVenta" class="modal-backdrop hidden">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="ventaTitle">
-    <header class="modal-header">
-      <h3 id="ventaTitle" class="modal-title">Agregar venta</h3>
-      <button type="button" class="modal-close" id="ventaCerrar" aria-label="Cerrar">×</button>
-    </header>
-
-    <div class="modal-body">
-      <form id="formVenta">
-        <input type="hidden" id="ventaEstado" value="ENTREGADO" data-field="estado">
-
-        <!-- Datos principales en dos columnas -->
-        <div class="form-two-cols">
-          <div class="field">
-            <label for="ventaCliente">Cliente</label>
-            <input id="ventaCliente" class="input" type="text" required placeholder="Ej: María Pérez">
-          </div>
-          <div class="field">
-            <label for="ventaFecha">Fecha de entrega</label>
-            <input id="ventaFecha" class="input" type="date" required>
-          </div>
-          <div class="field">
-            <label for="ventaTipo">Tipo de venta</label>
-            <select id="ventaTipo" class="input" required>
-              <option value="PEDIDO">Pedido</option>
-              <option value="DIRECTO">Directo</option>
-              <option value="OTRO">Otro</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Items (mismas clases que pedidos, sin “Cantidad”) -->
-        <section class="pedido-items">
-          <header class="pedido-items__head">
-            <h4>Productos</h4>
-            <button type="button" id="addItemVentaBtn" class="btn btn-sec btn-sm">+ Producto</button>
-          </header>
-
-          <div class="pedido-items__labels">
-            <span>Producto</span>
-            <span>Cantidad</span>
-            <span>Unitario</span>
-            <span>Subtotal</span>
-            <span></span>
-          </div>
-
-          <div id="itemsContainerVenta" class="pedido-items__list"></div>
-
-          <!-- Fila de ejemplo que tu JS va a clonar/crear con la misma estructura -->
-          <!--
-          <div data-item class="pedido-items__row">
-            <input class="input" data-field="producto" placeholder="Ej: Ramo artesanal" />
-            <input class="input ta-right" data-field="valorUnitario" inputmode="decimal" placeholder="0" />
-            <input class="input ta-right" data-field="totalLinea" value="$ 0,00" readonly />
-            <button type="button" class="btn-icon btn-danger" title="Quitar" data-action="remove">✕</button>
-          </div>
-          -->
-
-          <div class="pedido-items__footer">
-            <span>Total de la venta:</span>
-            <strong id="totalVenta">$ 0,00</strong>
-          </div>
-        </section>
-
-        <footer class="modal-actions">
-          <button type="button" class="btn btn-sec" id="ventaCancelar">Cancelar</button>
-          <button type="submit" class="btn" id="guardarVentaBtn">Guardar venta</button>
-        </footer>
-      </form>
-    </div>
-  </div>
-</div>
-
-  	<script src="/js/index.js"  defer></script>
-  	<script src="/js/pedidos.js"  defer></script>
-  	<script src="/js/material.js"  defer></script>
-	<script src="/js/ventas.js"  defer></script>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-	
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <audio id="sonido-crear" src="/sonidos/crear.wav" preload="auto"></audio>
   <audio id="sonido-estado" src="/sonidos/estado.mp3" preload="auto"></audio>
+
 </body>
 </html>

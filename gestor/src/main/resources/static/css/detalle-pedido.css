@@ -1,0 +1,24 @@
+#view-venta-detalle h2{
+    color: #194d13;
+    font-size: 20px;
+    font-family: 'Poppins', sans-serif; 
+}
+
+#view-venta-detalle .kpi-detalle {
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    border: none;
+}
+
+#view-venta-detalle .tabla-detalle{
+   box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 3px 0px;
+}
+
+#view-venta-detalle .aside-detalle-total{
+    background-color: transparent;
+    border: none;
+}
+
+#view-venta-detalle #btnVolverPedidos{
+    font-size: 15px;
+    border: none;
+}
