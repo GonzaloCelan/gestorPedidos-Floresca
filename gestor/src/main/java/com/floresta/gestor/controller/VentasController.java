@@ -19,20 +19,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.floresta.gestor.model.Venta;
 
-import com.floresta.gestor.repository.ventaRepository;
+import com.floresta.gestor.repository.VentaRepository;
 import com.floresta.gestor.service.VentasService;
 
 
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin(origins = "*")
-public class ventasController {
+public class VentasController {
 
 	
-	private final ventaRepository ventaRepository;
+	private final VentaRepository ventaRepository;
 	private final VentasService service;
 
-    public ventasController(ventaRepository ventaRepository,VentasService service) {
+    public VentasController(VentaRepository ventaRepository,VentasService service) {
         this.ventaRepository = ventaRepository;
         this.service = service;
     }

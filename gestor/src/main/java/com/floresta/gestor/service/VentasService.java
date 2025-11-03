@@ -6,20 +6,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.floresta.gestor.repository.materialRepository;
-import com.floresta.gestor.repository.pedidoRepository;
-import com.floresta.gestor.repository.ventaRepository;
+import com.floresta.gestor.repository.InsumoRepository;
+import com.floresta.gestor.repository.PedidoRepository;
+import com.floresta.gestor.repository.VentaRepository;
 
 @Service
 public class VentasService {
 
 	
-	private final ventaRepository ventaRepository;
-	private final pedidoRepository pedidoRepository;
-	private final materialRepository materialRepository;
+	private final VentaRepository ventaRepository;
+	private final PedidoRepository pedidoRepository;
+	private final InsumoRepository materialRepository;
 	
 	@Autowired
-	VentasService(ventaRepository ventaRepository,pedidoRepository pedidoRepository, materialRepository materialRepository){
+	VentasService(VentaRepository ventaRepository,PedidoRepository pedidoRepository, InsumoRepository materialRepository){
 		
 		this.ventaRepository = ventaRepository;
 		this.pedidoRepository = pedidoRepository;

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.floresta.gestor.model.Insumo;
 
 @Repository
-public interface materialRepository extends JpaRepository<Insumo, Long> {
+public interface InsumoRepository extends JpaRepository<Insumo, Long> {
 
 	
 	@Query(value = "SELECT SUM(precio_total) " +

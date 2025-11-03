@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.floresta.gestor.model.ProductoItem;
 
 @Repository
-public interface productoRepository extends JpaRepository<ProductoItem, Long> {
+public interface ProductoRepository extends JpaRepository<ProductoItem, Long> {
 
 	  void deleteByIdPedido(Integer idPedido);   
 	  

@@ -32,7 +32,7 @@ public class Insumo {
 	@Column(name = "fecha",nullable = false)
     private LocalDate fecha;  
 
-    @Column(name = "Insumo",nullable = false)
+    @Column(name = "material",nullable = false)
     private String material;
 
     @Column(name = "cantidad",nullable = false)

@@ -21,23 +21,23 @@ import com.floresta.gestor.model.ProductoItem;
 import com.floresta.gestor.model.Pedido;
 import com.floresta.gestor.model.Venta;
 
-import com.floresta.gestor.repository.pedidoRepository;
-import com.floresta.gestor.repository.productoRepository;
-import com.floresta.gestor.repository.ventaRepository;
+import com.floresta.gestor.repository.PedidoRepository;
+import com.floresta.gestor.repository.ProductoRepository;
+import com.floresta.gestor.repository.VentaRepository;
 
 
 import jakarta.validation.Valid;
 
 @Service
-public class pedidoService {
+public class PedidoService {
 
 	
-	private final pedidoRepository pedidoRepository;
-	private final ventaRepository ventaRepository;
-	private final productoRepository productRepository;
+	private final PedidoRepository pedidoRepository;
+	private final VentaRepository ventaRepository;
+	private final ProductoRepository productRepository;
 	
 	@Autowired
-	pedidoService(pedidoRepository repository,ventaRepository ventaRepository,productoRepository productRepository){
+	PedidoService(PedidoRepository repository,VentaRepository ventaRepository,ProductoRepository productRepository){
 		this.pedidoRepository = repository;
 		this.ventaRepository = ventaRepository;
 		this.productRepository = productRepository;

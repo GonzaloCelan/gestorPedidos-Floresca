@@ -1,7 +1,8 @@
 // /js/nuevo_pedido.js
 (() => {
   const $  = (s, r=document) => r.querySelector(s);
-
+  const sonidoCrear = document.getElementById("sonido-crear");
+  
   function money(n) {
     return new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS" }).format(Number(n) || 0);
   }
@@ -141,25 +142,34 @@
   els.guardar?.addEventListener('click', async () => {
     if (!valid()) return;
     const data = payload();
+    console.log("Payload enviado:", JSON.stringify(data, null, 2));
+
     try {
       const res = await fetch('/api/v1/pedido', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-	  if (res.ok) {
-	    sonidoCrear?.play();
 
-	    // Traer el nuevo pedido desde el backend
-	    const nuevoPedido = await res.json(); // si tu backend devuelve el pedido creado
-	    pedidos.push(nuevoPedido); // lo agregás a la lista
-	    renderPedidos(); // lo pintás sin recargar
+      if (res.ok) {
+        sonidoCrear?.play();
 
-	    showView("dashboard");
-	    try { history.pushState({ v: "dashboard" }, "", "#dashboard"); } catch {}
-	  }
+        // ✅ recargamos la lista desde el backend
+        if (typeof fetchPedidos === "function") {
+          await fetchPedidos();
+        }
+
+        // ✅ volvemos al dashboard
+        showView("dashboard");
+        try { history.pushState({ v: "dashboard" }, "", "#dashboard"); } catch {}
+      } else {
+        const errorText = await res.text();
+        console.error("Error al crear pedido:", errorText);
+        showMsg("Error al crear pedido: " + errorText, false);
+      }
     } catch (err) {
-      showMsg('Ocurrió un error al crear el pedido.', false);
+      console.error("Error de red o fetch:", err);
+      showMsg("Error al conectar con el servidor.", false);
     }
   });
 

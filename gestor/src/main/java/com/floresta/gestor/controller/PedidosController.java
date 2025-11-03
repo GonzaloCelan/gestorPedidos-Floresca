@@ -3,6 +3,7 @@ package com.floresta.gestor.controller;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,8 +19,9 @@ import com.floresta.gestor.dto.ProductoDTO;
 import com.floresta.gestor.dto.PedidoDTO;
 import com.floresta.gestor.dto.PedidoDatosDTO;
 import com.floresta.gestor.dto.PedidoUpdateDTO;
+import com.floresta.gestor.model.Insumo;
 import com.floresta.gestor.model.Pedido;
-import com.floresta.gestor.service.pedidoService;
+import com.floresta.gestor.service.PedidoService;
 
 import jakarta.validation.Valid;
 
@@ -27,13 +29,13 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1")
-public class pedidosController {
+public class PedidosController {
 	
 	
 	
-	private final pedidoService service;
+	private final PedidoService service;
 
-    public pedidosController(pedidoService service) {
+    public PedidosController(PedidoService service) {
         this.service = service;
     }
     
@@ -41,9 +43,11 @@ public class pedidosController {
     @PostMapping ("/pedido")
     public ResponseEntity<Pedido> guardarEntrega(@Valid @RequestBody PedidoDTO dto) {
     	
-    	Pedido response = service.generarPedido(dto);
     	
-        return ResponseEntity.ok(response);
+        	Pedido response = service.generarPedido(dto);
+        	
+            return ResponseEntity.ok(response);
+	    
     }
     
     //ACTUALIZA ESTADO DEL PEDIDO

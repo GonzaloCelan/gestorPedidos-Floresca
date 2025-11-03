@@ -13,7 +13,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class materialDTO {
+public class InsumoDTO {
 
 	
 	@NotNull

@@ -6,26 +6,26 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.floresta.gestor.dto.materialDTO;
+import com.floresta.gestor.dto.InsumoDTO;
 import com.floresta.gestor.model.Insumo;
-import com.floresta.gestor.repository.materialRepository;
+import com.floresta.gestor.repository.InsumoRepository;
 
 import jakarta.validation.Valid;
 
 @Service
-public class materialService {
+public class InsumoService {
 
 	
-	private final materialRepository repository;
+	private final InsumoRepository repository;
 
-    public materialService(materialRepository materialRepository) {
+    public InsumoService(InsumoRepository materialRepository) {
         this.repository = materialRepository;
     }
 
     
 
     @Transactional
-    public Insumo guardarMaterial(@Valid materialDTO request) {
+    public Insumo guardarMaterial(@Valid InsumoDTO request) {
     	
     	Insumo nuevoMaterial = Insumo.builder()
     			.fecha(request.getFecha())
