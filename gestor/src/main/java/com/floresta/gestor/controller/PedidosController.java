@@ -16,9 +16,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.floresta.gestor.dto.ProductoDTO;
-import com.floresta.gestor.dto.PedidoDTO;
-import com.floresta.gestor.dto.PedidoDatosDTO;
-import com.floresta.gestor.dto.PedidoUpdateDTO;
+import com.floresta.gestor.dto.pedido.PedidoActualizadoDTO;
+import com.floresta.gestor.dto.pedido.PedidoCreadoDTO;
+import com.floresta.gestor.dto.pedido.PedidoDatosDTO;
+import com.floresta.gestor.dto.pedido.PedidoEstadoDTO;
+import com.floresta.gestor.dto.pedido.PedidoNuevoDTO;
+import com.floresta.gestor.dto.pedido.PedidoResponseDTO;
 import com.floresta.gestor.model.Insumo;
 import com.floresta.gestor.model.Pedido;
 import com.floresta.gestor.service.PedidoService;
@@ -41,10 +44,10 @@ public class PedidosController {
     
     //GUARDA UN PEDIDO NUEVO
     @PostMapping ("/pedido")
-    public ResponseEntity<Pedido> guardarEntrega(@Valid @RequestBody PedidoDTO dto) {
+    public ResponseEntity< PedidoCreadoDTO> guardarPedido( @Valid @RequestBody PedidoNuevoDTO dto) {
     	
     	
-        	Pedido response = service.generarPedido(dto);
+        	PedidoCreadoDTO response = service.generarPedido(dto);
         	
             return ResponseEntity.ok(response);
 	    
@@ -53,11 +56,14 @@ public class PedidosController {
     //ACTUALIZA ESTADO DEL PEDIDO
     
     @PutMapping("/pedido/{id}/{estado}")
-    public ResponseEntity<Pedido> actualizarEntrega(
-    		@PathVariable Integer id,
+    
+    public ResponseEntity<PedidoEstadoDTO> actualizarEstadoPedido(
+    		@PathVariable Long id,
     		@PathVariable String estado) {
     	
-    	Pedido response = service.actualizarEstado(id, estado);
+    	PedidoEstadoDTO response = service.actualizarEstado(id, estado);
+    	
+    	System.out.println("Estado actualizado: " + response);
     	
     	return ResponseEntity.ok(response);
     	
@@ -66,9 +72,9 @@ public class PedidosController {
   //ACTUALIZA PEDIDO ENTERO
     
     @PutMapping("/pedido/{id}")
-    public ResponseEntity<Pedido> actualizarEntregaCompleto(
-    		@PathVariable Integer id,
-    		@RequestBody PedidoUpdateDTO dto) {
+    public ResponseEntity<Pedido> actualizarPedidoCompleto(
+    		@PathVariable Long id,
+    		@RequestBody PedidoActualizadoDTO dto) {
     	
     	Pedido response = service.actualizarPedido(id,dto);
     	
@@ -79,7 +85,7 @@ public class PedidosController {
     
     //ELIMINA UN PEDIDO POR ID
     @DeleteMapping("/pedido/{id}")
-    public ResponseEntity<Void> eliminarEntrega(@PathVariable Integer id) {
+    public ResponseEntity<Void> eliminarPedido(@PathVariable Long id) {
         boolean eliminado = service.eliminarEntrega(id);
 
         if (eliminado) {
@@ -91,7 +97,7 @@ public class PedidosController {
     
   //OBTENGO UN PEDIDO POR ID
     @GetMapping("/pedido/datos/{id}")
-    public ResponseEntity<PedidoDatosDTO> getPedidoById(@PathVariable Integer id){
+    public ResponseEntity<PedidoDatosDTO> getPedidoById(@PathVariable Long id){
     	
     	PedidoDatosDTO response = service.obtenerPedidoById(id);
     	return ResponseEntity.ok(response);
@@ -100,7 +106,7 @@ public class PedidosController {
     
     //OBTENGO PRODUCTOS DE CADA PEDIDO
     @GetMapping("/pedido/producto/{id}")
-    public ResponseEntity<List<ProductoDTO>> getProductosByIdPedido(@PathVariable Integer id){
+    public ResponseEntity<List<ProductoDTO>> getProductosByIdPedido(@PathVariable Long id){
     	
     	List<ProductoDTO> response = service.obtenerProductosById(id);
     	
@@ -110,9 +116,12 @@ public class PedidosController {
     
     //OBTENGO TODOS LOS PEDIDOS ACTIVOS
     @GetMapping("/pedidos")
-    public ResponseEntity<List<Pedido>> getPedidosActivos(){
+    public ResponseEntity<List<PedidoResponseDTO>> getPedidosActivos(){
     	
-    	List<Pedido> response = service.obtenerPedidosActivos();
+    	
+    	List<PedidoResponseDTO> response = service.obtenerPedidosActivos();
+    	
+    	
     	return ResponseEntity.ok(response);
     	
     }

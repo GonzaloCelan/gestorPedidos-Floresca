@@ -27,10 +27,10 @@ public class ProductoItem {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idProducto")
-    private Integer idProducto;
+    private Long idProducto;
 	
 	 @Column(name = "id_pedido")
-	 private Integer idPedido;
+	 private Long idPedido;
 	 
 	 @Column(name = "producto_nombre")
 	 private String productoNombre;

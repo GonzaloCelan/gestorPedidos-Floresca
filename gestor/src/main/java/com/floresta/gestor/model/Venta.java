@@ -26,10 +26,10 @@ public class Venta {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idVenta")
-    private Integer idVenta;
+    private Long idVenta;
 	
 	 @Column(name = "id_pedido", nullable = false)
-	  private Integer idPedido;
+	  private Long idPedido;
 
     @Column(name = "cliente", nullable = false, length = 120)
     private String cliente;

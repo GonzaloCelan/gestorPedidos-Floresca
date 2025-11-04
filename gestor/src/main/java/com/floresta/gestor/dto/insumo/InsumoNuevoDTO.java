@@ -1,4 +1,4 @@
-package com.floresta.gestor.dto;
+package com.floresta.gestor.dto.insumo;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -13,7 +13,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class InsumoDTO {
+public class InsumoNuevoDTO {
 
 	
 	@NotNull

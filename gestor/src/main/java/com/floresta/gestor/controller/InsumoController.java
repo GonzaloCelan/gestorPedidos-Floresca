@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.floresta.gestor.dto.InsumoDTO;
+import com.floresta.gestor.dto.ProductoDTO;
+import com.floresta.gestor.dto.insumo.InsumoCreadoDTO;
+import com.floresta.gestor.dto.insumo.InsumoNuevoDTO;
+import com.floresta.gestor.dto.insumo.InsumoResponseDTO;
 import com.floresta.gestor.model.Insumo;
 import com.floresta.gestor.service.InsumoService;
 
@@ -32,43 +35,34 @@ public class InsumoController {
 	
 	 //GUARDA UN INSUMO NUEVO
 	@PostMapping("/insumo")
-	public ResponseEntity<?> crearMaterial(@Valid @RequestBody InsumoDTO request) {
-	    try {
-	        Insumo nuevo = service.guardarMaterial(request);
+	public ResponseEntity<InsumoCreadoDTO> crearInsumo(@Valid @RequestBody InsumoNuevoDTO request) {
+	   
+		InsumoCreadoDTO nuevo = service.guardarMaterial(request);
 	        return ResponseEntity.ok(nuevo);
-	    } catch (Exception e) {
-	        System.err.println("Error al guardar insumo: " + e.getMessage());
-	        e.printStackTrace(); // opcional: muestra el stack completo
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                             .body("Error al guardar insumo");
-	    }
+	   
 	}
 
 
     //OBTIENE TODOS LOS MATERIALES
 	@GetMapping("/insumos")
-	public ResponseEntity<?> listarMateriales() {
-	    try {
-	        List<Insumo> lista = service.obtenerTodos();
+	public ResponseEntity <List<InsumoResponseDTO>> listaInsumos() {
+	    
+	        List<InsumoResponseDTO> lista = service.obtenerTodos();
 	        return ResponseEntity.ok(lista);
-	    } catch (Exception e) {
-	        System.err.println("Error al listar insumos: " + e.getMessage());
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                             .body("Error al listar insumos");
-	    }
+	        
 	}
+	
   //OBTIENE UN MATERIAL POR ID
     @GetMapping("/insumo/{id}")
-    public ResponseEntity<Insumo> obtenerMaterial(@PathVariable Long id) {
-        return service.obtenerPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<InsumoResponseDTO> obtenerInsumo(@PathVariable Long id) {
+    	InsumoResponseDTO response =  service.obtenerPorId(id);
+    	return ResponseEntity.ok(response);
+                
     }
 
   //ELIMINA UN MATERIAL POR ID
     @DeleteMapping("/insumo/{id}")
-    public ResponseEntity<Void> eliminarMaterial(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarInsumo(@PathVariable Long id) {
     	service.eliminarPorId(id);
         return ResponseEntity.noContent().build();
     }

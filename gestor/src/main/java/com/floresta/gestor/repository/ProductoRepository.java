@@ -13,7 +13,7 @@ import com.floresta.gestor.model.ProductoItem;
 @Repository
 public interface ProductoRepository extends JpaRepository<ProductoItem, Long> {
 
-	  void deleteByIdPedido(Integer idPedido);   
+	  void deleteByIdPedido(Long long1);   
 	  
 	  @Query(value = """
 		        SELECT  pi.idProducto,
@@ -27,5 +27,5 @@ public interface ProductoRepository extends JpaRepository<ProductoItem, Long> {
         WHERE p.idPedido = :id
         ORDER BY pi.id_pedido
 		    """, nativeQuery = true)
-	  List<ProductoItem> findItemsByPedidoId(@Param("id") Integer id);
+	  List<ProductoItem> findItemsByPedidoId(@Param("id") Long id);
 }

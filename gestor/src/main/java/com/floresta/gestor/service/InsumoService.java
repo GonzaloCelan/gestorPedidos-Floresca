@@ -1,12 +1,18 @@
 package com.floresta.gestor.service;
 
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
-import com.floresta.gestor.dto.InsumoDTO;
+import com.floresta.gestor.dto.insumo.InsumoCreadoDTO;
+import com.floresta.gestor.dto.insumo.InsumoNuevoDTO;
+import com.floresta.gestor.dto.insumo.InsumoResponseDTO;
 import com.floresta.gestor.model.Insumo;
 import com.floresta.gestor.repository.InsumoRepository;
 
@@ -25,7 +31,7 @@ public class InsumoService {
     
 
     @Transactional
-    public Insumo guardarMaterial(@Valid InsumoDTO request) {
+    public  InsumoCreadoDTO guardarMaterial(@Valid InsumoNuevoDTO request) {
     	
     	Insumo nuevoMaterial = Insumo.builder()
     			.fecha(request.getFecha())
@@ -36,18 +42,54 @@ public class InsumoService {
     			.precioTotal(request.getPrecioTotal())
     			.build();
     	
-        return repository.save(nuevoMaterial);
+        repository.save(nuevoMaterial);
+        
+        return InsumoCreadoDTO.builder()
+				.idInsumo(nuevoMaterial.getId())
+				.build();
     }
 
  
     @Transactional(readOnly = true) 
-    public List<Insumo> obtenerTodos() {
-        return repository.findAll();
+    public List<InsumoResponseDTO> obtenerTodos() {
+    	
+    	List<InsumoResponseDTO> listaInsumos = new ArrayList<>();
+    	
+        List<Insumo> insumo = repository.findAll();
+        
+        for(Insumo i : insumo) {
+			InsumoResponseDTO insumoDTO = InsumoResponseDTO.builder()
+					.idInsumo(i.getId())
+					.fecha(i.getFecha())
+					.material(i.getMaterial())
+					.cantidad(i.getCantidad())
+					.proveedor(i.getProveedor())
+					.precioUnitario(i.getPrecioUnitario())
+					.precioTotal(i.getPrecioTotal())
+					.build();
+		
+			listaInsumos.add(insumoDTO);
+        }
+        
+        return listaInsumos;
     }
 
     @Transactional(readOnly = true) 
-    public Optional<Insumo> obtenerPorId(Long id) {
-        return repository.findById(id);
+    public InsumoResponseDTO obtenerPorId(Long id) {
+    	
+         Insumo insumoExiste = repository.findById(id).orElseThrow(() -> new ResponseStatusException( NOT_FOUND,"Insumo con " + id + " no existe"));
+         
+         InsumoResponseDTO insumo = InsumoResponseDTO.builder()
+		 		.idInsumo(insumoExiste.getId())
+		 		.fecha(insumoExiste.getFecha())
+		 		.material(insumoExiste.getMaterial())
+		 		.cantidad(insumoExiste.getCantidad())
+		 		.proveedor(insumoExiste.getProveedor())
+		 		.precioUnitario(insumoExiste.getPrecioUnitario())
+		 		.precioTotal(insumoExiste.getPrecioTotal())
+		 		.build();
+         
+         return insumo;
     }
 
     @Transactional
