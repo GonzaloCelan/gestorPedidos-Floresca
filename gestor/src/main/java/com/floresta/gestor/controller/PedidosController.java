@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.floresta.gestor.dto.ProductoDTO;
 import com.floresta.gestor.dto.pedido.PedidoActualizadoDTO;
 import com.floresta.gestor.dto.pedido.PedidoCreadoDTO;
-import com.floresta.gestor.dto.pedido.PedidoDatosDTO;
+import com.floresta.gestor.dto.pedido.PedidoDetalleDTO;
 import com.floresta.gestor.dto.pedido.PedidoEstadoDTO;
 import com.floresta.gestor.dto.pedido.PedidoNuevoDTO;
 import com.floresta.gestor.dto.pedido.PedidoResponseDTO;
@@ -96,23 +96,15 @@ public class PedidosController {
     }
     
   //OBTENGO UN PEDIDO POR ID
-    @GetMapping("/pedido/datos/{id}")
-    public ResponseEntity<PedidoDatosDTO> getPedidoById(@PathVariable Long id){
+    @GetMapping("/pedido/detalle/{id}")
+    public ResponseEntity<PedidoDetalleDTO> getPedidoById(@PathVariable Long id){
     	
-    	PedidoDatosDTO response = service.obtenerPedidoById(id);
+    	var response = service.obtenerPedidoById(id);
     	return ResponseEntity.ok(response);
     	
     }
     
-    //OBTENGO PRODUCTOS DE CADA PEDIDO
-    @GetMapping("/pedido/producto/{id}")
-    public ResponseEntity<List<ProductoDTO>> getProductosByIdPedido(@PathVariable Long id){
-    	
-    	List<ProductoDTO> response = service.obtenerProductosById(id);
-    	
-    	return ResponseEntity.ok(response);
-    	
-    }
+ 
     
     //OBTENGO TODOS LOS PEDIDOS ACTIVOS
     @GetMapping("/pedidos")

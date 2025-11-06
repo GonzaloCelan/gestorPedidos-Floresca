@@ -13,22 +13,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class ProductoDTO {
 
-	
-	@NotBlank 
-	private String producto;     
-	  
-	@NotNull @Min(1) 
-	 private Integer cantidad;
-	
-	@NotNull @PositiveOrZero 
-	private BigDecimal precioUnitario;
-	
-	@NotNull @PositiveOrZero 
-	private BigDecimal subTotal;
-}
+public record ProductoDTO (
+		@NotBlank 
+		 String producto, 
+		  
+		@NotNull @Min(1) 
+		  Integer cantidad,
+		
+		@NotNull @PositiveOrZero 
+		 BigDecimal precioUnitario,
+		
+		@NotNull @PositiveOrZero 
+		 BigDecimal subTotal
+) {}

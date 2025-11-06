@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.floresta.gestor.model.Venta;
 
 @Repository
-public interface VentaRepository extends JpaRepository<Venta , Integer>{
+public interface VentaRepository extends JpaRepository<Venta , Long>{
 
 	Page<Venta> findAllByOrderByFechaEntregaDesc(Pageable pageable);
 	

@@ -14,9 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
-
-
+import com.floresta.gestor.dto.venta.VentaResponseDTO;
 import com.floresta.gestor.model.Venta;
 
 import com.floresta.gestor.repository.VentaRepository;
@@ -38,20 +36,23 @@ public class VentasController {
     }
 
     @GetMapping("/ventas")
-    public List<Venta> obtenerLogs() {
-        return ventaRepository.findAll(Sort.by(Sort.Direction.DESC, "fechaEntrega")); // ordenado por fecha
+    public ResponseEntity<List<VentaResponseDTO>> obtenerVentas() 
+    {
+    	List<VentaResponseDTO> response = service.obtenerVentas(); 
+    	
+    	return ResponseEntity.ok(response);
     }
     
     
     @GetMapping("/ventas/page")
-    public Page<Venta> obtenerLogsPaginado(
-        @PageableDefault(sort = "fechaEntrega", direction = Sort.Direction.DESC, size = 10)
+    public Page<Venta> obtenerVentasPaginado(
+        @PageableDefault(sort = "fechaEntrega", direction = Sort.Direction.DESC, size = 5)
         Pageable pageable) {
       return ventaRepository.findAllByOrderByFechaEntregaDesc(pageable);
     }
     
     @DeleteMapping("/ventas/{id}")
-    public ResponseEntity<Void> eliminarVenta(@PathVariable Integer id) {
+    public ResponseEntity<Void> eliminarVenta(@PathVariable Long id) {
         boolean eliminado = service.eliminarVenta(id);
 
         if (eliminado) {

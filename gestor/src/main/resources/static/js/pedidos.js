@@ -85,8 +85,36 @@ function initPedidos() {
 	        grid grid-cols-[1.1fr_1.3fr_1.2fr_1fr_.9fr_110px]
 	        items-center gap-10 bg-slate-200 rounded-2xl px-4 py-3
 	        div-item
-	       
 	      `;
+
+	      // 🔹 Bloque de acciones: depende del estado
+	      let accionesHTML = "";
+	      if (String(p.estado).toUpperCase() === "ENTREGADO") {
+	        // Mostrar solo un ícono de OK
+	        accionesHTML = `
+	          <div class="flex items-center justify-center">
+	            <span class="inline-grid place-items-center w-9 h-9 rounded-xl border border-emerald-300 bg-emerald-50" title="Pedido entregado">
+	              ✅
+	            </span>
+	          </div>
+	        `;
+	      } else {
+	        // Mostrar editar y eliminar
+	        accionesHTML = `
+	          <div class="flex items-center justify-center gap-2">
+	            <button 
+	              class="js-editar-pedido inline-grid place-items-center w-9 h-9 rounded-xl border border-slate-300 bg-white hover:bg-slate-50" 
+	              data-id="${p.idPedido}" 
+	              title="Editar">
+	              <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+	                <path d="M12 20h9" />
+	                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+	              </svg>
+	            </button>
+	            <button data-action="delete-pedido" data-id="${p.idPedido}" class="inline-grid place-items-center w-9 h-9 rounded-xl border border-slate-300 bg-white hover:bg-slate-50" title="Eliminar">🗑</button>
+	          </div>
+	        `;
+	      }
 
 	      row.innerHTML = `
 	        <div>${parseFechaISO(p.fechaEntrega).toLocaleDateString("es-AR")}</div>
@@ -101,18 +129,7 @@ function initPedidos() {
 	        </div>
 	        <div>${estadoToBadge(p.estado, p.idPedido)}</div>
 	        <div class="text-right pr-4 border-r border-slate-400">${money(p.total ?? 0)}</div>
-	        <div class="flex items-center justify-center gap-2">
-			<button 
-			      class="js-editar-pedido inline-grid place-items-center w-9 h-9 rounded-xl border border-slate-300 bg-white hover:bg-slate-50" 
-			      data-id="${p.idPedido}" 
-			      title="Editar">
-			      <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-			        <path d="M12 20h9" />
-			        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
-			      </svg>
-			    </button>
-	          <button data-action="delete-pedido" data-id="${p.idPedido}" class="inline-grid place-items-center w-9 h-9 rounded-xl border border-slate-300 bg-white hover:bg-slate-50" title="Eliminar">🗑</button>
-	        </div>
+	        ${accionesHTML}
 	      `;
 
 	      tbody.appendChild(row);

@@ -17,6 +17,7 @@ import com.floresta.gestor.dto.ProductoDTO;
 import com.floresta.gestor.dto.pedido.PedidoActualizadoDTO;
 import com.floresta.gestor.dto.pedido.PedidoCreadoDTO;
 import com.floresta.gestor.dto.pedido.PedidoDatosDTO;
+import com.floresta.gestor.dto.pedido.PedidoDetalleDTO;
 import com.floresta.gestor.dto.pedido.PedidoEstadoDTO;
 import com.floresta.gestor.dto.pedido.PedidoNuevoDTO;
 import com.floresta.gestor.dto.pedido.PedidoResponseDTO;
@@ -67,17 +68,17 @@ public class PedidoService {
 		  
 		for (ProductoDTO p : request.items()) {
 			
-			ProductoItem producto = ProductoItem.builder()
+			var producto = ProductoItem.builder()
 					.idPedido(nuevoPedido.getIdPedido())
-					.productoNombre(p.getProducto())
-					.cantidad(p.getCantidad())
-					.precioUnit(p.getPrecioUnitario())
-					.subtotal(p.getSubTotal())
+					.productoNombre(p.producto())
+					.cantidad(p.cantidad())
+					.precioUnit(p.precioUnitario())
+					.subtotal(p.subTotal())
 					.build();
 			
 			productRepository.save(producto);
 			
-			total = total.add(p.getSubTotal());
+			total = total.add(p.subTotal());
 			
 		}
 		
@@ -170,20 +171,21 @@ public class PedidoService {
 		        BigDecimal total = BigDecimal.ZERO;
 
 		        for (ProductoDTO p : request.getItems()) {
-		            if (p.getCantidad() == null || p.getCantidad() < 1)
-		                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cantidad inválida para " + p.getProducto());
-		            if (p.getPrecioUnitario() == null || p.getPrecioUnitario().signum() < 0)
-		                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Precio inválido para " + p.getProducto());
+		            if (p.cantidad() == null || p.cantidad() < 1)
+		                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cantidad inválida para " + p.producto());
+		            
+		            if (p.precioUnitario() == null || p.precioUnitario().signum() < 0)
+		                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Precio inválido para " + p.producto());
 
-		            BigDecimal subtotal = p.getPrecioUnitario()
-		                    .multiply(BigDecimal.valueOf(p.getCantidad()))
+		            BigDecimal subtotal = p.precioUnitario()
+		                    .multiply(BigDecimal.valueOf(p.cantidad()))
 		                    .setScale(2);
 
 		            var item = ProductoItem.builder()
 		                    .idPedido(ped.getIdPedido())        
-		                    .productoNombre(p.getProducto())
-		                    .cantidad(p.getCantidad())
-		                    .precioUnit(p.getPrecioUnitario())
+		                    .productoNombre(p.producto())
+		                    .cantidad(p.cantidad())
+		                    .precioUnit(p.precioUnitario())
 		                    .subtotal(subtotal)
 		                    .build();
 
@@ -212,14 +214,19 @@ public class PedidoService {
 		  }
 	}
 	
+
+	
 	@Transactional(readOnly = true) 
-	public List<ProductoDTO> obtenerProductosById(Long id){
+	
+	public PedidoDetalleDTO obtenerPedidoById(Long id){
 		
-		List<ProductoItem> listaProductos = productRepository.findItemsByPedidoId(id);
+		Pedido pedido = pedidoRepository.findById(id).orElseThrow(() -> new ResponseStatusException( NOT_FOUND,"Entrega " + id + " no existe"));
+		
+		List<ProductoItem> listaProductosId = productRepository.findItemsByPedidoId(id);
 
 		List<ProductoDTO> items = new ArrayList<>();
 		
-	    for (ProductoItem p : listaProductos) {
+	    for (ProductoItem p : listaProductosId) {
 	        items.add(new ProductoDTO(
 	            p.getProductoNombre(),   // <-- usa tus getters reales
 	            p.getCantidad(),
@@ -227,21 +234,13 @@ public class PedidoService {
 	            p.getSubtotal()          // NO lo recalculo
 	        ));
 	    }
-	    return items;
-	}
-	
-	@Transactional(readOnly = true) 
-	
-	public PedidoDatosDTO obtenerPedidoById(Long id){
-		
-		Pedido pedido = pedidoRepository.findById(id).orElseThrow(() -> new ResponseStatusException( NOT_FOUND,"Entrega " + id + " no existe"));
 	    
-		return new PedidoDatosDTO(
+		return new PedidoDetalleDTO(
 		        pedido.getCliente(),
 		        pedido.getFechaEntrega(),
-		        pedido.getEstado(),
-		        pedido.getTipoVenta()
-		    );
+		        pedido.getTipoVenta(),
+		        items
+		 );
 	}
 	
 	

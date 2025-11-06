@@ -26,28 +26,22 @@ tbodyPedidos.addEventListener("click", async e => {
   if (!pedidoId) return;
 
   try {
-    // 🔹 Fetch de productos
-    const resItems = await fetch(`${API_BASE}/pedido/producto/${pedidoId}`);
-    if (!resItems.ok) throw new Error("Error al cargar productos");
+    // 🔹 Fetch único al detalle
+    const resDetalle = await fetch(`${API_BASE}/pedido/detalle/${pedidoId}`);
+    if (!resDetalle.ok) throw new Error("Error al cargar detalle del pedido");
 
-    const items = await resItems.json();
-
-    // 🔹 Fetch de metadatos del pedido
-    const resDatos = await fetch(`${API_BASE}/pedido/datos/${pedidoId}`);
-    if (!resDatos.ok) throw new Error("Error al cargar datos del pedido");
-
-    const datos = await resDatos.json();
+    const detalle = await resDetalle.json();
 
     // Pintar metadatos
-    metaCliente.textContent = datos?.cliente || "—";
-    metaFecha.textContent = datos?.fechaEntrega
-      ? new Date(datos.fechaEntrega).toLocaleDateString("es-AR")
+    metaCliente.textContent = detalle?.cliente || "—";
+    metaFecha.textContent = detalle?.fechaEntrega
+      ? new Date(detalle.fechaEntrega).toLocaleDateString("es-AR")
       : "—";
 
     // Pintar tabla de productos
     ventaItemsBody.innerHTML = "";
     let subtotal = 0;
-    items.forEach(it => {
+    detalle.items.forEach(it => {
       subtotal += it.subTotal;
       const tr = document.createElement("tr");
       tr.innerHTML = `

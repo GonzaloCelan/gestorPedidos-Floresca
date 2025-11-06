@@ -36,7 +36,7 @@ public class ProductoItem {
 	 private String productoNombre;
 	 
 	 @Column(name = "cantidad")
-	 private Integer cantidad;
+	 private int cantidad;
 	 
 	 @Column(name = "precio_unit")
 	 private BigDecimal precioUnit;
