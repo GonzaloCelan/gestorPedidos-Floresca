@@ -222,33 +222,6 @@ function initPedidos() {
 	  }
 	});
 	
-	async function cargarPedidoEditar(id) {
-	  const res = await fetch(`/api/v1/pedido/producto/${id}`);
-	  const data = await res.json();
-
-	  document.getElementById("epCliente").value = data.cliente;
-	  document.getElementById("epFecha").value = data.fechaEntrega;
-
-	  const epItemsBody = document.getElementById("epItemsBody");
-	  epItemsBody.innerHTML = "";
-	  const tpl = document.getElementById("epRowTpl");
-
-	  (data.items || []).forEach(item => {
-	    const tr = tpl.cloneNode(true);
-	    tr.id = "";
-	    tr.classList.remove("hidden");
-
-	    tr.querySelector('[data-role="name"]').value = item.nombre;
-	    tr.querySelector('[data-role="qty"]').value = item.cantidad;
-	    tr.querySelector('[data-role="price"]').value = item.precio;
-	    tr.querySelector('[data-role="subtotal"]').textContent =
-	      `$ ${(item.cantidad * item.precio).toLocaleString("es-AR", { minimumFractionDigits: 2 })}`;
-
-	    epItemsBody.appendChild(tr);
-	  });
-
-	  window.pedidoEditId = id; // guardás el id para el PUT
-	}
 
 	// === FILTROS ===
 	filMes.addEventListener("change", renderPedidos);
