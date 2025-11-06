@@ -34,19 +34,19 @@ public class InsumoService {
     public  InsumoCreadoDTO guardarMaterial(@Valid InsumoNuevoDTO request) {
     	
     	Insumo nuevoMaterial = Insumo.builder()
-    			.fecha(request.getFecha())
-    			.material(request.getMaterial())
-    			.cantidad(request.getCantidad())
-    			.proveedor(request.getProveedor())
-    			.precioUnitario(request.getPrecioUnitario())
-    			.precioTotal(request.getPrecioTotal())
+    			.fecha(request.fecha())
+    			.material(request.material())
+    			.cantidad(request.cantidad())
+    			.proveedor(request.proveedor())
+    			.precioUnitario(request.precioUnitario())
+    			.precioTotal(request.precioTotal())
     			.build();
     	
         repository.save(nuevoMaterial);
         
-        return InsumoCreadoDTO.builder()
-				.idInsumo(nuevoMaterial.getId())
-				.build();
+        return new InsumoCreadoDTO(
+        		nuevoMaterial.getId()
+        );
     }
 
  

@@ -20,6 +20,8 @@ public record InsumoNuevoDTO(
 	    @NotNull
 	    @Min(value = 1, message = "La cantidad mínima es 1")
 	    Double cantidad,
+	    
+	    String material,
 
 	    String proveedor,
 

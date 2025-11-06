@@ -1,12 +1,12 @@
 package com.floresta.gestor.dto.insumo;
 
-import lombok.Builder;
-import lombok.Data;
 
-@Data	
-@Builder
-public class InsumoCreadoDTO {
+
+
+public record InsumoCreadoDTO(
+	    Long idInsumo
+	) {
 
 	
-	private Long idInsumo;
+	
 }
