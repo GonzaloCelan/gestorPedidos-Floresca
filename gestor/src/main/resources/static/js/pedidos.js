@@ -239,3 +239,4 @@ function initPedidos() {
 }
 window.initPedidos = initPedidos; // lo exponés al global
 
+
