@@ -16,7 +16,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import com.floresta.gestor.dto.ProductoDTO;
 import com.floresta.gestor.dto.pedido.PedidoActualizadoDTO;
 import com.floresta.gestor.dto.pedido.PedidoCreadoDTO;
-import com.floresta.gestor.dto.pedido.PedidoDatosDTO;
 import com.floresta.gestor.dto.pedido.PedidoDetalleDTO;
 import com.floresta.gestor.dto.pedido.PedidoEstadoDTO;
 import com.floresta.gestor.dto.pedido.PedidoNuevoDTO;

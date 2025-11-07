@@ -120,7 +120,7 @@ function initPedidos() {
 	        <div>${parseFechaISO(p.fechaEntrega).toLocaleDateString("es-AR")}</div>
 	        <div>${p.cliente}</div>
 	        <div>
-	          <button class="js-ver-detalle inline-flex items-center gap-1 text-emerald-700 font-semibold hover:text-emerald-900 hover:underline transition" data-id="${p.idPedido}">
+	          <button class="js-ver-detalle-pedido inline-flex items-center gap-1 text-emerald-700 font-semibold hover:text-emerald-900 hover:underline transition" data-id="${p.idPedido}">
 	            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
 	              <path d="M15 12H3m12 0l-4-4m4 4l-4 4"/>
 	            </svg>

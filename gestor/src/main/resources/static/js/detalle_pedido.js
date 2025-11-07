@@ -1,9 +1,9 @@
 // Elementos de la vista detalle
-const viewDetalle = document.getElementById("view-venta-detalle");
+const viewDetalle = document.getElementById("view-pedido-detalle");
 const btnVolverPedidos = document.getElementById("btnVolverPedidos");
-const ventaItemsBody = document.getElementById("ventaItemsBody");
-const ventaSubtotalText = document.getElementById("ventaSubtotalText");
-const ventaTotalText = document.getElementById("ventaTotalText");
+const ventaItemsBody = document.getElementById("pedidoItemsBody");
+const ventaSubtotalText = document.getElementById("pedidoSubtotalText");
+const ventaTotalText = document.getElementById("pedidoTotalText");
 
 // Metadatos
 const metaCliente = viewDetalle.querySelector("[data-meta='cliente']");
@@ -19,7 +19,7 @@ function money(valor) {
 }
 
 tbodyPedidos.addEventListener("click", async e => {
-  const btn = e.target.closest(".js-ver-detalle");
+  const btn = e.target.closest(".js-ver-detalle-pedido");
   if (!btn) return;
 
   const pedidoId = btn.dataset.id;
@@ -56,8 +56,8 @@ tbodyPedidos.addEventListener("click", async e => {
     ventaSubtotalText.textContent = money(subtotal);
     ventaTotalText.textContent = money(subtotal);
 
-    showView("venta-detalle");
-    try { history.pushState({ v: "venta-detalle" }, "", "#venta-detalle"); } catch {}
+    showView("pedido-detalle");
+    try { history.pushState({ v: "pedido-detalle" }, "", "#pedido-detalle"); } catch {}
   } catch (err) {
     console.error("Error cargando detalle:", err);
     Swal.fire("Error", "No se pudo cargar el detalle del pedido", "error");

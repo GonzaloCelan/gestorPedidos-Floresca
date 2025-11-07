@@ -163,6 +163,17 @@ function initVentas() {
   [filMes, filAnio, filTipo].forEach(el => el.addEventListener("change", renderVentas));
 
   tbody.addEventListener("click", async e => {
+	
+	const btnDetalle = e.target.closest(".js-ver-detalle-venta");
+	  if (btnDetalle) {
+	    const pedidoId = btnDetalle.dataset.id;
+	    if (!pedidoId) return;
+	    // Aquí simplemente llamás a tu función global
+		console.log(pedidoId)
+	    window.verDetalleVenta(pedidoId);
+	    return;
+	  }
+	  
     // Eliminar
     const del = e.target.closest(".btn-delete");
     if (del) {
@@ -197,17 +208,8 @@ function initVentas() {
       return;
     }
 
-    // Ver detalle
-    const verVenta = e.target.closest(".js-ver-detalle-venta");
-    if (verVenta) {
-      const pedidoId = verVenta.dataset.id;
-      if (!pedidoId) return;
-
-      showView("detalle-venta"); // 👈 siempre la vista correcta
-      try { history.pushState({ v: "detalle-venta" }, "", "#detalle-venta"); } catch {}
-
-      cargarYRenderDetalle(pedidoId); // 👈 misma función que usás en pedidos
-    }
+ 
+    
   });
 
   fetchVentas();
